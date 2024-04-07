@@ -26,6 +26,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -37,6 +38,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import spacedeck.SpaceDeck;
 import spacedeck.exceptions.CardAlreadyActiveException;
 import spacedeck.exceptions.FullDeckException;
 import spacedeck.exceptions.InsufficientFuelException;
@@ -49,7 +51,8 @@ import spacedeck.exceptions.InsufficientFuelException;
  * @author pj
  */
 public class BattleScreenController implements Initializable {
-    
+	@FXML
+	private AnchorPane root;
     @FXML
     private AnchorPane playerDeckElement;
     @FXML
@@ -66,13 +69,17 @@ public class BattleScreenController implements Initializable {
     private AnchorPane cardStackElement;
     @FXML
     private MediaView videoBackground;
-    
+	@FXML
+	private VBox menu;
+	
     private final int CARDS_IN_CARD_STACK = 10;
     private final double ROTATION_PER_CARD = -10;
     
     private Player player;
     private Character opponent;
     private boolean isDraggingCard;
+	private boolean isScreenActive;
+	private double musicVolume = 0.3;
     
     // TRANSITIONS
     private TranslateTransition slotInvalid;
@@ -82,6 +89,9 @@ public class BattleScreenController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+		isScreenActive = true;
+
+		// Video Setting
         Media backgroundVideo = new Media(getClass().getResource("/spacedeck/media/[TEMP] video bg.mp4").toExternalForm());
         MediaPlayer backgroundPlayer = new MediaPlayer(backgroundVideo);
         backgroundPlayer.setAutoPlay(true);
@@ -138,7 +148,7 @@ public class BattleScreenController implements Initializable {
         // Play music
         Media battleMusic = new Media(getClass().getResource("/spacedeck/audio/TEMP_battle_music.mp3").toExternalForm());
         songPlayer = new MediaPlayer(battleMusic);
-        songPlayer.setVolume(0.3);
+        songPlayer.setVolume(musicVolume);
         songPlayer.setAutoPlay(true);
         songPlayer.play();
     }    
@@ -226,12 +236,113 @@ public class BattleScreenController implements Initializable {
         }
     }
 
+	@FXML
+	private void menuIconHoverEnter(MouseEvent event) {
+		Node menuButton = (Node) event.getSource();
+
+		ScaleTransition menuScale = new ScaleTransition();
+		menuScale.setFromX(1);
+		menuScale.setFromY(1);
+		menuScale.setToX(1.1);
+		menuScale.setToY(1.1);
+		menuScale.setDuration(Duration.millis(100));
+		menuScale.setNode(menuButton);
+		menuScale.play();
+	}
+
+	@FXML
+	private void menuIconHoverExit(MouseEvent event) {
+		Node menuButton = (Node) event.getSource();
+
+		ScaleTransition menuScale = new ScaleTransition();
+		menuScale.setFromX(1.1);
+		menuScale.setFromY(1.1);
+		menuScale.setToX(1);
+		menuScale.setToY(1);
+		menuScale.setDuration(Duration.millis(100));
+		menuScale.setNode(menuButton);
+		menuScale.play();
+	}
+
     @FXML
     private void slotHoverExit(MouseEvent event) {
         if (borderRedFlashing.getStatus() == Status.STOPPED) {
             ((AnchorPane) event.getSource()).getStyleClass().remove("selectedSlot");
         }
     }
+
+	@FXML
+	public void toggleMenu(MouseEvent event) {
+		// If the menuButton was not open 
+		if (menu.disableProperty().get()) {
+			isScreenActive = false;	
+
+			menu.setDisable(false);
+			menu.setOpacity(1);
+
+			for (Node child : root.getChildren()) {
+				if (child != menu) {
+					child.setOpacity(0.5);
+				}
+			}
+
+			songPlayer.setVolume(0.2);
+		// If the menuButton was open
+		} else {
+			isScreenActive = true;
+
+			menu.setDisable(true);
+			menu.setOpacity(0);
+
+			for (Node child : root.getChildren()) {
+				if (child != menu) {
+					child.setOpacity(1);
+				}
+			}
+
+			songPlayer.setVolume(musicVolume);
+		}
+	}
+
+	@FXML
+	private void onMouseHoverExit(MouseEvent event) {
+		Node button = (Node) event.getSource();
+
+		ScaleTransition buttonScale = new ScaleTransition();
+		buttonScale.setFromX(1.1);
+		buttonScale.setFromY(1.1);
+		buttonScale.setToX(1);
+		buttonScale.setToY(1);
+		buttonScale.setDuration(Duration.millis(100));
+		buttonScale.setNode(button);
+		buttonScale.play();
+	}
+
+	@FXML
+	private void onMouseHoverEnter(MouseEvent event) {
+		Node button = (Node) event.getSource();
+
+		ScaleTransition buttonScale = new ScaleTransition();
+		buttonScale.setFromX(1);
+		buttonScale.setFromY(1);
+		buttonScale.setToX(1.1);
+		buttonScale.setToY(1.1);
+		buttonScale.setDuration(Duration.millis(100));
+		buttonScale.setNode(button);
+		buttonScale.play();
+	}
+
+	@FXML
+	private void backToMenu(MouseEvent event) {
+		songPlayer.setVolume(0);
+		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.MapScreen);
+	}
+
+	@FXML
+	private void restartGame(MouseEvent event) {
+		songPlayer.setVolume(0);
+		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.BattleScreen);
+	}
 
     @FXML
     private void slotHoverEnter(MouseEvent event) {
@@ -437,4 +548,12 @@ public class BattleScreenController implements Initializable {
     public void setIsDraggingCard(boolean d) {
         isDraggingCard = d;
     }
+
+	public boolean getIsScreenActive() {
+		return isScreenActive;
+	}
+
+	public void setIsScreenActive(boolean isScreenActive) {
+		this.isScreenActive = isScreenActive;
+	}
 }

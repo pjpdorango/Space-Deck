@@ -13,6 +13,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     -fx-card-border-color: #00E8FF;
     -fx-gear-bg-color: #920254;
     -fx-gear-border-color: #FF00FF;
+	-fx-menu-bg-color: #035C64;
+	-fx-menu-border-color: #00E8FF;
 }
 
 .deckCard {
@@ -66,6 +68,24 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
 
 .values {
     -fx-font-family: Squartiqa4F;
+}
+
+.pauseMenu {
+	-fx-border-color: -fx-menu-border-color;		
+	-fx-border-width: 5px;
+	-fx-border-radius: 5px;
+	-fx-background-color: -fx-menu-bg-color;		
+	-fx-background-radius: 5px;
+}
+
+.pauseTitle {
+	-fx-font-family: Cristik;
+	-fx-font-size: 35;
+}
+
+.option {
+	-fx-font-family: TTSupermolotNeue-Regular;
+	-fx-font-size: 18;
 }
 
 .selectedSlot {
