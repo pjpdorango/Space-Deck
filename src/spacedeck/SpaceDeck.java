@@ -36,11 +36,6 @@ import spacedeck.model.Player;
 public class SpaceDeck extends Application {
 	private static Player currentPlayer;
 	private static Stage currentStage;
-	private static FXMLLoader titleScreenLoader, 
-			collectionScreenLoader, 
-			mapScreenLoader, 
-			levelSelectionScreenLoader, 
-			battleScreenLoader;
 
 	public enum SceneType {
 		TitleScreen, CollectionScreen, MapScreen, LevelSelectionScreen, BattleScreen	
@@ -138,8 +133,16 @@ public class SpaceDeck extends Application {
         currentStage.setHeight(570);
         currentStage.setWidth(960);
 		
-		battleScreenLoader = new FXMLLoader(getClass().getResource("battlescreen/BattleScreen.fxml"));
-
+		/*
+			-------------
+			SCENE LOADING
+			-------------
+			WHATS NEW? 
+			- All scenes are now linked together and offer a way of returning to the previous screen. 
+				- Because of this, no need to change the scene anymore!
+				- But still, if needed, change the loaded scene using the SceneType enum.
+			- Added a fade in and out effect between scenes.
+		*/
 		FXMLLoader sceneLoader = loadScene(SceneType.TitleScreen);
 
 		currentStage.setScene(((Parent) sceneLoader.getRoot()).getScene());
@@ -182,6 +185,7 @@ public class SpaceDeck extends Application {
 		} catch (IOException e) {
 			System.out.println("[ERROR] Error loading scene: " + e.getMessage());
 		}
+		
 		newScene.setFill(Color.BLACK);
 
 		return sceneLoader;

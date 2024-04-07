@@ -10,15 +10,12 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import spacedeck.SpaceDeck;
 
@@ -43,7 +40,6 @@ public class MapScreenController implements Initializable {
 	@FXML
 	private void goToPlanet(MouseEvent event) {
 		FXMLLoader levelSelectLoader = SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.LevelSelectionScreen);
-		AnchorPane levelSelectScreen = levelSelectLoader.getRoot();
 		LevelSelectionScreenController levelSelectController = levelSelectLoader.getController();
 		
 		ImageView planet = (ImageView) event.getSource();
@@ -97,6 +93,11 @@ public class MapScreenController implements Initializable {
 		planetScale.setDuration(Duration.millis(100));
 		planetScale.setNode(planet);
 		planetScale.play();	planetRotation.play();
+	}
+
+	@FXML
+	private void returnToMenu(MouseEvent event) {
+		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.TitleScreen);
 	}
     
 }

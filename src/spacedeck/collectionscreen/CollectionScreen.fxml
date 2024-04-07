@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -88,5 +89,13 @@
             </GridPane>
          </right>
       </BorderPane>
+      <ImageView fitHeight="65.0" fitWidth="113.0" layoutX="831.0" layoutY="10.0" onMouseClicked="#returnToMenu" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../media/Information_Minimize_Button.png" />
+         </image>
+         <cursor>
+            <Cursor fx:constant="OPEN_HAND" />
+         </cursor>
+      </ImageView>
    </children>
 </AnchorPane>

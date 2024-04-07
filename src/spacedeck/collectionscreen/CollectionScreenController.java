@@ -15,12 +15,15 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import spacedeck.SpaceDeck;
 
 /**
  *
@@ -93,5 +96,10 @@ public class CollectionScreenController implements Initializable {
         Image selectedCardImage = new Image(getClass().getResourceAsStream("/spacedeck/media/" + c.getIcon()));
         selectedCardIcon.setImage(selectedCardImage);
     }
+
+	@FXML
+	private void returnToMenu(MouseEvent event) {
+		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.TitleScreen);
+	}
     
 }
