@@ -14,10 +14,13 @@ import spacedeck.model.FireCard;
 import spacedeck.model.AirCard;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
@@ -36,6 +39,7 @@ import spacedeck.model.Player;
 public class SpaceDeck extends Application {
 	private static Player currentPlayer;
 	private static Stage currentStage;
+	private static HashMap<URL, FXMLLoader> loaderMap = new HashMap<>();
 
 	public enum SceneType {
 		TitleScreen, CollectionScreen, MapScreen, LevelSelectionScreen, BattleScreen	
@@ -143,7 +147,7 @@ public class SpaceDeck extends Application {
 				- But still, if needed, change the loaded scene using the SceneType enum.
 			- Added a fade in and out effect between scenes.
 		*/
-		FXMLLoader sceneLoader = loadScene(SceneType.TitleScreen);
+		FXMLLoader sceneLoader = determineScene(SceneType.BattleScreen);
 
 		currentStage.setScene(((Parent) sceneLoader.getRoot()).getScene());
         currentStage.show();
@@ -156,35 +160,58 @@ public class SpaceDeck extends Application {
         launch(args);
     }
 
-	public static FXMLLoader loadScene(SceneType sceneType) {
-		FXMLLoader sceneLoader = null;
+	public static FXMLLoader loadScene(URL url) {
+		FXMLLoader loader = null;
+
+		if (loaderMap.containsKey(url)) {
+			loader = loaderMap.get(url);
+		} else {
+			loader = new FXMLLoader(url);
+			loaderMap.put(url, loader);
+		}
+
+		Parent root = loader.getRoot();
+
+		if (root == null) {
+			try {
+				loader.load();
+			} catch (IOException e) {
+				System.out.println("[ERROR] Error loading scene: " + e.getMessage());
+			}
+		}
+
+		if (root.getScene() == null) {
+			new Scene(root);
+		}
+
+		return loader;
+	}
+
+	public static FXMLLoader determineScene(SceneType sceneType) {
+		URL url = null;	
 
 		if (null != sceneType) switch (sceneType) {
 			case TitleScreen:
-				sceneLoader = new FXMLLoader(SpaceDeck.class.getResource("titlescreen/TitleScreen.fxml"));
+				url = SpaceDeck.class.getResource("titlescreen/TitleScreen.fxml");
 				break;
 			case CollectionScreen:
-				sceneLoader = new FXMLLoader(SpaceDeck.class.getResource("collectionscreen/CollectionScreen.fxml"));
+				url = SpaceDeck.class.getResource("collectionscreen/CollectionScreen.fxml");
 				break;
 			case LevelSelectionScreen:
-				sceneLoader = new FXMLLoader(SpaceDeck.class.getResource("levelselectionscreen/LevelSelectionScreen.fxml"));
+				url = SpaceDeck.class.getResource("levelselectionscreen/LevelSelectionScreen.fxml");
 				break;
 			case MapScreen:
-				sceneLoader = new FXMLLoader(SpaceDeck.class.getResource("mapscreen/MapScreen.fxml"));
+				url = SpaceDeck.class.getResource("mapscreen/MapScreen.fxml");
 				break;
 			case BattleScreen:
-				sceneLoader = new FXMLLoader(SpaceDeck.class.getResource("battlescreen/BattleScreen.fxml"));
+				url = SpaceDeck.class.getResource("battlescreen/BattleScreen.fxml");
 				break;
 			default:
 				break;
 		}
 
-		Scene newScene = null;
-		try {
-			newScene = new Scene(sceneLoader.load());
-		} catch (IOException e) {
-			System.out.println("[ERROR] Error loading scene: " + e.getMessage());
-		}
+		FXMLLoader sceneLoader = loadScene(url);
+		Scene newScene = ((Parent) sceneLoader.getRoot()).getScene();
 		
 		newScene.setFill(Color.BLACK);
 
@@ -192,7 +219,7 @@ public class SpaceDeck extends Application {
 	}
 
 	public static FXMLLoader transitionToScene(Scene currentScene, SceneType sceneType) {
-		FXMLLoader sceneLoader = loadScene(sceneType);
+		FXMLLoader sceneLoader = determineScene(sceneType);
 		Parent parent = sceneLoader.getRoot();
 		parent.setOpacity(0);
 
@@ -203,8 +230,6 @@ public class SpaceDeck extends Application {
 		fadeOut.setToValue(0);
 		fadeOut.setNode(originalParent);
 		fadeOut.setOnFinished((ActionEvent event) -> {
-			System.out.println("done");
-
 			if (parent.getScene() == null) {
 				currentStage.setScene(new Scene(parent));
 			} else {
