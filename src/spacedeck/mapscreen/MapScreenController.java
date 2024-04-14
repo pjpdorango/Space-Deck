@@ -33,12 +33,20 @@ public class MapScreenController implements Initializable {
 	private ImageView aurosMinoris;
 	@FXML
 	private ImageView astraforge;
+
+	private boolean isScreenActive;
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) { }
+    public void initialize(URL url, ResourceBundle rb) {
+		isScreenActive = true;
+	}
 
 	@FXML
 	private void goToPlanet(MouseEvent event) {
+		// Only do if screen is active
+		if (!isScreenActive) return;
+
+		isScreenActive = false;
 		FXMLLoader levelSelectLoader = SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.LevelSelectionScreen);
 		LevelSelectionScreenController levelSelectController = levelSelectLoader.getController();
 		
@@ -56,6 +64,9 @@ public class MapScreenController implements Initializable {
 
 	@FXML
 	private void mouseHoverEnter(MouseEvent event) {
+		// Only do if screen is active
+		if (!isScreenActive) return;
+
 		RotateTransition planetRotation = new RotateTransition();
 		Node planet = (Node) event.getSource();
 
@@ -77,6 +88,9 @@ public class MapScreenController implements Initializable {
 
 	@FXML
 	private void mouseHoverExit(MouseEvent event) {
+		// Only do if screen is active
+		if (!isScreenActive) return;
+
 		RotateTransition planetRotation = new RotateTransition();
 		Node planet = (Node) event.getSource();
 
@@ -97,6 +111,10 @@ public class MapScreenController implements Initializable {
 
 	@FXML
 	private void returnToMenu(MouseEvent event) {
+		// Only do if screen is active
+		if (!isScreenActive) return;
+
+		isScreenActive = false;
 		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.TitleScreen);
 	}
     

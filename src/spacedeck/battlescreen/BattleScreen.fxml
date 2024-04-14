@@ -13,13 +13,8 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="spacedeck.battlescreen.BattleScreenController">
+<AnchorPane id="AnchorPane" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" styleClass="root" stylesheets="@BattleScreenStyle.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="spacedeck.battlescreen.BattleScreenController">
    <children>
-      <ImageView fitHeight="540.0" fitWidth="1043.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../media/TEMP_background.png" />
-         </image>
-      </ImageView>
       <MediaView fx:id="videoBackground" fitHeight="540.0" fitWidth="960.0" />
       <ImageView fitHeight="333.0" fitWidth="574.0" layoutX="193.0" layoutY="111.0" pickOnBounds="true" preserveRatio="true">
          <image>

@@ -13,7 +13,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 import spacedeck.SpaceDeck;
 
@@ -50,13 +52,17 @@ public class TitleScreenController implements Initializable {
 
     @FXML
     private void textMouseExit(MouseEvent event) {
-        mouseExit.setNode((Node) event.getSource());
+		Text textNode = (Text) event.getSource();
+		textNode.setFill(Color.WHITE);
+        mouseExit.setNode(textNode);
         mouseExit.play();
     }
 
     @FXML
     private void textMouseEnter(MouseEvent event) {
-        mouseEnter.setNode((Node) event.getSource());
+		Text textNode = (Text) event.getSource();
+		textNode.setFill(Color.AQUA);
+        mouseEnter.setNode(textNode);
         mouseEnter.play();
     }
 

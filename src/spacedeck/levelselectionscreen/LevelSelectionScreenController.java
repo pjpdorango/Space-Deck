@@ -62,12 +62,14 @@ public class LevelSelectionScreenController implements Initializable {
 	@FXML
 	private Text description;
 
+	private boolean isScreenActive;
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+		isScreenActive = true;
 		selectedLevel = -1;
 		originalBattleIcon = battleIcon.getImage();
 		greyScaleBattleIcon = makeGreyScale(battleIcon);
@@ -76,6 +78,9 @@ public class LevelSelectionScreenController implements Initializable {
 
 	@FXML
 	private void buttonHoverEnter(MouseEvent event) {
+		// Only do if screen is active
+		if (!isScreenActive) return;
+
 		ScaleTransition hover = new ScaleTransition();
 		hover.setFromX(1);
 		hover.setFromY(1);
@@ -88,6 +93,9 @@ public class LevelSelectionScreenController implements Initializable {
 
 	@FXML
 	private void buttonHoverExit(MouseEvent event) {
+		// Only do if screen is active
+		if (!isScreenActive) return;
+
 		ScaleTransition hover = new ScaleTransition();
 		hover.setFromX(1.1);
 		hover.setFromY(1.1);
@@ -100,6 +108,9 @@ public class LevelSelectionScreenController implements Initializable {
 
 	@FXML
 	private void selectLevel(MouseEvent event) {
+		// Only do if screen is active
+		if (!isScreenActive) return;
+
 		// levelNumber is which level is being contained
 		// Level 1 will have the levelNumber = 0, etc.
 		Node level = (Node) event.getSource();	
@@ -146,6 +157,11 @@ public class LevelSelectionScreenController implements Initializable {
 	}
 
 	private void battle(MouseEvent ev) {
+		// Only do if screen is active
+		if (!isScreenActive) return;
+
+		isScreenActive = false;
+
 		SpaceDeck.transitionToScene(((Node) ev.getSource()).getScene(), SpaceDeck.SceneType.BattleScreen);
 	}
 
@@ -187,6 +203,10 @@ public class LevelSelectionScreenController implements Initializable {
 
 	@FXML
 	private void returnToMap(MouseEvent event) {
+		// Only do if screen is active
+		if (!isScreenActive) return;
+		
+		isScreenActive = false;
 		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.MapScreen);
 	}
 }

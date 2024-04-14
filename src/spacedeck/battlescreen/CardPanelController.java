@@ -66,6 +66,9 @@ public class CardPanelController implements Initializable {
 
     @FXML
     private void cardHoverEnterAnimation(MouseEvent event) {
+		// If the screen is not active, don't do anything
+		if (!sceneController.getIsScreenActive()) return;
+
         // If the card is not currently being dragged
         // Here bc if it is being dragged, and the card lags behind and then catches up, the cardHoverEnterAnimation
         // starts playing again (we don't want that)
@@ -98,6 +101,9 @@ public class CardPanelController implements Initializable {
     
     @FXML
     private void cardHoverExitAnimation(MouseEvent event) {
+		// If the screen is not active, don't do anything
+		if (!sceneController.getIsScreenActive()) return;
+
         if (!isBeingDragged) {
             // Get each card that is NOT the current card,
             // Revert the opacity
@@ -111,6 +117,9 @@ public class CardPanelController implements Initializable {
     
     @FXML
     private void cardPress(MouseEvent event) {
+		// If the screen is not active, don't do anything
+		if (!sceneController.getIsScreenActive()) return;
+
         if (event.getButton() == MouseButton.PRIMARY) {
             startX = event.getSceneX();
             startY = event.getSceneY();
@@ -128,12 +137,18 @@ public class CardPanelController implements Initializable {
     
     @FXML
     private void cardDrag(MouseEvent event) {
+		// If the screen is not active, don't do anything
+		if (!sceneController.getIsScreenActive()) return;
+
         card.setTranslateX(restingTranslate + event.getSceneX() - startX);
         card.setTranslateY(event.getSceneY() - startY);
     }
     
     @FXML
     private void cardRelease(MouseEvent event) {
+		// If the screen is not active, don't do anything
+		if (!sceneController.getIsScreenActive()) return;
+
         if (event.getButton() == MouseButton.PRIMARY) {
             isBeingDragged = false;
             

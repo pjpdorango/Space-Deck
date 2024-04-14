@@ -17,6 +17,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
 	-fx-menu-border-color: #00E8FF;
 }
 
+.root {
+	-fx-background-color: black;
+}
+
 .deckCard {
     -fx-border-radius: 5px;
     -fx-background-radius: 5px;

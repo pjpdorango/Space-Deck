@@ -28,6 +28,9 @@ public class StackCardPanelController implements Initializable {
 
 	@FXML
 	private void getCardFromStack(MouseEvent event) {
+		// If the screen is not active, don't do anything
+		if (!sceneController.getIsScreenActive()) return;
+
 		sceneController.getCardFromStack(event);
 	}
 

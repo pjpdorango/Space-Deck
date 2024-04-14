@@ -98,7 +98,7 @@ public class BattleScreenController implements Initializable {
         backgroundPlayer.setCycleCount(Integer.MAX_VALUE);
         backgroundPlayer.play();
         videoBackground.setMediaPlayer(backgroundPlayer);
-        
+
         // Field Initialization
         isDraggingCard = false;
         slotInvalid = new TranslateTransition();
@@ -238,6 +238,9 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void menuIconHoverEnter(MouseEvent event) {
+		// If the screen is not active, don't do anything
+		if (!isScreenActive) return;
+
 		Node menuButton = (Node) event.getSource();
 
 		ScaleTransition menuScale = new ScaleTransition();
@@ -252,6 +255,9 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void menuIconHoverExit(MouseEvent event) {
+		// If the screen is not active, don't do anything
+		if (!isScreenActive) return;
+
 		Node menuButton = (Node) event.getSource();
 
 		ScaleTransition menuScale = new ScaleTransition();
@@ -266,6 +272,9 @@ public class BattleScreenController implements Initializable {
 
     @FXML
     private void slotHoverExit(MouseEvent event) {
+		// If the screen is not active, don't do anything
+		if (!isScreenActive) return;
+
         if (borderRedFlashing.getStatus() == Status.STOPPED) {
             ((AnchorPane) event.getSource()).getStyleClass().remove("selectedSlot");
         }
@@ -306,6 +315,9 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void onMouseHoverExit(MouseEvent event) {
+		// If the screen is not active, don't do anything
+		if (!isScreenActive) return;
+
 		Node button = (Node) event.getSource();
 
 		ScaleTransition buttonScale = new ScaleTransition();
@@ -320,6 +332,9 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void onMouseHoverEnter(MouseEvent event) {
+		// If the screen is not active, don't do anything
+		if (!isScreenActive) return;
+
 		Node button = (Node) event.getSource();
 
 		ScaleTransition buttonScale = new ScaleTransition();
@@ -346,6 +361,9 @@ public class BattleScreenController implements Initializable {
 
     @FXML
     private void slotHoverEnter(MouseEvent event) {
+		// If the screen is not active, don't do anything
+		if (!isScreenActive) return;
+
         if (borderRedFlashing.getStatus() == Status.STOPPED) {
             ((AnchorPane) event.getSource()).getStyleClass().add("selectedSlot");
         }
