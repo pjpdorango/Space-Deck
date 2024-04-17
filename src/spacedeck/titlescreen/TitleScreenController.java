@@ -25,13 +25,14 @@ import spacedeck.SpaceDeck;
  * @author pj
  */
 public class TitleScreenController implements Initializable {
-    
+    private boolean isScreenActive;
     private ScaleTransition mouseExit, mouseEnter;
     /**
      * Initializes the controller class.
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {        
+    public void initialize(URL url, ResourceBundle rb) {
+		isScreenActive = true;
         mouseEnter = new ScaleTransition();
         mouseExit = new ScaleTransition();
         mouseEnter.setDuration(new Duration(20));
@@ -68,20 +69,30 @@ public class TitleScreenController implements Initializable {
 
 	@FXML
 	private void playButton(MouseEvent event) {
+		if (!isScreenActive) return;
+
+		isScreenActive = false;
 		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.MapScreen);
 	}
 
 	@FXML
 	private void collectionButton(MouseEvent event) {
+		if (!isScreenActive) return;
+
+		isScreenActive = false;
 		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.CollectionScreen);
 	}
 
 	@FXML
 	private void settingsButton(MouseEvent event) {
+		if (!isScreenActive) return;
 	}
 
 	@FXML
 	private void exitButton(MouseEvent event) {
+		if (!isScreenActive) return;
+
+		isScreenActive = false;
 		System.exit(0);
 	}
     

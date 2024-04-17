@@ -78,7 +78,7 @@ public class BattleScreenController implements Initializable {
     private Player player;
     private Character opponent;
     private boolean isDraggingCard;
-	private boolean isScreenActive;
+	private boolean isPaused;
 	private double musicVolume = 0.3;
     
     // TRANSITIONS
@@ -89,7 +89,7 @@ public class BattleScreenController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-		isScreenActive = true;
+		isPaused = false;
 
 		// Video Setting
         Media backgroundVideo = new Media(getClass().getResource("/spacedeck/media/[TEMP] video bg.mp4").toExternalForm());
@@ -239,7 +239,7 @@ public class BattleScreenController implements Initializable {
 	@FXML
 	private void menuIconHoverEnter(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (!isScreenActive) return;
+		if (isPaused) return;
 
 		Node menuButton = (Node) event.getSource();
 
@@ -256,7 +256,7 @@ public class BattleScreenController implements Initializable {
 	@FXML
 	private void menuIconHoverExit(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (!isScreenActive) return;
+		if (isPaused) return;
 
 		Node menuButton = (Node) event.getSource();
 
@@ -273,7 +273,7 @@ public class BattleScreenController implements Initializable {
     @FXML
     private void slotHoverExit(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (!isScreenActive) return;
+		if (isPaused) return;
 
         if (borderRedFlashing.getStatus() == Status.STOPPED) {
             ((AnchorPane) event.getSource()).getStyleClass().remove("selectedSlot");
@@ -284,7 +284,7 @@ public class BattleScreenController implements Initializable {
 	public void toggleMenu(MouseEvent event) {
 		// If the menuButton was not open 
 		if (menu.disableProperty().get()) {
-			isScreenActive = false;	
+			isPaused = true;	
 
 			menu.setDisable(false);
 			menu.setOpacity(1);
@@ -298,7 +298,7 @@ public class BattleScreenController implements Initializable {
 			songPlayer.setVolume(0.2);
 		// If the menuButton was open
 		} else {
-			isScreenActive = true;
+			isPaused = false;
 
 			menu.setDisable(true);
 			menu.setOpacity(0);
@@ -316,7 +316,7 @@ public class BattleScreenController implements Initializable {
 	@FXML
 	private void onMouseHoverExit(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (!isScreenActive) return;
+		if (isPaused) return;
 
 		Node button = (Node) event.getSource();
 
@@ -333,7 +333,7 @@ public class BattleScreenController implements Initializable {
 	@FXML
 	private void onMouseHoverEnter(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (!isScreenActive) return;
+		if (isPaused) return;
 
 		Node button = (Node) event.getSource();
 
@@ -349,12 +349,20 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void backToMenu(MouseEvent event) {
+		if (!isPaused) return;
+
+		isPaused = false;
+
 		songPlayer.setVolume(0);
 		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.MapScreen);
 	}
 
 	@FXML
 	private void restartGame(MouseEvent event) {
+		if (!isPaused) return;
+
+		isPaused = false;
+
 		songPlayer.setVolume(0);
 		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.BattleScreen);
 	}
@@ -362,7 +370,7 @@ public class BattleScreenController implements Initializable {
     @FXML
     private void slotHoverEnter(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (!isScreenActive) return;
+		if (isPaused) return;
 
         if (borderRedFlashing.getStatus() == Status.STOPPED) {
             ((AnchorPane) event.getSource()).getStyleClass().add("selectedSlot");
@@ -568,10 +576,10 @@ public class BattleScreenController implements Initializable {
     }
 
 	public boolean getIsScreenActive() {
-		return isScreenActive;
+		return !isPaused;
 	}
 
-	public void setIsScreenActive(boolean isScreenActive) {
-		this.isScreenActive = isScreenActive;
+	public void setIsScreenActive(boolean isPaused) {
+		this.isPaused = !isPaused;
 	}
 }
