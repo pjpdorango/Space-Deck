@@ -203,8 +203,6 @@ public class SpaceDeck extends Application {
 		fadeOut.setToValue(0);
 		fadeOut.setNode(originalParent);
 		fadeOut.setOnFinished((ActionEvent event) -> {
-			System.out.println("done");
-
 			if (parent.getScene() == null) {
 				currentStage.setScene(new Scene(parent));
 			} else {

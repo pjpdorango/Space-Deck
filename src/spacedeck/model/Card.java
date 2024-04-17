@@ -69,6 +69,9 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
 		newCard.description = card.description;
 		newCard.icon = card.icon;
 
+		// There is no need for the card to be added to the allCards list, so remove it
+		allCards.remove(newCard);
+
 		return newCard;
 	}
     

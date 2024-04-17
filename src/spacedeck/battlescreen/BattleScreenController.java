@@ -535,9 +535,6 @@ public class BattleScreenController implements Initializable {
 		
 		addLeadingCardToDeck();
 		
-		System.out.println(cardStackDestination.getMinX());
-		System.out.println(cardStackDestination.getMinY());
-	
 		CardStackTransition slideToDeck = new CardStackTransition();	
 		slideToDeck.setNode(leadingCard);
 		slideToDeck.setNewNode(newCard);
