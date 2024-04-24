@@ -1,0 +1,39 @@
+[
+	{
+		"name" : "Cryoterra",
+		"description" : "Farthest from the solar system's sun, it is the coldest among all of the planets in Andromeda. I love lore wowowowowowowow looooooooooooooree this is the loooooooooooooooooore soooongg oooOOOOooOohhh llOOOOOOOooroeeee where do i get the lorem ipsum test PLEASE",
+		"population" : 63000,
+		"diameter" : 2489,
+		"environment" : "Harsh Snowy Tundra",
+		"champions" : [
+			"Chad", "Awesomeperson", "Coolio Guy", "Tuff guy"
+		]	
+	},	{
+		"name" : "Lunaris IX",
+		"description" : "Lorem Ipsum Something Somehtiggngngn Arrrgghhh im a Pirate matey",
+		"population" : 100000,
+		"diameter" : 200,
+		"environment" : "Warm Tropical Desert",
+		"champions" : [
+			"djdd", "Hi", "Arrrgh", "Mr Pirate Man"
+		]	
+	},	{
+		"name" : "Auros Minoris",
+		"description" : "Chipi chipi, chapa chapa Dubidubi, dabadaba Mágico mi dubidubi boom, boom, boom, boom Chipi chipi, chapa chapa Dubidubi, dabadaba Mágico mi dubidubi boom", 
+		"population" : 20000, 
+		"diameter" : 100000,
+		"environment" : "Desert Wasteland",
+		"champions" : [
+			"Awesome", "Awesome", "Person", "Spongebob Squarepants"
+		]	
+	},	{
+		"name" : "Astraforge",
+		"description" : "I love Deltarune and other games such as deltarun",
+		"population" : 1000,
+		"diameter" : 1000,
+		"environment" : "Hell",
+		"champions" : [
+			"ragh", "Me", "Aweomse", "Dante from Dantes Inferno"
+		]	
+	}
+]

@@ -1,0 +1,29 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Mar 24, 2024, 3:24:13 AM
+    Author     : pj
+*/
+
+.title {
+	-fx-font-family: Cristik;
+	-fx-font-size: 45px;
+}
+
+.text {
+	-fx-font-family: Squartiqa4FLight;
+	-fx-font-size: 16px;
+}
+
+.textTitle {
+	-fx-font-family: TTSupermolotNeue-Regular;
+	-fx-font-size: 13px;
+}
+
+.levelNumber {
+	-fx-font-family: Cristik;
+	-fx-font-size: 15px;
+	-fx-font-weight: bold;
+}

@@ -1,0 +1,106 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 26, 2024, 3:38:08 PM
+    Author     : pj
+*/
+
+/* Sets variables */
+* {
+    -fx-card-bg-color: #035C64;
+    -fx-card-border-color: #00E8FF;
+    -fx-gear-bg-color: #920254;
+    -fx-gear-border-color: #FF00FF;
+	-fx-menu-bg-color: #035C64;
+	-fx-menu-border-color: #00E8FF;
+}
+
+.root {
+	-fx-background-color: black;
+}
+
+.deckCard {
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-background-color: -fx-card-bg-color;
+    -fx-border-color: -fx-card-border-color;
+}
+
+.deckGear {
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-background-color: -fx-gear-bg-color;
+    -fx-border-color: -fx-gear-border-color;
+}
+
+.title {
+    -fx-font-family: Cristik;
+}
+
+.deckCardCost {
+    -fx-translate-x: -40;
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+}
+
+.deckCardName {
+    -fx-font-size: 15;
+}
+
+.deckCardDesc {
+    -fx-font-family: TTSupermolotNeue-Regular;
+    -fx-font-size: 10;
+    -fx-text-alignment: center;
+}
+
+.playingCard {
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-border-width: 5px;
+    -fx-border-color: -fx-card-border-color;
+}
+
+.attackDisplay {
+    -fx-background-color: cornflowerblue;
+}
+
+.healthDisplay {
+    -fx-background-color: darkred;
+}
+
+.values {
+    -fx-font-family: Squartiqa4F;
+}
+
+.pauseMenu {
+	-fx-border-color: -fx-menu-border-color;		
+	-fx-border-width: 5px;
+	-fx-border-radius: 5px;
+	-fx-background-color: -fx-menu-bg-color;		
+	-fx-background-radius: 5px;
+}
+
+.pauseTitle {
+	-fx-font-family: Cristik;
+	-fx-font-size: 35;
+}
+
+.option {
+	-fx-font-family: TTSupermolotNeue-Regular;
+	-fx-font-size: 18;
+}
+
+.selectedSlot {
+    -fx-border-color: #FFFFFF;
+}
+
+.invalidSlot {
+    -fx-border-color: #FF0000;
+}
+
+.insufficientFuel {
+    -fx-fill: #FF0000;
+}
+    

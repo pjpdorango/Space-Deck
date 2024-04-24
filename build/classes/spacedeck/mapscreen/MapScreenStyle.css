@@ -1,0 +1,13 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Mar 24, 2024, 5:25:25 PM
+    Author     : pj
+*/
+
+.planetName {
+	-fx-font-family: Cristik;
+	-fx-font-size: 17px;
+}
