@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<<<<<<< Updated upstream
 <?import javafx.scene.Cursor?>
+=======
+>>>>>>> Stashed changes
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -89,6 +92,7 @@
             </GridPane>
          </right>
       </BorderPane>
+<<<<<<< Updated upstream
       <ImageView fitHeight="65.0" fitWidth="113.0" layoutX="831.0" layoutY="10.0" onMouseClicked="#returnToMenu" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../media/Information_Minimize_Button.png" />
@@ -97,5 +101,7 @@
             <Cursor fx:constant="OPEN_HAND" />
          </cursor>
       </ImageView>
+=======
+>>>>>>> Stashed changes
    </children>
 </AnchorPane>
