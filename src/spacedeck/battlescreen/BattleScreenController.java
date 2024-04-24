@@ -76,7 +76,8 @@ public class BattleScreenController implements Initializable {
     private final double ROTATION_PER_CARD = -10;
     
     private Player player;
-    private Character opponent;
+    private Opponent opponent;
+	private Character turn;
     private boolean isDraggingCard;
 	private boolean isPaused;
 	private double musicVolume = 0.3;
@@ -140,6 +141,7 @@ public class BattleScreenController implements Initializable {
 		createCardStack();
 
         // Set the turn indicator
+		turn = player;
         turnIndicator.setText("Player's Turn");
 
         opponentFuelCount.setText(Integer.toString(opponent.getFuel()));
@@ -565,8 +567,22 @@ public class BattleScreenController implements Initializable {
         opponentFuelCount.setText(Integer.toString(opponent.getFuel()));
         playerFuelCount.setText(Integer.toString(player.getFuel()));
     }
+
+	private void opponentDrawCard(Card c) {
+		if (opponent.getDeck().contains(c)) {
+			// Create an animation for the opponent
+			
+		}
+	}
    	
 	// ATTRIBUTE SETTERS FOR OTHER FUNCTIONS
+	public void setPlayer(Player p) {
+		this.player = p;
+	}
+
+	public void setOpponent(Opponent o) {
+		this.opponent = o;
+	}
 
     public void setIsDraggingCard(boolean d) {
         isDraggingCard = d;
