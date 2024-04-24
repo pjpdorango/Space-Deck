@@ -33,7 +33,6 @@
             <Image url="@../media/Astraforge.png" />
          </image>
       </ImageView>
-<<<<<<< Updated upstream
       <ImageView fitHeight="95.0" fitWidth="150.0" layoutX="763.0" layoutY="16.0" onMouseClicked="#returnToMenu" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../media/Information_Minimize_Button.png" />
@@ -42,11 +41,6 @@
       <Text fill="WHITE" layoutX="221.0" layoutY="451.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="planetName" text="CRYOTERRA" textAlignment="CENTER" />
       <Text fill="WHITE" layoutX="618.0" layoutY="248.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="planetName" text="AUROS MINORIS" textAlignment="CENTER" wrappingWidth="130.936767578125" />
       <Text fill="WHITE" layoutX="341.0" layoutY="221.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="planetName" text="LUNARIS IX" textAlignment="CENTER" wrappingWidth="75.8701343536377" />
-=======
-      <Text fill="WHITE" layoutX="221.0" layoutY="451.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="planetName" text="CRYOTERRA" textAlignment="CENTER" />
-      <Text fill="WHITE" layoutX="618.0" layoutY="248.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="planetName" text="AUROS MINORIS" textAlignment="CENTER" wrappingWidth="130.936767578125" />
-      <Text fill="WHITE" layoutX="348.0" layoutY="237.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="planetName" text="LUNARIS IX" textAlignment="CENTER" wrappingWidth="65.8701343536377" />
->>>>>>> Stashed changes
       <Text fill="WHITE" layoutX="612.0" layoutY="513.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="planetName" text="ASTRAFORGE" textAlignment="CENTER" />
       <Line endX="-53.0" endY="-73.0" layoutX="386.0" layoutY="280.0" startX="-94.0" startY="11.0" stroke="WHITE" style="-fx-stroke-dash-array: 5;" />
       <Line endX="35.0" endY="-18.0" layoutX="543.0" layoutY="163.0" startX="-79.73333740234375" startY="-24.666656494140625" stroke="WHITE" style="-fx-stroke-dash-array: 5;" />

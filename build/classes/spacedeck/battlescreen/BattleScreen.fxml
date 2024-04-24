@@ -13,18 +13,13 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<<<<<<< Updated upstream
-<AnchorPane id="AnchorPane" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" styleClass="root" stylesheets="@BattleScreenStyle.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="spacedeck.battlescreen.BattleScreenController">
-   <children>
-=======
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="spacedeck.battlescreen.BattleScreenController">
+<AnchorPane id="AnchorPane" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="spacedeck.battlescreen.BattleScreenController">
    <children>
       <ImageView fitHeight="540.0" fitWidth="1043.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../media/TEMP_background.png" />
          </image>
       </ImageView>
->>>>>>> Stashed changes
       <MediaView fx:id="videoBackground" fitHeight="540.0" fitWidth="960.0" />
       <ImageView fitHeight="333.0" fitWidth="574.0" layoutX="193.0" layoutY="111.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -112,11 +107,15 @@
                         </FlowPane>
                      </children>
                   </AnchorPane>
-                  <Text fx:id="turnIndicator" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Opponent's Turn" wrappingWidth="111.6137655377388">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Text>
+                  <AnchorPane fx:id="turnButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onTurnButtonMouseClicked" onMouseEntered="#onTurnButtonMouseEnter" onMouseExited="#onTurnButtonMouseExit" prefHeight="64.0" prefWidth="111.0" styleClass="turnIndicatorButton">
+                     <children>
+                        <Text fx:id="turnIndicator" fill="WHITE" layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="playerTurnIndicator" text="End Turn" textAlignment="CENTER" wrappingWidth="111.6137655377388">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </AnchorPane>
                   <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="58.0" prefWidth="85.0" stylesheets="@BattleScreenStyle.css">
                      <children>
                         <ImageView fitHeight="82.0" fitWidth="101.0" pickOnBounds="true" preserveRatio="true">
@@ -200,7 +199,6 @@
             </AnchorPane>
          </center>
       </BorderPane>
-<<<<<<< Updated upstream
       <ImageView fitHeight="32.0" fitWidth="51.0" layoutX="898.0" layoutY="14.0" onMouseClicked="#toggleMenu" onMouseEntered="#menuIconHoverEnter" onMouseExited="#menuIconHoverExit" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../media/Hamburger_Menu_Icon.png" />
@@ -214,7 +212,5 @@
             <Text fill="WHITE" onMouseClicked="#restartGame" onMouseEntered="#onMouseHoverEnter" onMouseExited="#onMouseHoverExit" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="pauseOption" text="Restart" />
          </children>
 		</VBox>
-=======
->>>>>>> Stashed changes
    </children>
 </AnchorPane>

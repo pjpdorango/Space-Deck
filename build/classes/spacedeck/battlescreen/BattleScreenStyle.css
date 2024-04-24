@@ -13,15 +13,14 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     -fx-card-border-color: #00E8FF;
     -fx-gear-bg-color: #920254;
     -fx-gear-border-color: #FF00FF;
-<<<<<<< Updated upstream
 	-fx-menu-bg-color: #035C64;
 	-fx-menu-border-color: #00E8FF;
+    -fx-button-color-1: rgb(52, 41, 102);   
+    -fx-button-color-2: rgb(42, 78, 135);
 }
 
 .root {
 	-fx-background-color: black;
-=======
->>>>>>> Stashed changes
 }
 
 .deckCard {
@@ -77,7 +76,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     -fx-font-family: Squartiqa4F;
 }
 
-<<<<<<< Updated upstream
 .pauseMenu {
 	-fx-border-color: -fx-menu-border-color;		
 	-fx-border-width: 5px;
@@ -96,8 +94,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
 	-fx-font-size: 18;
 }
 
-=======
->>>>>>> Stashed changes
 .selectedSlot {
     -fx-border-color: #FFFFFF;
 }
@@ -109,4 +105,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
 .insufficientFuel {
     -fx-fill: #FF0000;
 }
-    
+
+.playerTurnIndicator {
+    -fx-font-family: Cristik;
+    -fx-border-color: black;
+}
+
+.turnIndicatorButton {
+    -fx-background-color: linear-gradient(to bottom right, -fx-button-color-2, -fx-button-color-1);
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-effect: dropshadow(gaussian, white, 2, 0.1, 1.2, 1.2);
+} 

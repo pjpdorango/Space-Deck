@@ -143,7 +143,7 @@ public class SpaceDeck extends Application {
 				- But still, if needed, change the loaded scene using the SceneType enum.
 			- Added a fade in and out effect between scenes.
 		*/
-		FXMLLoader sceneLoader = loadScene(SceneType.TitleScreen);
+		FXMLLoader sceneLoader = loadScene(SceneType.BattleScreen);
 
 		currentStage.setScene(((Parent) sceneLoader.getRoot()).getScene());
         currentStage.show();

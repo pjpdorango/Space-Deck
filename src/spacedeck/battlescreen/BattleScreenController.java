@@ -36,6 +36,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import spacedeck.SpaceDeck;
@@ -71,10 +75,13 @@ public class BattleScreenController implements Initializable {
     private MediaView videoBackground;
 	@FXML
 	private VBox menu;
+	@FXML
+	private AnchorPane turnButton;
 	
     private final int CARDS_IN_CARD_STACK = 10;
     private final double ROTATION_PER_CARD = -10;
-    
+	private LinearGradient INITIAL_TURN_BUTTON_GRADIENT;
+	private LinearGradient UPDATED_TURN_BUTTON_GRADIENT;    
     private Player player;
     private Opponent opponent;
 	private Character turn;
@@ -142,7 +149,7 @@ public class BattleScreenController implements Initializable {
 
         // Set the turn indicator
 		turn = player;
-        turnIndicator.setText("Player's Turn");
+        turnIndicator.setText("End Turn");
 
         opponentFuelCount.setText(Integer.toString(opponent.getFuel()));
         playerFuelCount.setText(Integer.toString(player.getFuel()));
@@ -153,6 +160,15 @@ public class BattleScreenController implements Initializable {
         songPlayer.setVolume(musicVolume);
         songPlayer.setAutoPlay(true);
         songPlayer.play();
+
+		this.INITIAL_TURN_BUTTON_GRADIENT = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, 
+				new Stop(0, new Color(52d/255, 41d/255, 102d/255, 1)),
+				new Stop(1, new Color(42d/255d, 78d/255, 135d/255, 1))
+		);
+		this.UPDATED_TURN_BUTTON_GRADIENT = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, 
+			new Stop(0, new Color(0, 232d/255, 255d/255, 1)),
+			new Stop(1, new Color(52d/255, 41d/255, 102d/255, 1))
+		);
     }    
     
     public void createCardStack() {
@@ -594,5 +610,51 @@ public class BattleScreenController implements Initializable {
 
 	public void setIsScreenActive(boolean isPaused) {
 		this.isPaused = !isPaused;
+	}
+
+	@FXML
+	private void onTurnButtonMouseExit(MouseEvent event) {
+		if (turn == opponent) return;
+
+		ScaleTransition buttonScale = new ScaleTransition();
+		buttonScale.setDuration(Duration.millis(200));
+		buttonScale.setFromX(1.1);
+		buttonScale.setFromY(1.1);
+		buttonScale.setToX(1);
+		buttonScale.setToY(1);
+		buttonScale.setNode(turnButton);
+		buttonScale.play();
+
+		GradientTransition gradientTrans = new GradientTransition();
+		gradientTrans.setOriginalGradient(this.UPDATED_TURN_BUTTON_GRADIENT);
+		gradientTrans.setUpdatedGradient(this.INITIAL_TURN_BUTTON_GRADIENT);
+		gradientTrans.setDuration(Duration.millis(100));
+		gradientTrans.setNode(turnButton);
+		gradientTrans.play();
+	}
+
+	@FXML
+	private void onTurnButtonMouseEnter(MouseEvent event) {
+		if (turn == opponent) return;
+
+		ScaleTransition buttonScale = new ScaleTransition();
+		buttonScale.setDuration(Duration.millis(200));
+		buttonScale.setFromX(1);
+		buttonScale.setFromY(1);
+		buttonScale.setToX(1.1);
+		buttonScale.setToY(1.1);
+		buttonScale.setNode(turnButton);
+		buttonScale.play();
+
+		GradientTransition gradientTrans = new GradientTransition();
+		gradientTrans.setOriginalGradient(this.INITIAL_TURN_BUTTON_GRADIENT);
+		gradientTrans.setUpdatedGradient(this.UPDATED_TURN_BUTTON_GRADIENT);
+		gradientTrans.setDuration(Duration.millis(100));
+		gradientTrans.setNode(turnButton);
+		gradientTrans.play();
+	}
+
+	@FXML
+	private void onTurnButtonMouseClicked(MouseEvent event) {
 	}
 }
