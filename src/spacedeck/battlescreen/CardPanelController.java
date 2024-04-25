@@ -68,6 +68,7 @@ public class CardPanelController implements Initializable {
     private void cardHoverEnterAnimation(MouseEvent event) {
 		// If the screen is not active, don't do anything
 		if (!sceneController.getIsScreenActive()) return;
+		if (!sceneController.isPlayerTurn()) return;
 
         // If the card is not currently being dragged
         // Here bc if it is being dragged, and the card lags behind and then catches up, the cardHoverEnterAnimation

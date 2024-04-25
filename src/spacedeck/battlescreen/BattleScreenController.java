@@ -25,12 +25,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
@@ -292,6 +296,7 @@ public class BattleScreenController implements Initializable {
     private void slotHoverExit(MouseEvent event) {
 		// If the screen is not active, don't do anything
 		if (isPaused) return;
+		if (turn != player) return;
 
         if (borderRedFlashing.getStatus() == Status.STOPPED) {
             ((AnchorPane) event.getSource()).getStyleClass().remove("selectedSlot");
@@ -335,6 +340,7 @@ public class BattleScreenController implements Initializable {
 	private void onMouseHoverExit(MouseEvent event) {
 		// If the screen is not active, don't do anything
 		if (isPaused) return;
+		if (turn != player) return;
 
 		Node button = (Node) event.getSource();
 
@@ -352,6 +358,7 @@ public class BattleScreenController implements Initializable {
 	private void onMouseHoverEnter(MouseEvent event) {
 		// If the screen is not active, don't do anything
 		if (isPaused) return;
+		if (turn != player) return;
 
 		Node button = (Node) event.getSource();
 
@@ -389,6 +396,7 @@ public class BattleScreenController implements Initializable {
     private void slotHoverEnter(MouseEvent event) {
 		// If the screen is not active, don't do anything
 		if (isPaused) return;
+		if (turn != player) return;
 
         if (borderRedFlashing.getStatus() == Status.STOPPED) {
             ((AnchorPane) event.getSource()).getStyleClass().add("selectedSlot");
@@ -612,9 +620,13 @@ public class BattleScreenController implements Initializable {
 		this.isPaused = !isPaused;
 	}
 
+	public boolean isPlayerTurn() {
+		return this.turn == this.player;
+	}
+
 	@FXML
 	private void onTurnButtonMouseExit(MouseEvent event) {
-		if (turn == opponent) return;
+		if (turn != player) return;
 
 		ScaleTransition buttonScale = new ScaleTransition();
 		buttonScale.setDuration(Duration.millis(200));
@@ -635,7 +647,7 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void onTurnButtonMouseEnter(MouseEvent event) {
-		if (turn == opponent) return;
+		if (turn != player) return;
 
 		ScaleTransition buttonScale = new ScaleTransition();
 		buttonScale.setDuration(Duration.millis(200));
@@ -656,5 +668,48 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void onTurnButtonMouseClicked(MouseEvent event) {
+		if (turn != player) return;
+		endTurn();
+	}
+	
+	/**
+	 * Ends the turn of the player currently playing.
+	 * <br>
+	 * <br>
+	 * <h3 style="margin: 0px, padding: 0px">
+	 * If it is the {@code player's} turn: 
+	 * </h3>
+	 * <p>
+	 * Switch turn to opponent.
+	 * Make the button transparent.
+	 * Also disable controls for the player (moving cards, selecting slots, getting from stack, etc.)
+	 * Execute enemy AI.
+	 * Once AI finishes making choice, execute endTurn again to switch control to player.
+	 * </p>
+	 * <br>
+	 * <br>
+	 * <h3 style="margin: 0px, padding: 0px">
+	 * If it is the {@code opponent's} turn: 
+	 * </h3>
+	 * <p>
+	 * Switch turn to player.
+	 * Enable controls for the player.
+	 * Restore the button's transparency.
+	 * </p>
+	 * @param event 
+	 */	
+	private void endTurn() {
+		if (turn == player) {
+			turn = opponent;
+
+			turnButton.setBackground(Background.EMPTY);
+			turnIndicator.setOpacity(1);
+			
+			endTurn();
+		} else {
+			turn = player;
+			turnButton.setBackground(new Background(new BackgroundFill(this.INITIAL_TURN_BUTTON_GRADIENT, new CornerRadii(20), Insets.EMPTY)));
+			turnButton.setOpacity(1);
+		}
 	}
 }
