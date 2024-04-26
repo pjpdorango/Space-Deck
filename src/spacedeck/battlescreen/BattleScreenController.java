@@ -20,6 +20,8 @@ import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -140,7 +142,7 @@ public class BattleScreenController implements Initializable {
             }
             
             // Instantiate Opponent
-            opponent = new Opponent("Bob Ross", 20, 3, AILevel.ADVANCED);
+            opponent = new Opponent("Bob Ross", 20, 3, AILevel.RANDOM);
 //            for (int i = 0; i < 4; i++) {
 //           		opponent.addCard(Card.getRandomCard());
 //            }
@@ -607,6 +609,12 @@ public class BattleScreenController implements Initializable {
 				drawCard.setDuration(Duration.millis(300));
 
 				drawCard.play();
+
+				drawCard.setOnFinished(new EventHandler<ActionEvent>() {
+					public void handle(ActionEvent e) {
+						updateCardOrientation(character);
+					}	
+				});
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
 			}

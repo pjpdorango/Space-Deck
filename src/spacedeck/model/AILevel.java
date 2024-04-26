@@ -9,5 +9,5 @@ package spacedeck.model;
  * @author pj
  */
 public enum AILevel {
-    EASY, MEDIUM, ADVANCED
+    EASY, MEDIUM, ADVANCED, RANDOM
 }

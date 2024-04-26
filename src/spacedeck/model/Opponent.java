@@ -24,44 +24,78 @@ public class Opponent extends Character {
 		ArrayList<OpponentMove> moveset = new ArrayList<>();
         // TODO Opponent AI
         // isn't actually just an attack method, but a "move" method
-        // ADVANCED
-        // if the opponent has no more cards left: guarantee draw a card
-        // choose randomly from cards that are available, with the weight depending on the attack of the card
-        // once you pick a card to draw, draw it
-        // if insuff. fuel and no more cards left: gg skip turn
-        // if still has cards:
-        // if has gear in deck:
-        // decide whether or not to use a gear
-        // evaluate based on current fuel over max fuel (weight chance)
-        // if so, pick a gear to use (strongest one fuel allows)
-        // pick card to use it on (current strongest card)
-        // evaluate the total hp left of the playing cards
-        // decide whether or not to pick a card with the weight depending on the total hp
-        // if already at max cards dont pick anymore
-        // same principles of picking card to draw as before
-        // attack opponent
+		if (difficulty == AILevel.ADVANCED) {
+			// ADVANCED
+			// if the opponent has no more cards left: guarantee draw a card
+			// choose randomly from cards that are available, with the weight depending on the attack of the card
+			// once you pick a card to draw, draw it
+			// if insuff. fuel and no more cards left: gg skip turn
+			// if still has cards:
+			// if has gear in deck:
+			// decide whether or not to use a gear
+			// evaluate based on current fuel over max fuel (weight chance)
+			// if so, pick a gear to use (strongest one fuel allows)
+			// pick card to use it on (current strongest card)
+			// evaluate the total hp left of the playing cards
+			// decide whether or not to pick a card with the weight depending on the total hp
+			// if already at max cards dont pick anymore
+			// same principles of picking card to draw as before
+			// attack opponent
 
-		boolean hasDrawnCard = false;
+			boolean hasDrawnCard = false;
 
-        // take each playing card and attack the opponents side
-		// If deck is empty, MUST draw card from stack
-		// Does not need to return after this
-		// But now card has already drawn card
-		if (deck.isEmpty()) {
-			moveset.add(new OpponentMove(OpponentMove.MoveType.DRAW));
-			hasDrawnCard = true;
-		}
-		
-		// If the field is empty, definitely place a card in the field 
-		if (!hasEmptyField()) {
-			try {
-				moveset.add(deployWeightedCard());
-			} catch (FullFieldException e) {
-				System.out.println(e.getMessage());
+			// take each playing card and attack the opponents side
+			// If deck is empty, MUST draw card from stack
+			// Does not need to return after this
+			// But now card has already drawn card
+			if (deck.isEmpty()) {
+				moveset.add(new OpponentMove(OpponentMove.MoveType.DRAW));
+				hasDrawnCard = true;
+			}
+			
+			// If the field is empty, definitely place a card in the field 
+			if (!hasEmptyField()) {
+				try {
+					moveset.add(deployWeightedCard());
+				} catch (FullFieldException e) {
+					System.out.println(e.getMessage());
+				}
+			}
+
+			// If the field is empty, definitely place a card in the field
+		} else if (difficulty == AILevel.RANDOM) {
+			Random rand = new Random();
+			// 1/2 chance to draw card
+			if (rand.nextInt(2) == 0) {
+				moveset.add(new OpponentMove(OpponentMove.MoveType.DRAW));
+			}
+			
+			// 1/2 chance to deploy a card
+			if (rand.nextInt(2) == 0 && hasFullField()) {
+				OpponentMove move = new OpponentMove(OpponentMove.MoveType.DEPLOY_CARD);
+				try {
+					move.setDeployCard(deck.get(rand.nextInt(deck.size())));
+					move.setDeployTarget(getRandomAvailableSlot());
+				} catch (FullFieldException e) {
+					System.out.println(e.getMessage());
+				}
+				moveset.add(move);
+			}
+
+			// 1/2 chance to attack with any of avialable playing cards
+			for (int i = 0; i < playingCards.length; i++) {
+				Card c = playingCards[i];
+				if (rand.nextInt(2) == 0 && c != null) {
+					OpponentMove move = new OpponentMove(OpponentMove.MoveType.ATTACK);
+					move.setAttacker(i);
+					moveset.add(move);
+				}
+			}
+
+			if (moveset.isEmpty()) {
+				moveset.add(new OpponentMove(OpponentMove.MoveType.SKIP));
 			}
 		}
-
-		// If the field is empty, definitely place a card in the field
 		return moveset;
     }
 
@@ -131,5 +165,13 @@ public class Opponent extends Character {
 		return hasEmptyField;
 	}
 
+	private boolean hasFullField() {
+		boolean hasFullField = true;
+		for (Card c : playingCards) {
+			if (c == null) hasFullField = false;
+		}
+
+		return hasFullField;
+	}
     
 }

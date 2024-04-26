@@ -15,7 +15,7 @@ public class OpponentMove {
 
 	private MoveType type;
 	private Deckable deployCard;
-	private Deckable attacker, attackTarget;
+	private int attacker;
 	private int deployTarget, removeTarget;
 	private Gear gear;
 	private Card equipGearTarget;
@@ -29,7 +29,7 @@ public class OpponentMove {
 	 * <ol>
 	 * 	<li> {@code SKIP} - No attributes needed. </li>
 	 * 	<li> {@code DRAW} - No attributes needed. </li>
-	 * 	<li> {@code ATTACK} - Requires {@code attacker} and {@code attackTarget} to be set. </li>
+	 * 	<li> {@code ATTACK} - Requires {@code attacker} to be set. </li>
 	 * 	<li> {@code EQUIP_GEAR} - Requires {@code gear} and {@code equipGearTarget} to be set. </li>
 	 * 	<li> {@code DEPLOY_CARD} - Requires {@code deployCard} and {@code deployTarget} to be set. </li>
 	 * 	<li> {@code REMOVE_CARD} - Requires {@code removeTarget} to be set. </li>
@@ -54,12 +54,8 @@ public class OpponentMove {
 		this.deployCard = deployCard;
 	}
 
-	public void setAttacker(Deckable attacker) {
+	public void setAttacker(int attacker) {
 		this.attacker = attacker;
-	}
-
-	public void setAttackTarget(Deckable attackTarget) {
-		this.attackTarget = attackTarget;
 	}
 
 	public void setDeployTarget(int deployTarget) {
@@ -86,12 +82,8 @@ public class OpponentMove {
 		return deployCard;
 	}
 
-	public Deckable getAttacker() {
+	public int getAttacker() {
 		return attacker;
-	}
-
-	public Deckable getAttackTarget() {
-		return attackTarget;
 	}
 
 	public int getDeployTarget() {
