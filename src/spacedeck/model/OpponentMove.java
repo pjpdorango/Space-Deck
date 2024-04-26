@@ -9,7 +9,7 @@ package spacedeck.model;
  * @author pj
  */
 public class OpponentMove {
-	public enum MoveType {
+	public static enum MoveType {
 		SKIP, DRAW, ATTACK, EQUIP_GEAR, DEPLOY_CARD, REMOVE_CARD
 	}
 
@@ -28,10 +28,11 @@ public class OpponentMove {
 	 * 
 	 * <ol>
 	 * 	<li> {@code SKIP} - No attributes needed. </li>
+	 * 	<li> {@code DRAW} - No attributes needed. </li>
 	 * 	<li> {@code ATTACK} - Requires {@code attacker} and {@code attackTarget} to be set. </li>
 	 * 	<li> {@code EQUIP_GEAR} - Requires {@code gear} and {@code equipGearTarget} to be set. </li>
 	 * 	<li> {@code DEPLOY_CARD} - Requires {@code deployCard} and {@code deployTarget} to be set. </li>
-	 * 	<li> {@code REMOVE_TARGET} - Requires {@code removeTarget} to be set. </li>
+	 * 	<li> {@code REMOVE_CARD} - Requires {@code removeTarget} to be set. </li>
 	 * </ol>
 	 * 
 	 * @param t The type of Move to be performed. {@code MoveType} is a public enum

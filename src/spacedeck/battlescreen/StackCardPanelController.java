@@ -31,7 +31,7 @@ public class StackCardPanelController implements Initializable {
 		// If the screen is not active, don't do anything
 		if (!sceneController.getIsScreenActive()) return;
 
-		sceneController.getCardFromStack(event);
+		sceneController.getCardFromStack(event, sceneController.getPlayer());
 	}
 
 

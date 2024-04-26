@@ -27,6 +27,7 @@ import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
@@ -50,6 +51,7 @@ import spacedeck.SpaceDeck;
 import spacedeck.exceptions.CardAlreadyActiveException;
 import spacedeck.exceptions.FullDeckException;
 import spacedeck.exceptions.InsufficientFuelException;
+import spacedeck.model.OpponentMove;
 
 /**
  *
@@ -139,9 +141,9 @@ public class BattleScreenController implements Initializable {
             
             // Instantiate Opponent
             opponent = new Opponent("Bob Ross", 20, 3, AILevel.ADVANCED);
-            for (int i = 0; i < 4; i++) {
-           		opponent.addCard(Card.getRandomCard());
-            }
+//            for (int i = 0; i < 4; i++) {
+//           		opponent.addCard(Card.getRandomCard());
+//            }
         } catch (FullDeckException e) {
             System.out.println("[ERROR] FullDeckException");
         }
@@ -406,18 +408,24 @@ public class BattleScreenController implements Initializable {
 	/**
 	 * Function that both updates the orientation of the cards AND makes an animation for it.
 	 */
-	private void updateCardOrientation() {
-		for (int i = 0; i < playerDeckElement.getChildren().size(); i++) {
-			Node cardPanel = playerDeckElement.getChildren().get(i);
+	private void updateCardOrientation(Character ch) {
+		AnchorPane deckElement = null;
+		if (ch == player) {
+			deckElement = playerDeckElement;
+		} else {
+			deckElement = opponentDeckElement;
+		}
+		for (int i = 0; i < deckElement.getChildren().size(); i++) {
+			Node cardPanel = deckElement.getChildren().get(i);
 
 			RotateTransition cardRotate = new RotateTransition();
-			cardRotate.setToAngle((player.getDeck().size() - i - 1) * ROTATION_PER_CARD);
+			cardRotate.setToAngle((ch.getDeck().size() - i - 1) * ROTATION_PER_CARD);
 			cardRotate.setDuration(Duration.millis(200));
 			cardRotate.setNode(cardPanel);
 			cardRotate.play();
 
 			TranslateTransition cardMove = new TranslateTransition();
-			cardMove.setToX(((player.getDeck().size()) * 3 / 4d - i) * ROTATION_PER_CARD * 4);
+			cardMove.setToX(((ch.getDeck().size()) * 3 / 4d - i) * ROTATION_PER_CARD * 4);
 			cardMove.setDuration(Duration.millis(200));
 			cardMove.setNode(cardPanel);
 			cardMove.play();
@@ -499,7 +507,7 @@ public class BattleScreenController implements Initializable {
 				playerDeckElement.getChildren().remove(c.getSceneCard());
 
 				// Move rotate all other cards to the right
-				updateCardOrientation();
+				updateCardOrientation(player);
 
 				// Animation
 				takeSlot.setNode(playerSlot);
@@ -518,73 +526,106 @@ public class BattleScreenController implements Initializable {
 	/**
 	 * Function that gets a card from the stack and places it in the player's deck
 	 */
-    public void getCardFromStack(MouseEvent event) {
+    public void getCardFromStack(MouseEvent event, Character character) {
 		ObservableList<Node> cardList = cardStackElement.getChildren();	   
 		Node leadingCard = cardList.get(cardList.size() - 1);
 		Bounds origin = leadingCard.localToScene(leadingCard.getBoundsInLocal());	
-	
 		Bounds cardStackDestination;
-		
-		if (playerDeckElement.getChildren().size() - 1 > 0) {
-			Node destinationCard = playerDeckElement.getChildren().get(playerDeckElement.getChildren().size() - 1);
-			cardStackDestination = destinationCard.localToScene(destinationCard.getBoundsInLocal());
+
+		if (character == player) {
+			if (playerDeckElement.getChildren().size() - 1 > 0) {
+				Node destinationCard = playerDeckElement.getChildren().get(playerDeckElement.getChildren().size() - 1);
+				cardStackDestination = destinationCard.localToScene(destinationCard.getBoundsInLocal());
+			} else {
+				// DEFAULT CARD STACK DESTINATION
+				// Might not work if the window is resized
+				// For when the deck is empty
+				cardStackDestination = new BoundingBox(424, 400, 0, 0);	
+			}
+			FXMLLoader newCardLoader = new FXMLLoader(getClass().getResource("CardPanel.fxml"));	
+			
+			Node newCard;
+
+			// If the card won't load, print an error and early return
+			try {
+				newCard = newCardLoader.load();
+			} catch (IOException e) {
+				System.out.println("[ERROR] Error loading random card from card stack");
+				return;
+			}
+
+			CardPanelController newCardController = newCardLoader.getController();
+			
+			newCardController.setCard(Card.getRandomCard());
+
+			try {
+				player.addCard(newCardController.getCard());
+			} catch (FullDeckException e) {
+				return;
+			}
+
+			newCardController.setSceneController(this);
+			newCardController.updateAttributes();
+			
+			addLeadingCardToDeck(player);
+			
+			CardStackTransition slideToDeck = new CardStackTransition();	
+			slideToDeck.setNode(leadingCard);
+			slideToDeck.setNewNode(newCard);
+			slideToDeck.setDeckable(newCardController.getCard());
+			slideToDeck.setByX(cardStackDestination.getMinX() - origin.getMinX());
+			slideToDeck.setByY(cardStackDestination.getMinY() - origin.getMinY());
+			slideToDeck.setDuration(Duration.millis(300));
+			
+			leadingCard.setLayoutX(newCard.getLayoutX());
+			leadingCard.setLayoutY(newCard.getLayoutY());
+			
+			slideToDeck.setSceneController(this);
+			slideToDeck.play();
 		} else {
-			// DEFAULT CARD STACK DESTINATION
-			// Might not work if the window is resized
-			// For when the deck is empty
-			cardStackDestination = new BoundingBox(424, 400, 0, 0);	
+			// OPPONENT STUFF
+			if (opponentDeckElement.getChildren().size() - 1 > 0) {
+				Node destinationCard = opponentDeckElement.getChildren().get(opponentDeckElement.getChildren().size() - 1);
+				cardStackDestination = destinationCard.localToScene(destinationCard.getBoundsInLocal());
+			} else {
+				// DEFAULT CARD STACK DESTINATION
+				// Might not work if the window is resized
+				// For when the deck is empty
+				cardStackDestination = new BoundingBox(424, 400, 0, 0);	
+			}
+
+			try {
+				Node newCard = FXMLLoader.load(getClass().getResource("/spacedeck/battlescreen/EnemyCardPanel.fxml"));
+			
+				opponentDeckElement.getChildren().add(newCard);
+				cardStackElement.getChildren().remove(leadingCard);
+				OpponentDrawTransition drawCard = new OpponentDrawTransition();
+
+				drawCard.setNode(newCard);
+				drawCard.setByX(cardStackDestination.getMinX() - origin.getMinX());
+				drawCard.setByY(cardStackDestination.getMinY() - origin.getMinY());
+				drawCard.setDuration(Duration.millis(300));
+
+				drawCard.play();
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
+			}
 		}
-		FXMLLoader newCardLoader = new FXMLLoader(getClass().getResource("CardPanel.fxml"));	
-		
-		Node newCard;
-
-		// If the card won't load, print an error and early return
-		try {
-			newCard = newCardLoader.load();
-		} catch (IOException e) {
-			System.out.println("[ERROR] Error loading random card from card stack");
-			return;
-		}
-
-		CardPanelController newCardController = newCardLoader.getController();
-		
-		newCardController.setCard(Card.getRandomCard());
-
-		try {
-			player.addCard(newCardController.getCard());
-		} catch (FullDeckException e) {
-			return;
-		}
-
-		newCardController.setSceneController(this);
-		newCardController.updateAttributes();
-		
-		addLeadingCardToDeck();
-		
-		CardStackTransition slideToDeck = new CardStackTransition();	
-		slideToDeck.setNode(leadingCard);
-		slideToDeck.setNewNode(newCard);
-		slideToDeck.setDeckable(newCardController.getCard());
-		slideToDeck.setByX(cardStackDestination.getMinX() - origin.getMinX());
-		slideToDeck.setByY(cardStackDestination.getMinY() - origin.getMinY());
-		slideToDeck.setDuration(Duration.millis(300));
-		
-		leadingCard.setLayoutX(newCard.getLayoutX());
-		leadingCard.setLayoutY(newCard.getLayoutY());
-		
-		slideToDeck.setSceneController(this);
-		slideToDeck.play();
     }
     
-	private void addLeadingCardToDeck() {
+	private void addLeadingCardToDeck(Character ch) { 
 		ObservableList<Node> cardList = cardStackElement.getChildren();	   
 		Node leadingCard = cardList.get(cardList.size() - 1);
 		
 		// Set animations and card position 
 		cardList.remove(leadingCard);
-		playerDeckElement.getChildren().add(leadingCard);
+		if (ch == player) {
+			playerDeckElement.getChildren().add(leadingCard);
+		} else {
+			opponentDeckElement.getChildren().add(leadingCard);
+		}
 		
-		updateCardOrientation();	
+		updateCardOrientation(ch);	
 	}
 	
     private void updateFuel() {
@@ -592,16 +633,13 @@ public class BattleScreenController implements Initializable {
         playerFuelCount.setText(Integer.toString(player.getFuel()));
     }
 
-	private void opponentDrawCard(Card c) {
-		if (opponent.getDeck().contains(c)) {
-			// Create an animation for the opponent
-			
-		}
-	}
-   	
 	// ATTRIBUTE SETTERS FOR OTHER FUNCTIONS
 	public void setPlayer(Player p) {
 		this.player = p;
+	}
+
+	public Player getPlayer() {
+		return this.player;
 	}
 
 	public void setOpponent(Opponent o) {
@@ -704,6 +742,12 @@ public class BattleScreenController implements Initializable {
 
 			turnButton.setBackground(Background.EMPTY);
 			turnIndicator.setOpacity(1);
+
+			ArrayList<OpponentMove> moveList = opponent.decideMoves();
+			for (OpponentMove move : moveList) {
+				System.out.println(move.getType().name());
+			}
+			executeMoves(moveList);
 			
 			endTurn();
 		} else {
@@ -712,4 +756,18 @@ public class BattleScreenController implements Initializable {
 			turnButton.setOpacity(1);
 		}
 	}
+
+	private void executeMoves(ArrayList<OpponentMove> moves) {
+		moves.forEach((move) -> {
+			switch (move.getType()) {
+				case SKIP:
+					break;
+				case DRAW:
+					getCardFromStack(null, opponent);
+					break;
+
+			}
+		});
+	}
+
 }
