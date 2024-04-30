@@ -406,6 +406,55 @@ public class BattleScreenController implements Initializable {
             ((AnchorPane) event.getSource()).getStyleClass().add("selectedSlot");
         }
     }
+
+	@FXML
+	private void onTurnButtonMouseExit(MouseEvent event) {
+		if (turn != player) return;
+
+		ScaleTransition buttonScale = new ScaleTransition();
+		buttonScale.setDuration(Duration.millis(200));
+		buttonScale.setFromX(1.1);
+		buttonScale.setFromY(1.1);
+		buttonScale.setToX(1);
+		buttonScale.setToY(1);
+		buttonScale.setNode(turnButton);
+		buttonScale.play();
+
+		GradientTransition gradientTrans = new GradientTransition();
+		gradientTrans.setOriginalGradient(this.UPDATED_TURN_BUTTON_GRADIENT);
+		gradientTrans.setUpdatedGradient(this.INITIAL_TURN_BUTTON_GRADIENT);
+		gradientTrans.setDuration(Duration.millis(100));
+		gradientTrans.setNode(turnButton);
+		gradientTrans.play();
+	}
+
+	@FXML
+	private void onTurnButtonMouseEnter(MouseEvent event) {
+		if (turn != player) return;
+
+		ScaleTransition buttonScale = new ScaleTransition();
+		buttonScale.setDuration(Duration.millis(200));
+		buttonScale.setFromX(1);
+		buttonScale.setFromY(1);
+		buttonScale.setToX(1.1);
+		buttonScale.setToY(1.1);
+		buttonScale.setNode(turnButton);
+		buttonScale.play();
+
+		GradientTransition gradientTrans = new GradientTransition();
+		gradientTrans.setOriginalGradient(this.INITIAL_TURN_BUTTON_GRADIENT);
+		gradientTrans.setUpdatedGradient(this.UPDATED_TURN_BUTTON_GRADIENT);
+		gradientTrans.setDuration(Duration.millis(100));
+		gradientTrans.setNode(turnButton);
+		gradientTrans.play();
+	}
+
+	@FXML
+	private void onTurnButtonMouseClicked(MouseEvent event) {
+		if (turn != player) return;
+		endTurn();
+	}
+	
 	
 	/**
 	 * Function that both updates the orientation of the cards AND makes an animation for it.
@@ -613,6 +662,7 @@ public class BattleScreenController implements Initializable {
 				drawCard.setOnFinished(new EventHandler<ActionEvent>() {
 					public void handle(ActionEvent e) {
 						updateCardOrientation(character);
+						endTurn();
 					}	
 				});
 			} catch (IOException e) {
@@ -640,6 +690,64 @@ public class BattleScreenController implements Initializable {
         opponentFuelCount.setText(Integer.toString(opponent.getFuel()));
         playerFuelCount.setText(Integer.toString(player.getFuel()));
     }
+
+	/**
+	 * Ends the turn of the player currently playing.
+	 * <br>
+	 * <br>
+	 * <h3 style="margin: 0px, padding: 0px">
+	 * If it is the {@code player's} turn: 
+	 * </h3>
+	 * <p>
+	 * Switch turn to opponent.
+	 * Make the button transparent.
+	 * Also disable controls for the player (moving cards, selecting slots, getting from stack, etc.)
+	 * Execute enemy AI.
+	 * Once AI finishes making choice, execute endTurn again to switch control to player.
+	 * </p>
+	 * <br>
+	 * <br>
+	 * <h3 style="margin: 0px, padding: 0px">
+	 * If it is the {@code opponent's} turn: 
+	 * </h3>
+	 * <p>
+	 * Switch turn to player.
+	 * Enable controls for the player.
+	 * Restore the button's transparency.
+	 * </p>
+	 */	
+	public void endTurn() {
+		if (turn == player) {
+			turn = opponent;
+
+			turnButton.setBackground(Background.EMPTY);
+			turnIndicator.setOpacity(1);
+
+			ArrayList<OpponentMove> moveList = opponent.decideMoves();
+			for (OpponentMove move : moveList) {
+				System.out.println(move.getType().name());
+			}
+			executeMoves(moveList);
+		} else {
+			turn = player;
+			turnButton.setBackground(new Background(new BackgroundFill(this.INITIAL_TURN_BUTTON_GRADIENT, new CornerRadii(20), Insets.EMPTY)));
+			turnButton.setOpacity(1);
+		}
+	}
+
+	private void executeMoves(ArrayList<OpponentMove> moves) {
+		moves.forEach((move) -> {
+			switch (move.getType()) {
+				case SKIP:
+					endTurn();
+					break;
+				case DRAW:
+					getCardFromStack(null, opponent);
+					break;
+
+			}
+		});
+	}
 
 	// ATTRIBUTE SETTERS FOR OTHER FUNCTIONS
 	public void setPlayer(Player p) {
@@ -669,113 +777,4 @@ public class BattleScreenController implements Initializable {
 	public boolean isPlayerTurn() {
 		return this.turn == this.player;
 	}
-
-	@FXML
-	private void onTurnButtonMouseExit(MouseEvent event) {
-		if (turn != player) return;
-
-		ScaleTransition buttonScale = new ScaleTransition();
-		buttonScale.setDuration(Duration.millis(200));
-		buttonScale.setFromX(1.1);
-		buttonScale.setFromY(1.1);
-		buttonScale.setToX(1);
-		buttonScale.setToY(1);
-		buttonScale.setNode(turnButton);
-		buttonScale.play();
-
-		GradientTransition gradientTrans = new GradientTransition();
-		gradientTrans.setOriginalGradient(this.UPDATED_TURN_BUTTON_GRADIENT);
-		gradientTrans.setUpdatedGradient(this.INITIAL_TURN_BUTTON_GRADIENT);
-		gradientTrans.setDuration(Duration.millis(100));
-		gradientTrans.setNode(turnButton);
-		gradientTrans.play();
-	}
-
-	@FXML
-	private void onTurnButtonMouseEnter(MouseEvent event) {
-		if (turn != player) return;
-
-		ScaleTransition buttonScale = new ScaleTransition();
-		buttonScale.setDuration(Duration.millis(200));
-		buttonScale.setFromX(1);
-		buttonScale.setFromY(1);
-		buttonScale.setToX(1.1);
-		buttonScale.setToY(1.1);
-		buttonScale.setNode(turnButton);
-		buttonScale.play();
-
-		GradientTransition gradientTrans = new GradientTransition();
-		gradientTrans.setOriginalGradient(this.INITIAL_TURN_BUTTON_GRADIENT);
-		gradientTrans.setUpdatedGradient(this.UPDATED_TURN_BUTTON_GRADIENT);
-		gradientTrans.setDuration(Duration.millis(100));
-		gradientTrans.setNode(turnButton);
-		gradientTrans.play();
-	}
-
-	@FXML
-	private void onTurnButtonMouseClicked(MouseEvent event) {
-		if (turn != player) return;
-		endTurn();
-	}
-	
-	/**
-	 * Ends the turn of the player currently playing.
-	 * <br>
-	 * <br>
-	 * <h3 style="margin: 0px, padding: 0px">
-	 * If it is the {@code player's} turn: 
-	 * </h3>
-	 * <p>
-	 * Switch turn to opponent.
-	 * Make the button transparent.
-	 * Also disable controls for the player (moving cards, selecting slots, getting from stack, etc.)
-	 * Execute enemy AI.
-	 * Once AI finishes making choice, execute endTurn again to switch control to player.
-	 * </p>
-	 * <br>
-	 * <br>
-	 * <h3 style="margin: 0px, padding: 0px">
-	 * If it is the {@code opponent's} turn: 
-	 * </h3>
-	 * <p>
-	 * Switch turn to player.
-	 * Enable controls for the player.
-	 * Restore the button's transparency.
-	 * </p>
-	 * @param event 
-	 */	
-	private void endTurn() {
-		if (turn == player) {
-			turn = opponent;
-
-			turnButton.setBackground(Background.EMPTY);
-			turnIndicator.setOpacity(1);
-
-			ArrayList<OpponentMove> moveList = opponent.decideMoves();
-			for (OpponentMove move : moveList) {
-				System.out.println(move.getType().name());
-			}
-			executeMoves(moveList);
-			
-			endTurn();
-		} else {
-			turn = player;
-			turnButton.setBackground(new Background(new BackgroundFill(this.INITIAL_TURN_BUTTON_GRADIENT, new CornerRadii(20), Insets.EMPTY)));
-			turnButton.setOpacity(1);
-		}
-	}
-
-	private void executeMoves(ArrayList<OpponentMove> moves) {
-		moves.forEach((move) -> {
-			switch (move.getType()) {
-				case SKIP:
-					break;
-				case DRAW:
-					getCardFromStack(null, opponent);
-					break;
-
-			}
-		});
-	}
-
 }

@@ -125,6 +125,7 @@ public class SpaceDeck extends Application {
 			newPlanet.setDiameter(diameter);
 			newPlanet.setEnvironment(environment);
 			for (Object s : champions) {
+				System.out.println((String) s);
 				newPlanet.getChampions().add(new Opponent((String) s, 20, 1, AILevel.ADVANCED));
 			}
 		}
@@ -138,10 +139,13 @@ public class SpaceDeck extends Application {
 			SCENE LOADING
 			-------------
 			WHATS NEW? 
-			- All scenes are now linked together and offer a way of returning to the previous screen. 
-				- Because of this, no need to change the scene anymore!
-				- But still, if needed, change the loaded scene using the SceneType enum.
-			- Added a fade in and out effect between scenes.
+			- Planet lore is now accurate (except champions)
+			- Battle Screen now has "End Turn" button
+				- Button has gradient effect that smooths when hovering
+				- Gives control to the Opponent AI to choose their move next
+			- Opponent now has ANIMATIONS!!
+				- For drawing a card
+				- Skipping a turn
 		*/
 		FXMLLoader sceneLoader = loadScene(SceneType.BattleScreen);
 

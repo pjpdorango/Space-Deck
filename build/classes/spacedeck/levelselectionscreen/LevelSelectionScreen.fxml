@@ -158,11 +158,6 @@
                                     <Font size="14.0" />
                                  </font>
                               </Text>
-                              <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="???" wrappingWidth="130.0">
-                                 <font>
-                                    <Font name="System Bold" size="16.0" />
-                                 </font>
-                              </Text>
                            </children>
                         </VBox>
                      </children>

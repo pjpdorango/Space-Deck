@@ -27,6 +27,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -197,7 +199,10 @@ public class LevelSelectionScreenController implements Initializable {
 		ArrayList<Opponent> champList = p.getChampions();
 
 		for (Opponent o : champList) {
-			championsList.getChildren().add(new Text(o.getName()));
+			Text champ = new Text(o.getName());
+			champ.setFont(Font.font("System", FontWeight.BOLD, 14d));
+			champ.setFill(Color.WHITE);
+			championsList.getChildren().add(champ);
 		}		
 	}
 

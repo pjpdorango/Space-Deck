@@ -1,39 +1,39 @@
 [
-	{
-		"name" : "Cryoterra",
-		"description" : "Farthest from the solar system's sun, it is the coldest among all of the planets in Andromeda. I love lore wowowowowowowow looooooooooooooree this is the loooooooooooooooooore soooongg oooOOOOooOohhh llOOOOOOOooroeeee where do i get the lorem ipsum test PLEASE",
-		"population" : 63000,
-		"diameter" : 2489,
-		"environment" : "Harsh Snowy Tundra",
-		"champions" : [
-			"Chad", "Awesomeperson", "Coolio Guy", "Tuff guy"
-		]	
-	},	{
-		"name" : "Lunaris IX",
-		"description" : "Lorem Ipsum Something Somehtiggngngn Arrrgghhh im a Pirate matey",
-		"population" : 100000,
-		"diameter" : 200,
-		"environment" : "Warm Tropical Desert",
-		"champions" : [
-			"djdd", "Hi", "Arrrgh", "Mr Pirate Man"
-		]	
-	},	{
-		"name" : "Auros Minoris",
-		"description" : "Chipi chipi, chapa chapa Dubidubi, dabadaba Mágico mi dubidubi boom, boom, boom, boom Chipi chipi, chapa chapa Dubidubi, dabadaba Mágico mi dubidubi boom", 
-		"population" : 20000, 
-		"diameter" : 100000,
-		"environment" : "Desert Wasteland",
-		"champions" : [
-			"Awesome", "Awesome", "Person", "Spongebob Squarepants"
-		]	
-	},	{
-		"name" : "Astraforge",
-		"description" : "I love Deltarune and other games such as deltarun",
-		"population" : 1000,
-		"diameter" : 1000,
-		"environment" : "Hell",
-		"champions" : [
-			"ragh", "Me", "Aweomse", "Dante from Dantes Inferno"
-		]	
-	}
+{
+"name" : "Cryoterra",
+"description" : "Welcome to Cryoterra, the first planet to explore in Andromeda, a desolate yet captivating world with a political empire like no other. Throughout your journey, explore its unforgiving landscape filled with glistening ice formations and remarkable snowy mountains — but be wary, for beneath the icy surface lies a world of complete danger and utter mystery",
+"population" : 56400,
+"diameter" : 5760,
+"environment" : "Harsh Snowy Tundra",
+"champions" : [
+"Mizuki", "secret", "shhh", "cant tell u"
+]
+},{
+"name" : "Lunaris IX",
+"description" : "Lunaris IX is a vibrant yet scorching sphere, vaunting its sun-drenched deserts reaching temperatures up to 50°, and ancient oases with towering sand dunes. It boasts the highest population in the galaxy, but the grumpy Lunarists will pay you no heed as you explore the exotic terrain, holding hidden treasures and perilous encounters begging to be explored.",
+"population" : 83750,
+"diameter" : 8500,
+"environment" : "Hot Tropical Desert",
+"champions" : [
+"hihi", "hehe", "hoho", "huhu"
+]
+},{
+"name" : "Auros Minoris",
+"description" : "Offering an Earth-like environment but with a lighter gravitational force, Auros Minoris is the smallest yet the nicest planet in the vast cosmos. Sure, its beautiful landscapes and lush terrains are a sight to behold, but that’s not the best thing on this planet, as its rapidly growing technologies are booming and thriving. Will you be able to use these to your advantage, or will you fail, just like the rest of the Minor challengers?", 
+"population" : 13205, 
+"diameter" : 2480,
+"environment" : "Habitable Moon",
+"champions" : [
+"si idol", "si retsam", "si boss", "si coolio"
+]
+},{
+"name" : "Astraforge",
+"description" : "Behold Astraforge, a colossal wasteland planet which seems to be the biggest in the galaxy, but has the smallest population because of the Forgers’ known brutality and violence. Its desolate and unforgiving landscape has air that seems to pulse with malevolence and ground that is scorched by eternal flames. Astraforge is a living hell, where survival means navigating treacherous terrain and confronting the most ruthless beings in the cosmos, destined to be the final resting place for the galaxy's most notorious criminals.",
+"population" : 1000,
+"diameter" : 10000,
+"environment" : "Barren Wasteland",
+"champions" : [
+"scary", "vicious", "horrendous", "meow"
+]
+}
 ]
