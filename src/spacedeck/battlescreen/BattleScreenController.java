@@ -142,7 +142,7 @@ public class BattleScreenController implements Initializable {
             }
             
             // Instantiate Opponent
-            opponent = new Opponent("Bob Ross", 20, 3, AILevel.RANDOM);
+            opponent = new Opponent("Bob Ross", 20, 3, AILevel.ADVANCED);
 //            for (int i = 0; i < 4; i++) {
 //           		opponent.addCard(Card.getRandomCard());
 //            }
@@ -735,6 +735,13 @@ public class BattleScreenController implements Initializable {
 		}
 	}
 
+	private void opponentDeployCard(OpponentMove move) {
+		Card deployCard = move.getDeployCard();
+		int targetSlot = move.getDeployTarget();
+		// The actual nodes these correspond to
+
+	}
+
 	private void executeMoves(ArrayList<OpponentMove> moves) {
 		moves.forEach((move) -> {
 			switch (move.getType()) {
@@ -744,7 +751,9 @@ public class BattleScreenController implements Initializable {
 				case DRAW:
 					getCardFromStack(null, opponent);
 					break;
-
+				case DEPLOY_CARD:
+					opponentDeployCard(move);
+					break;
 			}
 		});
 	}

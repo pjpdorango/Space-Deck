@@ -4,9 +4,7 @@
  */
 package spacedeck.battlescreen;
 
-import spacedeck.model.Deckable;
 import javafx.animation.Transition;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.scene.Node;

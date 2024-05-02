@@ -14,7 +14,7 @@ public class OpponentMove {
 	}
 
 	private MoveType type;
-	private Deckable deployCard;
+	private Card deployCard;
 	private int attacker;
 	private int deployTarget, removeTarget;
 	private Gear gear;
@@ -50,7 +50,7 @@ public class OpponentMove {
 		this.type = type;
 	}
 
-	public void setDeployCard(Deckable deployCard) {
+	public void setDeployCard(Card deployCard) {
 		this.deployCard = deployCard;
 	}
 
@@ -78,7 +78,7 @@ public class OpponentMove {
 		return type;
 	}
 
-	public Deckable getDeployCard() {
+	public Card getDeployCard() {
 		return deployCard;
 	}
 

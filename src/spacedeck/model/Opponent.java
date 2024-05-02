@@ -7,6 +7,7 @@ package spacedeck.model;
 import java.util.ArrayList;
 import java.util.Random;
 import spacedeck.exceptions.FullFieldException;
+import spacedeck.exceptions.InsufficientFuelException;
 
 /**
  *
@@ -59,6 +60,12 @@ public class Opponent extends Character {
 					moveset.add(deployWeightedCard());
 				} catch (FullFieldException e) {
 					System.out.println(e.getMessage());
+				} catch (InsufficientFuelException e) {
+					// If not enough fuel for any cards, just draw a card man
+					if (!hasDrawnCard) {
+						moveset.add(new OpponentMove(OpponentMove.MoveType.DRAW));
+						hasDrawnCard = true;
+					}
 				}
 			}
 
@@ -74,7 +81,7 @@ public class Opponent extends Character {
 			if (rand.nextInt(2) == 0 && hasFullField()) {
 				OpponentMove move = new OpponentMove(OpponentMove.MoveType.DEPLOY_CARD);
 				try {
-					move.setDeployCard(deck.get(rand.nextInt(deck.size())));
+					move.setDeployCard((Card) deck.get(rand.nextInt(deck.size())));
 					move.setDeployTarget(getRandomAvailableSlot());
 				} catch (FullFieldException e) {
 					System.out.println(e.getMessage());
@@ -103,7 +110,7 @@ public class Opponent extends Character {
 	 * Deploys a card depending on the weight (attack, health, cost)
 	 * @return Corresponding move of deploying a card depending on the weight (Card has been chosen, slot has been randomized)
 	 */
-	private OpponentMove deployWeightedCard() throws FullFieldException {
+	private OpponentMove deployWeightedCard() throws FullFieldException, InsufficientFuelException {
 		Random rand = new Random();
 		Deckable randomDeckCard = null;
 
@@ -121,6 +128,13 @@ public class Opponent extends Character {
 			weightSum += weights[i];
 		}
 		
+		// This either means the deck was full of gears, or the current cards
+		// have not enough fuel. Since we already checked if there are no cards in
+		// the deck, there must be not enough fuel.
+		if (weightSum == 0) {
+			throw new InsufficientFuelException("No cards exist within the opponent deck with sufficient fuel.");
+		}
+
 		while (!(randomDeckCard instanceof Card) || randomDeckCard.getCost() < getFuel()) {
 			int weightedIndex = rand.nextInt(weightSum);
 			int upperBound = 0;
@@ -134,7 +148,7 @@ public class Opponent extends Character {
 		}
 
 		OpponentMove move = new OpponentMove(OpponentMove.MoveType.DEPLOY_CARD);
-		move.setDeployCard(randomDeckCard);
+		move.setDeployCard((Card) randomDeckCard);
 		move.setDeployTarget(getRandomAvailableSlot());
 		return move;
 	}
@@ -172,6 +186,29 @@ public class Opponent extends Character {
 		}
 
 		return hasFullField;
+	}
+	
+	/**
+	 * Function that determines whether the opponent deck has any Cards.
+	 * Gears do not count towards Cards. This is used for when the AI needs to
+	 * deploy a card but must first see if any are available.
+	 * 
+	 * @return Whether or not the current opponent deck has any Cards
+	 */
+	private boolean deckHasCards() {
+		// Base case
+		if (deck.isEmpty()) return false;
+
+		boolean hasCards = false;
+		
+		for (Deckable d : deck) {
+			if (d instanceof Card) {
+				hasCards = true;
+				break;
+			}
+		}
+
+		return hasCards;
 	}
     
 }
