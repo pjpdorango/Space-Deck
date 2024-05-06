@@ -86,6 +86,10 @@ public class OpponentMove {
 		return attacker;
 	}
 
+	/**
+	 * @return {@code deployTarget} - {@code int} that represents the slot where the
+	 * card shall be deployed. 0-indexed (1st slot is 0, 2nd slot is 1, etc).
+	 */
 	public int getDeployTarget() {
 		return deployTarget;
 	}

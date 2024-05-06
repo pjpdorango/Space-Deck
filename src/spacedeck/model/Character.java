@@ -10,7 +10,7 @@ public abstract class Character implements Attackable {
     // Constants
     private static final int MAXCARDS = 6;
     private static final int INITIALFUEL = 10; // All characters start with 10 fuel.
-    private static final int MAXPLAYINGCARDS = 4;
+    private static final int MAXPLAYINGCARDS = 3;
     
     // Character properties
     private String name;

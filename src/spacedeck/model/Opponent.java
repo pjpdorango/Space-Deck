@@ -25,6 +25,7 @@ public class Opponent extends Character {
 		ArrayList<OpponentMove> moveset = new ArrayList<>();
         // TODO Opponent AI
         // isn't actually just an attack method, but a "move" method
+		
 		if (difficulty == AILevel.ADVANCED) {
 			// ADVANCED
 			// if the opponent has no more cards left: guarantee draw a card
@@ -55,7 +56,7 @@ public class Opponent extends Character {
 			}
 			
 			// If the field is empty, definitely place a card in the field 
-			if (!hasEmptyField()) {
+			if (hasEmptyField()) {
 				try {
 					moveset.add(deployWeightedCard());
 				} catch (FullFieldException e) {
@@ -102,6 +103,26 @@ public class Opponent extends Character {
 			if (moveset.isEmpty()) {
 				moveset.add(new OpponentMove(OpponentMove.MoveType.SKIP));
 			}
+		} else if (difficulty == AILevel.EASY) {
+			if (!deckHasCards()) {
+				OpponentMove move = new OpponentMove(OpponentMove.MoveType.DRAW);
+				moveset.add(move);
+			} else {
+				try {
+					moveset.add(deployWeightedCard());
+				} catch (FullFieldException e) {
+					System.out.println("[ERROR] " + e.getMessage());
+					OpponentMove move = new OpponentMove(OpponentMove.MoveType.DRAW);
+					moveset.add(move);
+				} catch (InsufficientFuelException e) {
+					System.out.println("[ERROR] " + e.getMessage());
+					moveset.add(new OpponentMove(OpponentMove.MoveType.SKIP));
+				}
+			}
+		}
+
+		if (moveset.isEmpty()) {
+			moveset.add(new OpponentMove(OpponentMove.MoveType.SKIP));
 		}
 		return moveset;
     }
@@ -116,8 +137,11 @@ public class Opponent extends Character {
 
 		// Setting up the weights
 		int[] weights = new int[deck.size()];
+		System.out.println("hi");
 		int weightSum = 0;
+		System.out.println("hi");
 		for (int i = 0; i < deck.size(); i++) {
+			System.out.println("loop");
 			Deckable d = deck.get(i);
 			if (d instanceof Gear || d.getCost() >= getFuel()) { 
 				weights[i] = 0;
@@ -135,14 +159,18 @@ public class Opponent extends Character {
 			throw new InsufficientFuelException("No cards exist within the opponent deck with sufficient fuel.");
 		}
 
-		while (!(randomDeckCard instanceof Card) || randomDeckCard.getCost() < getFuel()) {
+		while (!(randomDeckCard instanceof Card) || randomDeckCard.getCost() >= getFuel()) {
 			int weightedIndex = rand.nextInt(weightSum);
 			int upperBound = 0;
 			for (int i = 0; i < weights.length; i++) {
+				System.out.println(weightedIndex + "<" + upperBound);
 				upperBound += weights[i];
 				if (weightedIndex < upperBound) {
 					randomDeckCard = deck.get(i);
 					break;
+				}
+				if (i == weights.length - 1) {
+					randomDeckCard = deck.get(i);
 				}
 			}
 		}
@@ -157,7 +185,8 @@ public class Opponent extends Character {
 		int[] availableSlots = new int[playingCards.length];
 		int nextSlot = 0;
 		for (int i = 0; i < playingCards.length; i++) {
-			if (playingCards[i] != null) {
+			if (playingCards[i] == null) {
+				System.out.println(i + " is available. It is less than " + playingCards.length);
 				availableSlots[nextSlot] = i;
 				nextSlot++;
 			}
@@ -167,7 +196,10 @@ public class Opponent extends Character {
 		}
 
 		Random rand = new Random();
-		return availableSlots[rand.nextInt(availableSlots.length)];
+		for (int i : availableSlots) {
+			System.out.println(i + " is available.");
+		}
+		return availableSlots[rand.nextInt(nextSlot)];
 	}
 	
 	private boolean hasEmptyField() {

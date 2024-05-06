@@ -181,7 +181,7 @@
                <children>
                   <VBox layoutX="53.0" prefHeight="230.0" prefWidth="538.0" spacing="10.0">
                      <children>
-                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="640.0" spacing="30.0">
+                        <HBox fx:id="opponentPlayingField" alignment="CENTER" prefHeight="100.0" prefWidth="640.0" spacing="30.0">
                            <children>
                               <AnchorPane onMouseEntered="#slotHoverEnter" onMouseExited="#slotHoverExit" prefHeight="100.0" prefWidth="143.0" styleClass="playingCard" stylesheets="@BattleScreenStyle.css" />
                               <AnchorPane onMouseEntered="#slotHoverEnter" onMouseExited="#slotHoverExit" prefHeight="100.0" prefWidth="143.0" styleClass="playingCard" stylesheets="@BattleScreenStyle.css" />

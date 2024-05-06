@@ -5,6 +5,7 @@
 package spacedeck.battlescreen;
 
 import javafx.animation.Transition;
+import javafx.geometry.Bounds;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.scene.Node;
@@ -21,8 +22,8 @@ public class OpponentDrawTransition extends Transition {
 
 	@Override
 	public void interpolate(double frac) {
-		card.setTranslateX(origX + byX * frac);
-		card.setTranslateY(origY + byY * frac);		
+		card.setTranslateX(origX + byX * (1 - frac));
+		card.setTranslateY(origY + byY * (1 - frac));		
 	}
 	
 	public void setNode(Node c) {
@@ -30,14 +31,17 @@ public class OpponentDrawTransition extends Transition {
 		this.hasInitialized = false;
 	}
 
+	public void setOrig(Bounds b) {
+		origX = b.getMinX();
+		origY = b.getMinY();
+	}
+
 	public void setByX(double x) {
-		byX = x;
-		origX = -byX;
+		byX = -x;
 	}
 
 	public void setByY(double y) {
-		byY = y;
-		origY = -byY;
+		byY = -y;
 	}
 
 	public void setDuration(Duration duration) {
