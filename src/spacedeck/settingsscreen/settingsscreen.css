@@ -1,0 +1,22 @@
+* {
+  -fx-panel-bg-color: #035C64;
+  -fx-panel-border-color: #00E8FF;
+}
+.settingsPanel {
+  -fx-background-color: -fx-panel-bg-color;
+  -fx-border-width: 5px;
+  -fx-border-color: -fx-panel-border-color;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+}
+
+.settingsTitle {
+  -fx-font-family: Cristik;
+  -fx-font-size: 20px;
+  -fx-fill: white;
+}
+.options {
+  -fx-font-family: Cristik;
+  -fx-font-size: 14px;
+  -fx-fill: white;
+}
