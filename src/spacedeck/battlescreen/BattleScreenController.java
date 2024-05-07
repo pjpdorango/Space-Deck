@@ -150,9 +150,6 @@ public class BattleScreenController implements Initializable {
             
             // Instantiate Opponent
             opponent = new Opponent("Bob Ross", 20, 3, AILevel.ADVANCED);
-//            for (int i = 0; i < 4; i++) {
-//           		opponent.addCard(Card.getRandomCard());
-//            }
         } catch (FullDeckException e) {
             System.out.println("[ERROR] FullDeckException");
         }
@@ -807,10 +804,7 @@ public class BattleScreenController implements Initializable {
 		SlotPanelController slotController = slotPanelLoader.getController();
 
 		// Card attributes
-		slotController.setCardAttack(((Card) card).getAttack());                    
-		slotController.setCardHealth(((Card) card).getHealth());
-		Image cardIcon = new Image(getClass().getResourceAsStream("/spacedeck/media/" + ((Card) card).getIcon()));
-		slotController.setCardIcon(cardIcon);
+		slotController.setCard(card);
 
 		slot.getChildren().add(slotPanel);
 	}

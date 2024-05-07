@@ -177,16 +177,16 @@ public class CardPanelController implements Initializable {
 		descriptionElement.setText(thisCard.getDescription());
 		String elementName = ((Card)thisCard).getElement();
 		Image elementIcon = null;
-		if("Fire".equals(elementName)){
+		if ("Fire".equals(elementName)) {
 			elementIcon = new Image(getClass().getResourceAsStream("/spacedeck/media/Fire Icon.png"));
 		}
-		if("Water".equals(elementName)){
+		if ("Water".equals(elementName)) {
 			elementIcon = new Image(getClass().getResourceAsStream("/spacedeck/media/Water Icon.png"));
 		}
-		if("Earth".equals(elementName)){
+		if ("Earth".equals(elementName)) {
 			elementIcon = new Image(getClass().getResourceAsStream("/spacedeck/media/Earth Icon.png"));
 		}
-		if("Air".equals(elementName)){
+		if ("Air".equals(elementName)) {
 			elementIcon = new Image(getClass().getResourceAsStream("/spacedeck/media/Air Icon.png"));
 		}
 		element.setImage(elementIcon);

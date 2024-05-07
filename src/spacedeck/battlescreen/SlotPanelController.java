@@ -11,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
+import spacedeck.model.Card;
 
 /**
  * FXML Controller class
@@ -26,22 +27,24 @@ public class SlotPanelController implements Initializable {
     @FXML
     private ImageView cardIcon;
 
+	private Card card;
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) { }
     
-    public void setCardAttack(int a) {
-        cardAttack.setText(Integer.toString(a));
-    }
-    
-    public void setCardHealth(int h) {
-        cardHealth.setText(Integer.toString(h));
-    }
-    
-    public void setCardIcon(Image i) {
-        cardIcon.setImage(i);
-    }
-    
+	public void setCard(Card c) {
+		card = c;
+
+        cardHealth.setText(Integer.toString(c.getHealth()));
+		Image icon = new Image(getClass().getResourceAsStream("/spacedeck/media/" + c.getIcon()));
+        cardIcon.setImage(icon);
+        cardAttack.setText(Integer.toString(c.getAttack()));
+	}
+
+	public Card getCard() {
+		return this.card;
+	}
 }
