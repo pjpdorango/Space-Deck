@@ -5,6 +5,7 @@
 package spacedeck.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 import spacedeck.exceptions.FullFieldException;
 import spacedeck.exceptions.InsufficientFuelException;
@@ -21,17 +22,17 @@ public class Opponent extends Character {
         difficulty = diff;
     }
     
-    public ArrayList<OpponentMove> decideMoves() {
+    public ArrayList<OpponentMove> decideMoves(Character player) {
 		ArrayList<OpponentMove> moveset = new ArrayList<>();
         // TODO Opponent AI
         // isn't actually just an attack method, but a "move" method
 		
 		if (difficulty == AILevel.ADVANCED) {
 			// ADVANCED
-			// if the opponent has no more cards left: guarantee draw a card
-			// choose randomly from cards that are available, with the weight depending on the attack of the card
-			// once you pick a card to draw, draw it
-			// if insuff. fuel and no more cards left: gg skip turn
+			// if the opponent has no more cards in playing field left: guarantee deploy a card [DONE]
+			// choose randomly from cards that are available, with the weight depending on the attack of the card [DONE]
+			// once you pick a card to draw, draw it [DONE]
+			// if insuff. fuel and no more cards left: gg skip turn [DONE]
 			// if still has cards:
 			// if has gear in deck:
 			// decide whether or not to use a gear
@@ -60,7 +61,7 @@ public class Opponent extends Character {
 				try {
 					moveset.add(deployWeightedCard());
 				} catch (FullFieldException e) {
-					System.out.println(e.getMessage());
+					System.out.println("[ERROR] " + e.getMessage());
 				} catch (InsufficientFuelException e) {
 					// If not enough fuel for any cards, just draw a card man
 					if (!hasDrawnCard) {
@@ -70,6 +71,17 @@ public class Opponent extends Character {
 				}
 			}
 
+			else if (!hasFullField()) {
+				try {
+					OpponentMove move = deployWeightedCard();
+					move.setDeployTarget(getWeightedAvailableSlot(player));
+					moveset.add(move);
+				} catch (FullFieldException e) {
+					System.out.println("[ERROR] " + e.getMessage());
+				} catch (InsufficientFuelException e) {
+					System.out.println("[ERROR] " + e.getMessage());
+				}
+			}
 			// If the field is empty, definitely place a card in the field
 		} else if (difficulty == AILevel.RANDOM) {
 			Random rand = new Random();
@@ -79,7 +91,7 @@ public class Opponent extends Character {
 			}
 			
 			// 1/2 chance to deploy a card
-			if (rand.nextInt(2) == 0 && hasFullField()) {
+			if (rand.nextInt(2) == 0 && !hasFullField()) {
 				OpponentMove move = new OpponentMove(OpponentMove.MoveType.DEPLOY_CARD);
 				try {
 					move.setDeployCard((Card) deck.get(rand.nextInt(deck.size())));
@@ -98,10 +110,6 @@ public class Opponent extends Character {
 					move.setAttacker(i);
 					moveset.add(move);
 				}
-			}
-
-			if (moveset.isEmpty()) {
-				moveset.add(new OpponentMove(OpponentMove.MoveType.SKIP));
 			}
 		} else if (difficulty == AILevel.EASY) {
 			if (!deckHasCards()) {
@@ -137,11 +145,8 @@ public class Opponent extends Character {
 
 		// Setting up the weights
 		int[] weights = new int[deck.size()];
-		System.out.println("hi");
 		int weightSum = 0;
-		System.out.println("hi");
 		for (int i = 0; i < deck.size(); i++) {
-			System.out.println("loop");
 			Deckable d = deck.get(i);
 			if (d instanceof Gear || d.getCost() >= getFuel()) { 
 				weights[i] = 0;
@@ -156,14 +161,13 @@ public class Opponent extends Character {
 		// have not enough fuel. Since we already checked if there are no cards in
 		// the deck, there must be not enough fuel.
 		if (weightSum == 0) {
-			throw new InsufficientFuelException("No cards exist within the opponent deck with sufficient fuel.");
+			throw new InsufficientFuelException("No cards exist within the opponent deck with sufficient fuel. [deployWeightedCard()]");
 		}
 
 		while (!(randomDeckCard instanceof Card) || randomDeckCard.getCost() >= getFuel()) {
 			int weightedIndex = rand.nextInt(weightSum);
 			int upperBound = 0;
 			for (int i = 0; i < weights.length; i++) {
-				System.out.println(weightedIndex + "<" + upperBound);
 				upperBound += weights[i];
 				if (weightedIndex < upperBound) {
 					randomDeckCard = deck.get(i);
@@ -186,7 +190,6 @@ public class Opponent extends Character {
 		int nextSlot = 0;
 		for (int i = 0; i < playingCards.length; i++) {
 			if (playingCards[i] == null) {
-				System.out.println(i + " is available. It is less than " + playingCards.length);
 				availableSlots[nextSlot] = i;
 				nextSlot++;
 			}
@@ -196,10 +199,50 @@ public class Opponent extends Character {
 		}
 
 		Random rand = new Random();
-		for (int i : availableSlots) {
-			System.out.println(i + " is available.");
-		}
 		return availableSlots[rand.nextInt(nextSlot)];
+	}
+
+	private int getWeightedAvailableSlot(Character player) throws FullFieldException {
+		HashMap<Integer, Integer> weights = new HashMap<>();
+		int maxWeight = 0;
+		for (int i = 0; i < playingCards.length; i++) {
+			if (playingCards[i] == null) {
+				// Check if the opposing side has a card there
+				// weight based on attack of that card plus its health
+				int runningWeight = 0;
+				Card[] playingField = player.getPlayingField();
+				if (playingField[i] != null) {
+					Card card = playingField[i];
+					runningWeight += card.getAttack() + card.getHealth();
+					System.out.println(runningWeight);
+					ArrayList<Gear> gears = card.getGears();
+					for (Gear gear : gears) {
+						runningWeight += gear.getAttackFx() + gear.getHealthFx();
+						System.out.println(runningWeight);
+					}
+				}
+					System.out.println(runningWeight);
+
+				weights.put(i, runningWeight);
+				maxWeight += runningWeight;
+			}
+		}
+
+		if (weights.isEmpty()) {
+			throw new FullFieldException("The opponent's field is already full, but the AI still tried to place a card. [getWeightedAvailableSlot()]");
+		}
+
+		Random rand = new Random();
+		int decision = rand.nextInt(maxWeight + 1);
+		int upperBound = 0;
+		for (int key : weights.keySet()) {
+			upperBound += weights.get(key);
+			if (decision < upperBound) {
+				return key;
+			}
+		}
+
+		return -1;
 	}
 	
 	private boolean hasEmptyField() {

@@ -207,4 +207,8 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
     public void setIcon(String path) {
         icon = path;
     }
+
+	public ArrayList<Gear> getGears() {
+		return currentGears;
+	}
 }

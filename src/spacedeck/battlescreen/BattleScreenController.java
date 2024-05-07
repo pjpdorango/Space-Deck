@@ -138,7 +138,7 @@ public class BattleScreenController implements Initializable {
         takeSlot.setByX(0.1);
         takeSlot.setByY(0.1);
         takeSlot.setAutoReverse(true);
-        takeSlot.setCycleCount(1);
+        takeSlot.setCycleCount(2);
         takeSlot.setDuration(new Duration(70));
         
         try {
@@ -708,7 +708,7 @@ public class BattleScreenController implements Initializable {
 			turnButton.setBackground(Background.EMPTY);
 			turnIndicator.setOpacity(1);
 
-			ArrayList<OpponentMove> moveList = opponent.decideMoves();
+			ArrayList<OpponentMove> moveList = opponent.decideMoves(player);
 			for (OpponentMove move : moveList) {
 				System.out.println(move.getType().name());
 			}
@@ -779,14 +779,9 @@ public class BattleScreenController implements Initializable {
 		slot.getStyleClass().add("selectedSlot");
 		takeSlot.setNode(slot);
 		takeSlot.play();
+		addCardToSlot(slot, cardEquiv);
 		takeSlot.setOnFinished(e -> {
-			// Basically, reverse what's been done. But before reversing, add
-			// the card to the slot (for "dropping" effect)
 			slot.getStyleClass().remove("selectedSlot");
-			addCardToSlot(slot, cardEquiv);
-			takeSlot.setOnFinished(null);
-			takeSlot.setRate(-takeSlot.getRate());
-			takeSlot.play();
 		});
 
 		Media deploySFX = new Media(getClass().getResource("/spacedeck/audio/deployCard.wav").toExternalForm());

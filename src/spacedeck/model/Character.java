@@ -147,4 +147,8 @@ public abstract class Character implements Attackable {
     public ArrayList<Deckable> getDeck() {
         return deck;
     }
+
+	public Card[] getPlayingField() {
+		return playingCards;
+	}
 }
