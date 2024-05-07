@@ -42,7 +42,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
 }
 
 .deckCardCost {
-    -fx-translate-x: -40;
     -fx-font-size: 20;
     -fx-font-weight: bold;
 }

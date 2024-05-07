@@ -47,6 +47,8 @@ public class CardPanelController implements Initializable {
 	private Text nameElement;
 	@FXML
 	private Text descriptionElement;
+	@FXML
+	private ImageView element;
     
     /**
      * Initializes the controller class.
@@ -173,6 +175,21 @@ public class CardPanelController implements Initializable {
 		iconElement.setImage(icon);
 		nameElement.setText(thisCard.getName());
 		descriptionElement.setText(thisCard.getDescription());
+		String elementName = ((Card)thisCard).getElement();
+		Image elementIcon = null;
+		if("Fire".equals(elementName)){
+			elementIcon = new Image(getClass().getResourceAsStream("/spacedeck/media/Fire Icon.png"));
+		}
+		if("Water".equals(elementName)){
+			elementIcon = new Image(getClass().getResourceAsStream("/spacedeck/media/Water Icon.png"));
+		}
+		if("Earth".equals(elementName)){
+			elementIcon = new Image(getClass().getResourceAsStream("/spacedeck/media/Earth Icon.png"));
+		}
+		if("Air".equals(elementName)){
+			elementIcon = new Image(getClass().getResourceAsStream("/spacedeck/media/Air Icon.png"));
+		}
+		element.setImage(elementIcon);
 	}
     
     public void setSceneController(BattleScreenController controller) {

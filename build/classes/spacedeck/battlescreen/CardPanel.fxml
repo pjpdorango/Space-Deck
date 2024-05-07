@@ -4,21 +4,31 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox fx:id="card" alignment="TOP_CENTER" layoutX="424.0" layoutY="15.0" onMouseDragged="#cardDrag" onMouseEntered="#cardHoverEnterAnimation" onMouseExited="#cardHoverExitAnimation" onMousePressed="#cardPress" onMouseReleased="#cardRelease" prefHeight="145.0" prefWidth="100.0" spacing="2.0" styleClass="deckCard" stylesheets="@BattleScreenStyle.css" translateZ="3.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="spacedeck.battlescreen.CardPanelController">
+<VBox fx:id="card" alignment="TOP_CENTER" layoutX="424.0" layoutY="15.0" onMouseDragged="#cardDrag" onMouseEntered="#cardHoverEnterAnimation" onMouseExited="#cardHoverExitAnimation" onMousePressed="#cardPress" onMouseReleased="#cardRelease" prefHeight="145.0" prefWidth="100.0" spacing="2.0" styleClass="deckCard" stylesheets="@BattleScreenStyle.css" translateZ="3.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="spacedeck.battlescreen.CardPanelController">
     <children>
-       <Text fx:id="costElement" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="-1">
-          <font>
-             <Font name="System Bold" size="17.0" />
-          </font>
-          <styleClass>
-             <String fx:value="deckCardCost" />
-             <String fx:value="title" />
-          </styleClass>
-       </Text>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0">
+         <children>
+             <Text fx:id="costElement" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="-1">
+                <font>
+                   <Font name="System Bold" size="17.0" />
+                </font>
+                <styleClass>
+                   <String fx:value="deckCardCost" />
+                   <String fx:value="title" />
+                </styleClass>
+             </Text>
+            <ImageView fx:id="element" fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../media/Fire%20Icon.png" />
+               </image>
+            </ImageView>
+         </children>
+      </HBox>
        <ImageView fx:id="iconElement" fitHeight="54.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true" styleClass="deckCardImage">
           <image>
              <Image url="@../media/TEMP_card_character.png" />

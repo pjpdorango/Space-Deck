@@ -209,7 +209,7 @@ public class Opponent extends Character {
 			if (playingCards[i] == null) {
 				// Check if the opposing side has a card there
 				// weight based on attack of that card plus its health
-				int runningWeight = 0;
+				int runningWeight = 1;
 				Card[] playingField = player.getPlayingField();
 				if (playingField[i] != null) {
 					Card card = playingField[i];
