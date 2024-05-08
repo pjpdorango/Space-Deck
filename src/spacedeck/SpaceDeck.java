@@ -4,6 +4,7 @@
  */
 package spacedeck;
 
+import java.io.FileNotFoundException;
 import spacedeck.model.WaterCard;
 import spacedeck.model.Planet;
 import spacedeck.model.EarthCard;
@@ -13,7 +14,9 @@ import spacedeck.model.AILevel;
 import spacedeck.model.FireCard;
 import spacedeck.model.AirCard;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -27,6 +30,7 @@ import javafx.util.Duration;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import spacedeck.model.Player;
 
 /**
@@ -37,8 +41,10 @@ public class SpaceDeck extends Application {
 	private static Player currentPlayer;
 	private static Stage currentStage;
 
+	public static final int[] DEFAULT_RESOLUTION = { 960 , 540 };
+
 	public enum SceneType {
-		TitleScreen, CollectionScreen, MapScreen, LevelSelectionScreen, BattleScreen	
+		TitleScreen, CollectionScreen, MapScreen, LevelSelectionScreen, BattleScreen, SettingsScreen
 	}
 	
     @Override
@@ -125,14 +131,15 @@ public class SpaceDeck extends Application {
 			newPlanet.setDiameter(diameter);
 			newPlanet.setEnvironment(environment);
 			for (Object s : champions) {
-				System.out.println((String) s);
 				newPlanet.getChampions().add(new Opponent((String) s, 20, 1, AILevel.ADVANCED));
 			}
 		}
 		
+		JSONObject settings = (JSONObject) fastOpenJSON("src/spacedeck/Settings.json");
+	
 		currentStage = new Stage();
-        currentStage.setHeight(570);
-        currentStage.setWidth(960);
+        currentStage.setHeight(((double) settings.get("scale")) * DEFAULT_RESOLUTION[1]);
+        currentStage.setWidth(((double) settings.get("scale")) * DEFAULT_RESOLUTION[0]);
 		
 		/*
 			-------------
@@ -147,10 +154,15 @@ public class SpaceDeck extends Application {
 				- For drawing a card
 				- Skipping a turn
 		*/
-		FXMLLoader sceneLoader = loadScene(SceneType.BattleScreen);
+		FXMLLoader sceneLoader = loadScene(SceneType.TitleScreen);
 
 		currentStage.setScene(((Parent) sceneLoader.getRoot()).getScene());
+		currentStage.setResizable(false);
         currentStage.show();
+		currentStage.setMinHeight(0);
+		currentStage.setMinWidth(0);
+		currentStage.setMaxHeight(Integer.MAX_VALUE);
+		currentStage.setMaxWidth(Integer.MAX_VALUE);
     }
 
     /**
@@ -179,6 +191,9 @@ public class SpaceDeck extends Application {
 			case BattleScreen:
 				sceneLoader = new FXMLLoader(SpaceDeck.class.getResource("battlescreen/BattleScreen.fxml"));
 				break;
+			case SettingsScreen:
+				sceneLoader = new FXMLLoader(SpaceDeck.class.getResource("settingsscreen/SettingsScreen.fxml"));
+				break;
 			default:
 				break;
 		}
@@ -192,6 +207,13 @@ public class SpaceDeck extends Application {
 		
 		newScene.setFill(Color.BLACK);
 
+		JSONObject settings = (JSONObject) fastOpenJSON("src/spacedeck/Settings.json");
+		double scale = (double) settings.get("scale");
+
+		newScene.getRoot().setScaleX(scale);
+		newScene.getRoot().setScaleY(scale);
+		newScene.getRoot().setLayoutX(DEFAULT_RESOLUTION[0] * (scale - 1) / 2 + 120 * Math.abs(scale - 1)); //magic numbers, sorry
+		newScene.getRoot().setLayoutY(DEFAULT_RESOLUTION[1] * (scale - 1) / 2 + 60 * Math.abs(scale - 1)); //thru trial & error not math
 		return sceneLoader;
 	}
 
@@ -225,5 +247,44 @@ public class SpaceDeck extends Application {
 
 	public static Stage getStage() {
 		return currentStage;
+	}
+
+	public static void changeSetting(String setting, double value) {
+		JSONObject settings = (JSONObject) fastOpenJSON("src/spacedeck/Settings.json");
+		
+		if (settings.containsKey(setting)) {
+			settings.put(setting, value);
+		} else {
+			System.out.println("[ERROR] Tried to modified a non-existent setting.");
+		}
+
+		PrintWriter writer;
+
+		try {
+			writer = new PrintWriter("src/spacedeck/Settings.json");
+		} catch (IOException e) {
+			System.out.println("[ERROR] IOException loading Settings file.");
+			return;
+		} 
+
+		writer.print(settings.toJSONString());
+		writer.flush();
+		writer.close();
+	}
+
+	public static Object fastOpenJSON(String path) {
+		JSONParser parser = new JSONParser();
+		JSONObject object;
+		try {
+			object = (JSONObject) parser.parse(new FileReader("src/spacedeck/Settings.json"));
+			return object;
+		} catch (IOException e) {
+			System.out.println("[ERROR] IOException loading file. " + path);
+		} catch (ParseException e) {
+			// TODO replace settings file
+			System.out.println("[ERROR] JSON file is corrupt and could not be parsed. " + path);
+		}
+
+		return null;
 	}
 }

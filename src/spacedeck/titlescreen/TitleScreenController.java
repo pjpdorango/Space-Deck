@@ -86,6 +86,9 @@ public class TitleScreenController implements Initializable {
 	@FXML
 	private void settingsButton(MouseEvent event) {
 		if (!isScreenActive) return;
+
+		isScreenActive = false;
+		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.SettingsScreen);
 	}
 
 	@FXML

@@ -1,30 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
+<?import javafx.scene.control.ScrollBar?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" prefHeight="540.0" prefWidth="960.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21" fx:controller="spacedeck.settingsscreen.SettingsScreenController">
-    <stylesheets>
-        <URL value="@settingsscreen.css" />
-    </stylesheets>
+<AnchorPane id="AnchorPane" prefHeight="540.0" prefWidth="960.0" styleClass="mainFxmlClass" stylesheets="@SettingsScreenStyle.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="spacedeck.settingsscreen.SettingsScreenController">
    <children>
       <ImageView fitHeight="540.0" fitWidth="960.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../media/Background.png" />
          </image>
       </ImageView>
-      <VBox alignment="CENTER" layoutX="153.0" layoutY="115.0" prefHeight="352.0" prefWidth="654.0" spacing="45.0" styleClass="settingsPanel">
+      <VBox alignment="CENTER" layoutX="153.0" layoutY="115.0" prefHeight="352.0" prefWidth="654.0" spacing="30.0" styleClass="settingsPanel">
          <children>
-            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="options" text="Master Volume" />
-            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="options" text="SFX" />
-            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="options" text="Music" />
-            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="options" text="Resolution" />
+            <VBox alignment="CENTER" prefHeight="51.0" prefWidth="644.0" spacing="5.0">
+               <children>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="options" text="Master Volume" />
+                  <ScrollBar fx:id="masterVolumeScrollbar" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="14.0" prefWidth="384.0" styleClass="scrollbar" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="51.0" prefWidth="644.0" spacing="5.0">
+               <children>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="options" text="Music" />
+                  <ScrollBar fx:id="musicScrollbar" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="14.0" prefWidth="384.0" styleClass="scrollbar" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="51.0" prefWidth="644.0" spacing="5.0">
+               <children>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="options" text="SFX" />
+                  <ScrollBar fx:id="sfxScrollbar" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="14.0" prefWidth="384.0" styleClass="scrollbar" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="63.0" prefWidth="644.0" spacing="5.0">
+               <children>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="options" text="Resolution" />
+                  <HBox alignment="CENTER" prefHeight="44.0" prefWidth="644.0" spacing="10.0">
+                     <children>
+                        <ImageView fitHeight="34.0" fitWidth="32.0" onMouseClicked="#leftResolutionCycle" pickOnBounds="true" preserveRatio="true" scaleX="-1.0">
+                           <image>
+                              <Image url="@../media/Right_arrow.png" />
+                           </image>
+                        </ImageView>
+                        <Text fx:id="resolution" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="resolution" text="960x540" />
+                        <ImageView fitHeight="35.0" fitWidth="30.0" onMouseClicked="#rightResolutionCycle" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../media/Right_arrow.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
          </children>
       </VBox>
-      <Text layoutX="444.0" layoutY="91.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="settingsTitle" text="Settings" />
+      <Text layoutX="427.0" layoutY="84.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="settingsTitle" text="Settings" />
    </children>
 </AnchorPane>
