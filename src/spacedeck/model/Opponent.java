@@ -59,7 +59,9 @@ public class Opponent extends Character {
 			// If the field is empty, definitely place a card in the field 
 			if (hasEmptyField()) {
 				try {
-					moveset.add(deployWeightedCard());
+					OpponentMove move = deployWeightedCard();
+					move.setDeployTarget(getWeightedAvailableSlot(player));
+					moveset.add(move);
 				} catch (FullFieldException e) {
 					System.out.println("[ERROR] " + e.getMessage());
 				} catch (InsufficientFuelException e) {
@@ -237,7 +239,7 @@ public class Opponent extends Character {
 		int upperBound = 0;
 		for (int key : weights.keySet()) {
 			upperBound += weights.get(key);
-			if (decision < upperBound) {
+			if (decision <= upperBound) {
 				return key;
 			}
 		}

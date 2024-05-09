@@ -20,19 +20,19 @@
             <VBox alignment="CENTER" prefHeight="51.0" prefWidth="644.0" spacing="5.0">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="options" text="Master Volume" />
-                  <ScrollBar fx:id="masterVolumeScrollbar" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="14.0" prefWidth="384.0" styleClass="scrollbar" />
+                  <ScrollBar fx:id="masterVolumeScrollbar" maxHeight="-Infinity" maxWidth="-Infinity" onMouseReleased="#updateScrollbar" prefHeight="14.0" prefWidth="384.0" styleClass="scrollbar" />
                </children>
             </VBox>
             <VBox alignment="CENTER" prefHeight="51.0" prefWidth="644.0" spacing="5.0">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="options" text="Music" />
-                  <ScrollBar fx:id="musicScrollbar" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="14.0" prefWidth="384.0" styleClass="scrollbar" />
+                  <ScrollBar fx:id="musicScrollbar" maxHeight="-Infinity" maxWidth="-Infinity" onMouseReleased="#updateScrollbar" prefHeight="14.0" prefWidth="384.0" styleClass="scrollbar" />
                </children>
             </VBox>
             <VBox alignment="CENTER" prefHeight="51.0" prefWidth="644.0" spacing="5.0">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="options" text="SFX" />
-                  <ScrollBar fx:id="sfxScrollbar" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="14.0" prefWidth="384.0" styleClass="scrollbar" />
+                  <ScrollBar fx:id="sfxScrollbar" maxHeight="-Infinity" maxWidth="-Infinity" onMouseReleased="#updateScrollbar" prefHeight="14.0" prefWidth="384.0" styleClass="scrollbar" />
                </children>
             </VBox>
             <VBox alignment="CENTER" prefHeight="63.0" prefWidth="644.0" spacing="5.0">
@@ -58,5 +58,10 @@
          </children>
       </VBox>
       <Text layoutX="427.0" layoutY="84.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="settingsTitle" text="Settings" />
+      <ImageView fitHeight="88.0" fitWidth="162.0" layoutX="23.0" layoutY="39.0" onMouseClicked="#backToTitleScreen" pickOnBounds="true" preserveRatio="true" scaleX="-1.0">
+         <image>
+            <Image url="@../media/Information_Minimize_Button.png" />
+         </image>
+      </ImageView>
    </children>
 </AnchorPane>

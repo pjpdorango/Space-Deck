@@ -143,8 +143,8 @@ public class CardPanelController implements Initializable {
 		// If the screen is not active, don't do anything
 		if (!sceneController.getIsScreenActive()) return;
 
-        card.setTranslateX(restingTranslate + event.getSceneX() - startX);
-        card.setTranslateY(event.getSceneY() - startY);
+        card.setTranslateX((restingTranslate + event.getSceneX() - startX) / sceneController.getScreenScale());
+        card.setTranslateY((event.getSceneY() - startY) / sceneController.getScreenScale());
     }
     
     @FXML

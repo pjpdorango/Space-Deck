@@ -272,6 +272,24 @@ public class SpaceDeck extends Application {
 		writer.close();
 	}
 
+	public static Object getSetting(String setting) {
+		JSONObject settings = (JSONObject) fastOpenJSON("src/spacedeck/Settings.json");
+
+		return settings.get(setting);
+	}
+
+	/**
+	 * Opens a JSON file, automatically managing possible errors. <br>
+	 * Dependencies: {@code org.json.simple.*} <br>
+	 * Errors are managed automatically by printing the respective error and the path of the file where the error occured.
+	 * @param path The path to the JSON file. In the format: <br>
+	 * <p style="color: green"> {@code "src/[root folder]/[folder]/[file].json"} </p>
+	 * @return Object that represents the root structure of the JSON file.
+	 * <br>
+	 * Structures include: {@code JSONObject}, {@code JSONArray}, and other data
+	 * structures provided in the {@code org.json.simple} library.
+	 * 
+	 */
 	public static Object fastOpenJSON(String path) {
 		JSONParser parser = new JSONParser();
 		JSONObject object;
@@ -281,7 +299,6 @@ public class SpaceDeck extends Application {
 		} catch (IOException e) {
 			System.out.println("[ERROR] IOException loading file. " + path);
 		} catch (ParseException e) {
-			// TODO replace settings file
 			System.out.println("[ERROR] JSON file is corrupt and could not be parsed. " + path);
 		}
 

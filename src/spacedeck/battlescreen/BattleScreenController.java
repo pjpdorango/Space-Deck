@@ -30,9 +30,6 @@ import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -101,6 +98,8 @@ public class BattleScreenController implements Initializable {
     private boolean isDraggingCard;
 	private boolean isPaused;
 	private double musicVolume = 0.3;
+	private double sfxVolume = 0.3;
+	private double scale;
     
     // TRANSITIONS
     private TranslateTransition slotInvalid;
@@ -140,6 +139,9 @@ public class BattleScreenController implements Initializable {
         takeSlot.setAutoReverse(true);
         takeSlot.setCycleCount(2);
         takeSlot.setDuration(new Duration(70));
+
+		musicVolume *= (double) SpaceDeck.getSetting("musicVolume") / 100 * (double) SpaceDeck.getSetting("masterVolume") / 100;
+		sfxVolume *= (double) SpaceDeck.getSetting("sfxVolume") / 100 * (double) SpaceDeck.getSetting("masterVolume") / 100;
         
         try {
             // Instantiate Player
@@ -184,6 +186,7 @@ public class BattleScreenController implements Initializable {
 
 		this.PLAYER_DECK_POSITION = new BoundingBox(424, 400, 0, 0);
 		this.ENEMY_DECK_POSITION = new BoundingBox(428, 5, 0, 0);
+		scale = (double) SpaceDeck.getSetting("scale");
     }    
     
     public void createCardStack() {
@@ -329,7 +332,7 @@ public class BattleScreenController implements Initializable {
 				}
 			}
 
-			songPlayer.setVolume(0.2);
+			songPlayer.setVolume(musicVolume / 2);
 		// If the menuButton was open
 		} else {
 			isPaused = false;
@@ -520,6 +523,7 @@ public class BattleScreenController implements Initializable {
 
 					Media invalidSFX = new Media(getClass().getResource("/spacedeck/audio/invalidCard.wav").toExternalForm());
 					MediaPlayer sfxPlayer = new MediaPlayer(invalidSFX);
+					sfxPlayer.setVolume(sfxVolume);
 					sfxPlayer.play();
 					return;
 				}
@@ -541,6 +545,7 @@ public class BattleScreenController implements Initializable {
 
 					Media invalidSFX = new Media(getClass().getResource("/spacedeck/audio/invalidCard.wav").toExternalForm());
 					MediaPlayer sfxPlayer = new MediaPlayer(invalidSFX);
+					sfxPlayer.setVolume(sfxVolume);
 					sfxPlayer.play();
 					return;
 				} catch (CardAlreadyActiveException e) {
@@ -609,9 +614,10 @@ public class BattleScreenController implements Initializable {
 			CardStackTransition slideToDeck = new CardStackTransition();	
 			slideToDeck.setNode(leadingCard);
 			slideToDeck.setNewNode(newCard);
+			slideToDeck.setScale(scale);
 			slideToDeck.setDeckable(newCardController.getCard());
-			slideToDeck.setByX(cardStackDestination.getMinX() - origin.getMinX());
-			slideToDeck.setByY(cardStackDestination.getMinY() - origin.getMinY());
+			slideToDeck.setByX((cardStackDestination.getMinX() - origin.getMinX()) / scale);
+			slideToDeck.setByY((cardStackDestination.getMinY() - origin.getMinY()) / scale);
 			slideToDeck.setDuration(Duration.millis(300));
 			
 			leadingCard.setLayoutX(newCard.getLayoutX());
@@ -623,7 +629,7 @@ public class BattleScreenController implements Initializable {
 			// --------------
 			// OPPONENT STUFF
 			// --------------
-			if (opponentDeckElement.getChildren().size() - 1 > 0) {
+			if (opponentDeckElement.getChildren().size() > 1) {
 				Node destinationCard = opponentDeckElement.getChildren().get(opponentDeckElement.getChildren().size() - 1);
 				cardStackDestination = destinationCard.localToScene(destinationCard.getBoundsInLocal());
 			} else {
@@ -637,9 +643,9 @@ public class BattleScreenController implements Initializable {
 
 			OpponentDrawTransition drawCard = new OpponentDrawTransition();
 			drawCard.setNode(leadingCard);
-			drawCard.setOrig(cardStackDestination);
-			drawCard.setByX(cardStackDestination.getMinX() - origin.getMinX());
-			drawCard.setByY(cardStackDestination.getMinY() - origin.getMinY());
+			drawCard.setOrig(new BoundingBox(cardStackDestination.getMinX() / scale, cardStackDestination.getMinY() / scale, 0, 0));
+			drawCard.setByX((cardStackDestination.getMinX() - origin.getMinX())/scale);
+			drawCard.setByY((cardStackDestination.getMinY() - origin.getMinY())/scale);
 			drawCard.setDuration(Duration.millis(300));
 
 			drawCard.play();
@@ -761,8 +767,8 @@ public class BattleScreenController implements Initializable {
 
 	private TranslateTransition slideTransitionToNode(Bounds slotBounds, Bounds cardBounds, Node card) {
 		TranslateTransition slide = new TranslateTransition();
-		slide.setByX(slotBounds.getMinX() + slotBounds.getWidth() / 2 - cardBounds.getMinX() - cardBounds.getWidth() / 2);
-		slide.setByY(slotBounds.getMinY() + slotBounds.getHeight() / 2 - cardBounds.getMinY() - cardBounds.getHeight() / 2);
+		slide.setByX((slotBounds.getMinX() + slotBounds.getWidth() / 2 - cardBounds.getMinX() - cardBounds.getWidth() / 2) / scale);
+		slide.setByY((slotBounds.getMinY() + slotBounds.getHeight() / 2 - cardBounds.getMinY() - cardBounds.getHeight() / 2) / scale);
 		slide.setDuration(Duration.millis(400));
 		slide.setNode(card);
 		slide.setInterpolator(Interpolator.EASE_OUT);
@@ -783,7 +789,7 @@ public class BattleScreenController implements Initializable {
 
 		Media deploySFX = new Media(getClass().getResource("/spacedeck/audio/deployCard.wav").toExternalForm());
 		MediaPlayer sfxPlayer = new MediaPlayer(deploySFX);
-		sfxPlayer.setVolume(0.3);
+		sfxPlayer.setVolume(sfxVolume);
 		sfxPlayer.play();
 
 		return takeSlot;
@@ -844,6 +850,10 @@ public class BattleScreenController implements Initializable {
 
 	public boolean getIsScreenActive() {
 		return !isPaused;
+	}
+
+	public double getScreenScale() {
+		return scale;
 	}
 
 	public void setIsScreenActive(boolean isPaused) {

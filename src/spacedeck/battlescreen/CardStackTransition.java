@@ -19,6 +19,7 @@ public class CardStackTransition extends Transition {
 	private VBox card, newCard;
 	private double byX, byY;
 	private double origX, origY;
+	private double scale;
 	private boolean hasTransformed, hasInitialized;
 	private BattleScreenController sceneController;
 	private Deckable deckableCard;
@@ -62,6 +63,10 @@ public class CardStackTransition extends Transition {
 	public void setByY(double y) {
 		byY = y;
 		origY = -byY;
+	}
+
+	public void setScale(double s) {
+		scale = s;
 	}
 
 	public void setDuration(Duration duration) {
