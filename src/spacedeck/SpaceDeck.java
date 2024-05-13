@@ -138,21 +138,13 @@ public class SpaceDeck extends Application {
 		JSONObject settings = (JSONObject) fastOpenJSON("src/spacedeck/Settings.json");
 	
 		currentStage = new Stage();
-        currentStage.setHeight(((double) settings.get("scale")) * DEFAULT_RESOLUTION[1]);
-        currentStage.setWidth(((double) settings.get("scale")) * DEFAULT_RESOLUTION[0]);
+        currentStage.setHeight(((double) settings.get("scale")) * DEFAULT_RESOLUTION[1] + 30);
+        currentStage.setWidth(((double) settings.get("scale")) * DEFAULT_RESOLUTION[0] + 10);
 		
 		/*
 			-------------
 			SCENE LOADING
 			-------------
-			WHATS NEW? 
-			- Planet lore is now accurate (except champions)
-			- Battle Screen now has "End Turn" button
-				- Button has gradient effect that smooths when hovering
-				- Gives control to the Opponent AI to choose their move next
-			- Opponent now has ANIMATIONS!!
-				- For drawing a card
-				- Skipping a turn
 		*/
 		FXMLLoader sceneLoader = loadScene(SceneType.TitleScreen);
 
@@ -213,7 +205,7 @@ public class SpaceDeck extends Application {
 		newScene.getRoot().setScaleX(scale);
 		newScene.getRoot().setScaleY(scale);
 		newScene.getRoot().setLayoutX(DEFAULT_RESOLUTION[0] * (scale - 1) / 2 + 120 * Math.abs(scale - 1)); //magic numbers, sorry
-		newScene.getRoot().setLayoutY(DEFAULT_RESOLUTION[1] * (scale - 1) / 2 + 60 * Math.abs(scale - 1)); //thru trial & error not math
+		newScene.getRoot().setLayoutY(DEFAULT_RESOLUTION[1] * (scale - 1) / 2 + 40 * Math.abs(scale - 1)); //thru trial & error not math
 		return sceneLoader;
 	}
 

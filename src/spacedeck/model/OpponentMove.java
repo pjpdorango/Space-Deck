@@ -15,7 +15,7 @@ public class OpponentMove {
 
 	private MoveType type;
 	private Card deployCard;
-	private int attacker;
+	private int attacker, attackTarget;
 	private int deployTarget, removeTarget;
 	private Gear gear;
 	private Card equipGearTarget;
@@ -104,5 +104,13 @@ public class OpponentMove {
 
 	public Card getEquipGearTarget() {
 		return equipGearTarget;
+	}
+
+	public int getAttackTarget() {
+		return attackTarget;
+	}
+
+	public void setAttackTarget(int attackTarget) {
+		this.attackTarget = attackTarget;
 	}
 }

@@ -93,12 +93,24 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
 	-fx-font-size: 18;
 }
 
+.targetSlot {
+    -fx-border-color: #FF0000;
+}
+
 .selectedSlot {
     -fx-border-color: #FFFFFF;
 }
 
 .invalidSlot {
     -fx-border-color: #FF0000;
+}
+
+.currentSlot {
+    -fx-border-color: #FFCC00;
+}
+
+.invincibilityFrame {
+	-fx-opacity: 0.4;
 }
 
 .insufficientFuel {

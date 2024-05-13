@@ -84,7 +84,20 @@ public class Opponent extends Character {
 					System.out.println("[ERROR] " + e.getMessage());
 				}
 			}
+
 			// If the field is empty, definitely place a card in the field
+			for (int i = 0; i < playingCards.length; i++) {
+				if (playingCards[i] != null) {
+					OpponentMove move = new OpponentMove(OpponentMove.MoveType.ATTACK);
+					move.setAttacker(i);
+
+					int slot = getRandomOccupiedPlayerSlot(player);
+					if (slot != -1) {
+						move.setAttackTarget(slot);
+						moveset.add(move);
+					}
+				}
+			}
 		} else if (difficulty == AILevel.RANDOM) {
 			Random rand = new Random();
 			// 1/2 chance to draw card
@@ -136,6 +149,22 @@ public class Opponent extends Character {
 		}
 		return moveset;
     }
+
+	private int getRandomOccupiedPlayerSlot(Character player) {
+		ArrayList<Integer> possible = new ArrayList<>();
+		for (int i = 0; i < player.getPlayingField().length; i++) {
+			if (player.getPlayingField()[i] != null) {
+				possible.add(i);
+			}
+		}
+
+		if (possible.isEmpty()) {
+			return -1;
+		}
+
+		Random rand = new Random();
+		return possible.get(rand.nextInt(possible.size()));
+	}
 
 	/**
 	 * Deploys a card depending on the weight (attack, health, cost)
@@ -215,15 +244,12 @@ public class Opponent extends Character {
 				Card[] playingField = player.getPlayingField();
 				if (playingField[i] != null) {
 					Card card = playingField[i];
-					runningWeight += card.getAttack() + card.getHealth();
-					System.out.println(runningWeight);
+					runningWeight += card.getAttack();
 					ArrayList<Gear> gears = card.getGears();
 					for (Gear gear : gears) {
 						runningWeight += gear.getAttackFx() + gear.getHealthFx();
-						System.out.println(runningWeight);
 					}
 				}
-					System.out.println(runningWeight);
 
 				weights.put(i, runningWeight);
 				maxWeight += runningWeight;

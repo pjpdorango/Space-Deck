@@ -44,6 +44,11 @@ public class SlotPanelController implements Initializable {
         cardAttack.setText(Integer.toString(c.getAttack()));
 	}
 
+	public void updateData() {
+        cardHealth.setText(Integer.toString(card.getHealth()));
+        cardAttack.setText(Integer.toString(card.getAttack()));
+	}
+
 	public Card getCard() {
 		return this.card;
 	}

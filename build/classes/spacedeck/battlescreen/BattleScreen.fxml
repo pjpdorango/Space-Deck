@@ -183,15 +183,15 @@
                      <children>
                         <HBox fx:id="opponentPlayingField" alignment="CENTER" prefHeight="100.0" prefWidth="640.0" spacing="30.0">
                            <children>
-                              <AnchorPane onMouseEntered="#slotHoverEnter" onMouseExited="#slotHoverExit" prefHeight="100.0" prefWidth="143.0" styleClass="playingCard" stylesheets="@BattleScreenStyle.css" />
-                              <AnchorPane onMouseEntered="#slotHoverEnter" onMouseExited="#slotHoverExit" prefHeight="100.0" prefWidth="143.0" styleClass="playingCard" stylesheets="@BattleScreenStyle.css" />
-                              <AnchorPane onMouseEntered="#slotHoverEnter" onMouseExited="#slotHoverExit" prefHeight="100.0" prefWidth="143.0" styleClass="playingCard" stylesheets="@BattleScreenStyle.css" />
+                              <AnchorPane onMouseClicked="#enemySlotClicked" onMouseEntered="#slotHoverEnter" onMouseExited="#slotHoverExit" prefHeight="100.0" prefWidth="143.0" styleClass="playingCard" stylesheets="@BattleScreenStyle.css" />
+                              <AnchorPane onMouseClicked="#enemySlotClicked" onMouseEntered="#slotHoverEnter" onMouseExited="#slotHoverExit" prefHeight="100.0" prefWidth="143.0" styleClass="playingCard" stylesheets="@BattleScreenStyle.css" />
+                              <AnchorPane onMouseClicked="#enemySlotClicked" onMouseEntered="#slotHoverEnter" onMouseExited="#slotHoverExit" prefHeight="100.0" prefWidth="143.0" styleClass="playingCard" stylesheets="@BattleScreenStyle.css" />
                            </children></HBox>
                         <HBox fx:id="playerPlayingField" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
                            <children>
-                              <AnchorPane onMouseEntered="#slotHoverEnter" onMouseExited="#slotHoverExit" prefHeight="100.0" prefWidth="143.0" styleClass="playingCard" stylesheets="@BattleScreenStyle.css" />
-                              <AnchorPane onMouseEntered="#slotHoverEnter" onMouseExited="#slotHoverExit" prefHeight="100.0" prefWidth="143.0" styleClass="playingCard" stylesheets="@BattleScreenStyle.css" />
-                              <AnchorPane onMouseEntered="#slotHoverEnter" onMouseExited="#slotHoverExit" prefHeight="100.0" prefWidth="143.0" styleClass="playingCard" stylesheets="@BattleScreenStyle.css" />
+                              <AnchorPane onMouseClicked="#playerSlotClicked" onMouseEntered="#slotHoverEnter" onMouseExited="#slotHoverExit" prefHeight="100.0" prefWidth="143.0" styleClass="playingCard" stylesheets="@BattleScreenStyle.css" />
+                              <AnchorPane onMouseClicked="#playerSlotClicked" onMouseEntered="#slotHoverEnter" onMouseExited="#slotHoverExit" prefHeight="100.0" prefWidth="143.0" styleClass="playingCard" stylesheets="@BattleScreenStyle.css" />
+                              <AnchorPane onMouseClicked="#playerSlotClicked" onMouseEntered="#slotHoverEnter" onMouseExited="#slotHoverExit" prefHeight="100.0" prefWidth="143.0" styleClass="playingCard" stylesheets="@BattleScreenStyle.css" />
                            </children></HBox>
                      </children>
                   </VBox>

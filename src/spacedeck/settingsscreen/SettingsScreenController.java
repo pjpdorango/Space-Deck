@@ -95,15 +95,12 @@ public class SettingsScreenController implements Initializable {
 		root.setScaleX(scale);
 		root.setScaleY(scale);
 		root.setLayoutX(SpaceDeck.DEFAULT_RESOLUTION[0] * (scale - 1) / 2 + 120 * Math.abs(scale - 1)); //magic numbers, sorry thru trial & error not math
-		root.setLayoutY(SpaceDeck.DEFAULT_RESOLUTION[1] * (scale - 1) / 2 + 60 * Math.abs(scale - 1));	// the formula (origX * (scale - 1))/2 was from math. the 120 and 60 were magic numbers
+		root.setLayoutY(SpaceDeck.DEFAULT_RESOLUTION[1] * (scale - 1) / 2 + 40 * Math.abs(scale - 1));	// the formula (origX * (scale - 1))/2 was from math. the 120 and 60 were magic numbers
 
 		SpaceDeck.getStage().setX(Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2 - width / 2);
 		SpaceDeck.getStage().setY(Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 2 - height / 2);
-		SpaceDeck.getStage().setWidth(width);
-		SpaceDeck.getStage().setHeight(height);
-
-		System.out.println("Width: " + SpaceDeck.getStage().getWidth());
-		System.out.println("RootWidth: " + root.localToScene(root.getBoundsInLocal()).getWidth());
+		SpaceDeck.getStage().setWidth(width + 10);
+		SpaceDeck.getStage().setHeight(height + 30);
 
 		SpaceDeck.changeSetting("scale", scale);
 	}
