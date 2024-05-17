@@ -146,7 +146,7 @@ public class SpaceDeck extends Application {
 			SCENE LOADING
 			-------------
 		*/
-		FXMLLoader sceneLoader = loadScene(SceneType.TitleScreen);
+		FXMLLoader sceneLoader = loadScene(SceneType.BattleScreen);
 
 		currentStage.setScene(((Parent) sceneLoader.getRoot()).getScene());
 		currentStage.setResizable(false);

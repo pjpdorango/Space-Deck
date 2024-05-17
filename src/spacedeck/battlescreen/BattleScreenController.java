@@ -15,8 +15,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EventListener;
 import java.util.IdentityHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -59,6 +61,7 @@ import spacedeck.exceptions.CardAlreadyActiveException;
 import spacedeck.exceptions.FullDeckException;
 import spacedeck.exceptions.InsufficientFuelException;
 import spacedeck.model.OpponentMove;
+import spacedeck.util.Playable;
 
 /**
  *
@@ -116,7 +119,6 @@ public class BattleScreenController implements Initializable {
     
     // TRANSITIONS
     private TranslateTransition slotInvalid;
-    private ScaleTransition takeSlot;
     private FlashingTransition borderRedFlashing;
     private MediaPlayer songPlayer;
     
@@ -145,13 +147,6 @@ public class BattleScreenController implements Initializable {
         borderRedFlashing.setCycleCount(3);
         borderRedFlashing.setDuration(new Duration(100));
         
-        takeSlot = new ScaleTransition();
-        takeSlot.setByX(0.1);
-        takeSlot.setByY(0.1);
-        takeSlot.setAutoReverse(true);
-        takeSlot.setCycleCount(2);
-        takeSlot.setDuration(new Duration(70));
-
 		musicVolume *= (double) SpaceDeck.getSetting("musicVolume") / 100 * (double) SpaceDeck.getSetting("masterVolume") / 100;
 		sfxVolume *= (double) SpaceDeck.getSetting("sfxVolume") / 100 * (double) SpaceDeck.getSetting("masterVolume") / 100;
         
@@ -485,19 +480,22 @@ public class BattleScreenController implements Initializable {
 	private void enemySlotClicked(MouseEvent event) {
 		if (isPaused) return;
 		if (selectedPlayerSlot == -1) return;
-
-		clearHighlights();
 		AnchorPane selectedSlot = (AnchorPane) event.getSource();
+		if (selectedSlot.getChildren().isEmpty()) return;
+		
+		clearHighlights();
 		AnchorPane playerSlot = (AnchorPane) playerPlayingField.getChildren().get(selectedPlayerSlot);
 
 		alreadyAttacked.add(playerSlot);
 
-		attack(playerSlot, selectedSlot);
+		playEvents(attack(playerSlot, selectedSlot));
 
 		selectedPlayerSlot = -1;
 	}
 
-	private Transition attack(AnchorPane selectedSlot, AnchorPane targetSlot) {
+	private List<Object> attack(AnchorPane selectedSlot, AnchorPane targetSlot) {
+		ArrayList<Object> tier = new ArrayList<>();
+
 		TranslateTransition move = new TranslateTransition();
 		int byY = 20;
 		if (turn == player) {
@@ -526,30 +524,31 @@ public class BattleScreenController implements Initializable {
 		move.setCycleCount(2);
 		move.setAutoReverse(true);
 		move.setNode(selectedSlot);
-		move.play();
+		tier.add(move);
 
 		Card selectedCard = turn.getPlayingField()[selectedCardIndex];
 
 		Character targetCharacter = turn == player ? opponent : player;
 		Card targetCard = targetCharacter.getPlayingField()[targetCardIndex];
 
-		selectedCard.attack(targetCard);
-
 		FlashingTransition transition = new FlashingTransition("invincibilityFrame");	
 		transition.setDuration(Duration.millis(100));
 		transition.setCycleCount(3);
 		transition.setNode(targetSlot);
-		transition.play();
+		tier.add(transition);
 
 		Media attackSfx = new Media(getClass().getResource("/spacedeck/audio/attack.mp3").toExternalForm());
 		MediaPlayer sfxPlayer = new MediaPlayer(attackSfx);
 		sfxPlayer.setVolume(sfxVolume);
-		sfxPlayer.play();
+		tier.add(sfxPlayer);
 
 		// Update data on slots
-		updateSlotData(targetSlot);
+		tier.add((Playable) () -> {
+			selectedCard.attack(targetCard);
+			updateSlotData(targetSlot);
+		});
 
-		return transition;
+		return tier;
 	}
 
 	private void updateSlotData(AnchorPane slot) {
@@ -693,7 +692,7 @@ public class BattleScreenController implements Initializable {
 				// Move rotate all other cards to the right
 				updateCardOrientation(player);
 
-				popNodeToSlot(playerSlot, c.getSceneCard(), (Card) card);
+				playEvents(popNodeToSlot(playerSlot, c.getSceneCard(), (Card) card));
 			}
         }
         
@@ -704,13 +703,16 @@ public class BattleScreenController implements Initializable {
 	 * Function that gets a card from the stack and places it in the player's deck
 	 * @param event
 	 */
-    public Transition getCardFromStack(MouseEvent event, Character character) {
+	public Queue<List<Object>> getCardFromStack(MouseEvent event, Character character) {
+		Queue<List<Object>> transitionsList = new LinkedList();
+		ArrayList<Object> tier = new ArrayList<>();	
+		transitionsList.add(tier);
+
 		// For both player and opponent, these variables are used
 		ObservableList<Node> cardList = cardStackElement.getChildren();	   
 		Node leadingCard = cardList.get(cardList.size() - 1);
 		Bounds origin = leadingCard.localToScene(leadingCard.getBoundsInLocal());	
 		Bounds cardStackDestination;
-		AtomicReference<Transition> lastTransition = new AtomicReference<>();
 
 		if (character == player) {
 			if (playerDeckElement.getChildren().size() - 1 > 0) {
@@ -788,19 +790,21 @@ public class BattleScreenController implements Initializable {
 
 			drawCard.play();
 
-			drawCard.setOnFinished(e -> {
+			List newTier = new ArrayList();
+			transitionsList.add(newTier);
+			newTier.add((Playable) () -> {
 				updateCardOrientation(character);
 			});
 
-			lastTransition.set(drawCard);
+			tier.add(drawCard);
 		}
 
 		Media drawSFX = new Media(getClass().getResource("/spacedeck/audio/drawCard.mp3").toExternalForm());
 		MediaPlayer sfxPlayer = new MediaPlayer(drawSFX);
 		sfxPlayer.setVolume(sfxVolume * 3);
-		sfxPlayer.play();
+		tier.add(sfxPlayer);
 
-		return lastTransition.get();
+		return transitionsList;
     }
     
 	private void addLeadingCardToDeck(Character ch) { 
@@ -858,9 +862,6 @@ public class BattleScreenController implements Initializable {
 			turnIndicator.setOpacity(1);
 
 			ArrayList<OpponentMove> moveList = opponent.decideMoves(player);
-			for (OpponentMove move : moveList) {
-				System.out.println(move.getType().toString());
-			}
 			executeMoves(moveList);
 		} else {
 			turn = player;
@@ -871,15 +872,17 @@ public class BattleScreenController implements Initializable {
 		}
 	}
 
-	private Transition opponentDrawCard(OpponentMove move) {
-		Transition t = getCardFromStack(null, opponent);
+	/*
+
+	*/
+	private Queue<List<Object>> opponentDrawCard(OpponentMove move) {
+		Queue<List<Object>> t = getCardFromStack(null, opponent);
 		opponent.getDeck().add(Card.getRandomCard());
-		System.out.println(t.getClass().getName());
 
 		return t;
 	}
 
-	private Transition opponentDeployCard(OpponentMove move) {
+	private Queue<List<Object>> opponentDeployCard(OpponentMove move) {
 		if (opponent.getDeck().isEmpty()) {
 			System.out.println("[ERROR] AI tried to deploy card with empty deck [opponentDeployCard()]");
 			return null;
@@ -905,47 +908,53 @@ public class BattleScreenController implements Initializable {
 		Node leadingCard = opponentDeckElement.getChildren().get(opponentDeckElement.getChildren().size() - 1);
 		Bounds cardBounds = leadingCard.localToScene(leadingCard.getBoundsInLocal());
 		
-		Transition slide = slideTransitionToNode(slotBounds, cardBounds, leadingCard);
+		Queue<List<Object>> allTransitions = new LinkedList();
+		allTransitions.add(slideTransitionToNode(slotBounds, cardBounds, leadingCard));
+		List<Object> tier = popNodeToSlot((AnchorPane) slot, leadingCard, deployCard);
+		allTransitions.add(tier);
 
-		slide.setOnFinished(e -> {
-			ScaleTransition popCard = popNodeToSlot((AnchorPane) slot, leadingCard, deployCard);
-			EventHandler<ActionEvent> oldOnFinished = popCard.getOnFinished();
-			popCard.setOnFinished(e_ -> {
-				oldOnFinished.handle(e_);
-				endTurn();
-			});
-		});
-		return null;
+		return allTransitions;
 	}
 
-	private TranslateTransition slideTransitionToNode(Bounds slotBounds, Bounds cardBounds, Node card) {
+	private List<Object> slideTransitionToNode(Bounds slotBounds, Bounds cardBounds, Node card) {
+		List<Object> tier = new ArrayList<>();
+
 		TranslateTransition slide = new TranslateTransition();
 		slide.setByX((slotBounds.getMinX() + slotBounds.getWidth() / 2 - cardBounds.getMinX() - cardBounds.getWidth() / 2) / scale);
 		slide.setByY((slotBounds.getMinY() + slotBounds.getHeight() / 2 - cardBounds.getMinY() - cardBounds.getHeight() / 2) / scale);
 		slide.setDuration(Duration.millis(400));
 		slide.setNode(card);
 		slide.setInterpolator(Interpolator.EASE_OUT);
-		slide.play();
+		tier.add(slide);
 
-		return slide;
+		return tier;
 	}
 
-	private ScaleTransition popNodeToSlot(AnchorPane slot, Node card, Card cardEquiv) {
-		((AnchorPane) card.getParent()).getChildren().remove(card);
+	private List<Object> popNodeToSlot(AnchorPane slot, Node card, Card cardEquiv) {
+		List<Object> tier = new ArrayList<>();
+
 		slot.getStyleClass().add("selectedSlot");
+        ScaleTransition takeSlot = new ScaleTransition();
+        takeSlot.setByX(0.1);
+        takeSlot.setByY(0.1);
+        takeSlot.setAutoReverse(true);
+        takeSlot.setCycleCount(2);
+        takeSlot.setDuration(new Duration(70));
+
 		takeSlot.setNode(slot);
-		takeSlot.play();
-		addCardToSlot(slot, cardEquiv);
-		takeSlot.setOnFinished(e -> {
-			slot.getStyleClass().remove("selectedSlot");
-		});
+		tier.add(takeSlot);
 
 		Media deploySFX = new Media(getClass().getResource("/spacedeck/audio/deployCard.wav").toExternalForm());
 		MediaPlayer sfxPlayer = new MediaPlayer(deploySFX);
 		sfxPlayer.setVolume(sfxVolume);
-		sfxPlayer.play();
+		tier.add(sfxPlayer);
+		tier.add((Playable) () -> {
+			((AnchorPane) card.getParent()).getChildren().remove(card);
+			addCardToSlot(slot, cardEquiv);
+			slot.getStyleClass().remove("selectedSlot");
+		});
 
-		return takeSlot;
+		return tier;
 	}
 
 	private void addCardToSlot(AnchorPane slot, Card card) {
@@ -970,64 +979,118 @@ public class BattleScreenController implements Initializable {
 	}
 
 	private void executeMoves(ArrayList<OpponentMove> moves) {
-		AtomicReference<Transition> finishingTransition = new AtomicReference<>();
-		finishingTransition.set(new Transition() {
-				public void Transition() { setCycleDuration(Duration.millis(1)); }
-				@Override
-				protected void interpolate(double frac) { }
-			}
-		);
-		Transition initialTransition = finishingTransition.get();
-		
-		moves.forEach((move) -> {
-			if (finishingTransition.get() == null) return;
-			EventHandler<ActionEvent> oldOnFinished = finishingTransition.get().getOnFinished();
+		/* 	A queue of every transition. Each "level" in the queue is a list of
+		   	"events" to be played simultaneously.
+		   	These events can be either a MediaPlayer (SFX), a Transition (movement),
+			or an Animation (misc. movement).
+			Any other type of Object will not be recognized by the execution queue.
+		*/
+		Queue<List<Object>> executionQueue = new LinkedList();
 
+		moves.forEach((move) -> {
 			switch (move.getType()) {
 				case SKIP:
 					endTurn();
 					break;
 				case DRAW:
-					finishingTransition.get().setOnFinished(e -> {
-						if (oldOnFinished != null) oldOnFinished.handle(e);
-						System.out.println("EXECUTING DRAW...");
-					});
-					finishingTransition.set(opponentDrawCard(move));
+					executionQueue.addAll(opponentDrawCard(move));
 					break;
 				case DEPLOY_CARD:
-					finishingTransition.get().setOnFinished(e -> {
-						if (oldOnFinished != null) oldOnFinished.handle(e);
-						System.out.println("EXECUTING DEPLOY...");
-					});
-					finishingTransition.set(opponentDeployCard(move));
+					executionQueue.addAll(opponentDeployCard(move));
 					break;
 				case ATTACK:
 					AnchorPane opponentSlot = (AnchorPane) opponentPlayingField.getChildren().get(move.getAttacker());
 					AnchorPane playerSlot = (AnchorPane) playerPlayingField.getChildren().get(move.getAttackTarget());
-					finishingTransition.get().setOnFinished(e -> {
-						if (oldOnFinished != null) oldOnFinished.handle(e);
-						System.out.println("EXECUTING ATTACK...");
-					});
-					finishingTransition.set(attack(opponentSlot, playerSlot));
+					executionQueue.add(attack(opponentSlot, playerSlot));
 					break;
 			}
 		});
 
-		initialTransition.play();
-		if (finishingTransition.get() == null) {
-				finishingTransition.set(new Transition() {
-						public void Transition() { setCycleDuration(Duration.millis(1)); }
-						@Override
-						protected void interpolate(double frac) { }
-					}
-				);
+		System.out.println("TRANSITIONS LIST: ");
+		for (List<Object> list : executionQueue) {
+			System.out.print("[TIER] ");
+
+			for (Object event : list) {
+				System.out.print(event.getClass().toString() + " ");
+			}
+
+			System.out.println("");
 		}
-		EventHandler<ActionEvent> oldOnFinished = finishingTransition.get().getOnFinished();
-		finishingTransition.get().setOnFinished(e -> {
+
+		Transition lastLeadingTransition = null;
+		for (List<Object> transitions : executionQueue) {
+			if (lastLeadingTransition == null) {
+				lastLeadingTransition = playEvents(transitions);
+			} else {
+				Transition t = null;
+				EventHandler<ActionEvent> oldOnFinished = lastLeadingTransition.getOnFinished();
+				lastLeadingTransition.setOnFinished((e) -> {
+					if (oldOnFinished != null) oldOnFinished.handle(e);
+					System.out.println("DONE TIER");
+					playEvents(transitions);
+				});
+				Transition leadingTransition = getLeadingTransition(transitions);
+
+				if (leadingTransition != null) {
+					lastLeadingTransition = leadingTransition;
+				}
+			}
+		}
+
+		
+		EventHandler<ActionEvent> oldOnFinished = lastLeadingTransition.getOnFinished();
+
+		lastLeadingTransition.setOnFinished((e) -> {
 			if (oldOnFinished != null) oldOnFinished.handle(e);
-			System.out.println("RAAAGH");
 			endTurn();
 		});
+	}
+
+	public Transition getLeadingTransition(List<Object> events) {
+		Transition leadingTransition = null;
+		for (Object o : events) {
+			if (o instanceof Transition) {
+				Transition t = (Transition) o;
+
+				if (leadingTransition == null) leadingTransition = t;
+				else {
+					double leadingTransitionTime = leadingTransition.getCycleDuration().toSeconds() * leadingTransition.getCycleCount();
+					double currentTransitionTime = t.getCycleDuration().toSeconds() * t.getCycleCount();
+
+					if (currentTransitionTime > leadingTransitionTime) {
+						leadingTransition = t;
+					}
+				}
+			}
+		}
+
+		return leadingTransition;
+	}
+	public Transition playEvents(List<Object> events) {
+		Transition leadingTransition = null;
+		for (Object o : events) {
+			System.out.println("Playing " + o.getClass().getName());
+			if (o instanceof MediaPlayer) {
+				((MediaPlayer) o).play();
+			} else if (o instanceof Transition) {
+				Transition t = (Transition) o;
+				t.play();
+
+				if (leadingTransition == null) leadingTransition = t;
+				else {
+					double leadingTransitionTime = leadingTransition.getCycleDuration().toSeconds() * leadingTransition.getCycleCount();
+					double currentTransitionTime = t.getCycleDuration().toSeconds() * t.getCycleCount();
+
+					if (currentTransitionTime > leadingTransitionTime) {
+						leadingTransition = t;
+					}
+				}
+			} else if (o instanceof Playable) {
+				((Playable) o).play();
+			}
+		}
+
+		return leadingTransition;
 	}
 
 	// ATTRIBUTE SETTERS FOR OTHER FUNCTIONS
@@ -1070,5 +1133,4 @@ public class BattleScreenController implements Initializable {
 	public void setPlayerDrawnCard(boolean playerDrawnCard) {
 		this.playerDrawnCard = playerDrawnCard;
 	}
-
 }

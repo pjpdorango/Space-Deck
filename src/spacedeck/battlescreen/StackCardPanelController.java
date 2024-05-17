@@ -34,7 +34,9 @@ public class StackCardPanelController implements Initializable {
 
 		sceneController.setPlayerDrawnCard(true);
 
-		sceneController.getCardFromStack(event, sceneController.getPlayer());
+		sceneController.getCardFromStack(event, sceneController.getPlayer()).forEach((e) -> {
+			sceneController.playEvents(e);
+		});
 	}
 
 
