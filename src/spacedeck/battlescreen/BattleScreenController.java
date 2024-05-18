@@ -496,6 +496,7 @@ public class BattleScreenController implements Initializable {
 	@FXML
 	private void enemySlotClicked(MouseEvent event) {
 		if (isPaused) return;
+		if (turn != player) return;
 		if (selectedPlayerSlot == -1) return;
 		AnchorPane selectedSlot = (AnchorPane) event.getSource();
 		if (selectedSlot.getChildren().isEmpty()) return;
@@ -505,12 +506,77 @@ public class BattleScreenController implements Initializable {
 
 		alreadyAttacked.add(playerSlot);
 
-		playEvents(attack(playerSlot, selectedSlot));
+		playEvents(attackSlot(playerSlot, selectedSlot));
 
 		selectedPlayerSlot = -1;
 	}
 
-	private List<Object> attack(AnchorPane selectedSlot, AnchorPane targetSlot) {
+	@FXML
+	private void opponentClicked(MouseEvent event) {
+		if (isPaused) return;
+		if (selectedPlayerSlot == -1) return;
+		if (turn != player) return;
+		// If the selected slot 
+		if (opponent.getPlayingField()[selectedPlayerSlot] != null) return;
+
+		AnchorPane playerSlot = (AnchorPane) playerPlayingField.getChildren().get(selectedPlayerSlot);
+
+		clearHighlights();
+		playEvents(attackCharacter(playerSlot, opponent));
+		alreadyAttacked.add(playerSlot);
+		selectedPlayerSlot = -1;
+	}
+
+	private List<Object> attackCharacter(AnchorPane selectedSlot, Character target) {
+		ArrayList<Object> tier = new ArrayList<>();
+
+		// Somehow, and idk if this would ever happen, but if the character
+		// is neither the player nor the opponent, don't do anything.
+		if ((target != player) && (target != opponent)) return null;
+		
+		TranslateTransition move = new TranslateTransition();
+		int byY = 20;
+		if (turn == player) {
+			byY *= -1;
+		}
+		
+		int selectedCardIndex;
+		if (turn == player) {
+			selectedCardIndex = playerPlayingField.getChildren().indexOf(selectedSlot);
+		} else {
+			selectedCardIndex = opponentPlayingField.getChildren().indexOf(selectedSlot);
+		}
+
+		move.setByY(byY);
+		move.setDuration(Duration.millis(100));
+		move.setCycleCount(2);
+		move.setAutoReverse(true);
+		move.setNode(selectedSlot);
+		tier.add(move);
+
+		Card selectedCard = turn.getPlayingField()[selectedCardIndex];
+		
+		FlashingTransition transition = new FlashingTransition("invincibilityFrame");	
+		transition.setDuration(Duration.millis(100));
+		transition.setCycleCount(3);
+		transition.setNode(root);
+		tier.add(transition);
+
+		// Update data on slots
+		tier.add((Playable) () -> {
+			selectedCard.attack(target);
+			updateFuel();
+		});
+
+		Media attackSfx = new Media(getClass().getResource("/spacedeck/audio/attack.mp3").toExternalForm());
+		MediaPlayer sfxPlayer = new MediaPlayer(attackSfx);
+		sfxPlayer.setVolume(sfxVolume);
+		tier.add(sfxPlayer);
+
+		return tier;
+	}
+
+	private List<Object> attackSlot(AnchorPane selectedSlot, AnchorPane targetSlot) {
 		ArrayList<Object> tier = new ArrayList<>();
 
 		TranslateTransition move = new TranslateTransition();
@@ -612,6 +678,7 @@ public class BattleScreenController implements Initializable {
 		if (selectedPlayerSlot != -1) {
 			Node oldSlot = playerPlayingField.getChildren().get(selectedPlayerSlot);
 			oldSlot.getStyleClass().remove("currentSlot");
+			clearHighlights();
 		}
 
 		if (selectedPlayerSlot == index) {
@@ -656,6 +723,9 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void opponentGlowEnter(MouseEvent event) {
+		if (turn != player) return;
+		if (isPaused) return;
+
 		GradientTransition gradTrans = new GradientTransition();
 
 		System.out.println("ha");
@@ -669,6 +739,9 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void opponentGlowExit(MouseEvent event) {
+		if (turn != player) return;
+		if (isPaused) return;
+
 		GradientTransition gradTrans = new GradientTransition();
 		
 		System.out.println("ah");
@@ -1076,7 +1149,7 @@ public class BattleScreenController implements Initializable {
 				case ATTACK:
 					AnchorPane opponentSlot = (AnchorPane) opponentPlayingField.getChildren().get(move.getAttacker());
 					AnchorPane playerSlot = (AnchorPane) playerPlayingField.getChildren().get(move.getAttackTarget());
-					executionQueue.add(attack(opponentSlot, playerSlot));
+					executionQueue.add(attackSlot(opponentSlot, playerSlot));
 					break;
 			}
 		});

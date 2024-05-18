@@ -202,11 +202,6 @@
             </AnchorPane>
          </center>
       </BorderPane>
-      <ImageView fitHeight="32.0" fitWidth="51.0" layoutX="898.0" layoutY="14.0" onMouseClicked="#toggleMenu" onMouseEntered="#menuIconHoverEnter" onMouseExited="#menuIconHoverExit" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../media/Hamburger_Menu_Icon.png" />
-         </image>
-      </ImageView>
 		<VBox fx:id="menu" alignment="CENTER" disable="true" layoutX="332.0" layoutY="90.0" opacity="0.0" prefHeight="350.0" prefWidth="300.0" spacing="40.0" styleClass="pauseMenu" stylesheets="@BattleScreenStyle.css">
          <children>
             <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="pauseTitle" text="Paused" />
@@ -215,7 +210,7 @@
             <Text fill="WHITE" onMouseClicked="#restartGame" onMouseEntered="#onMouseHoverEnter" onMouseExited="#onMouseHoverExit" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="pauseOption" text="Restart" />
          </children>
 		</VBox>
-      <Rectangle fx:id="enemyAttackGlow" arcHeight="5.0" arcWidth="5.0" height="75.0" layoutX="-33.0" layoutY="-21.0" onMouseEntered="#opponentGlowEnter" onMouseExited="#opponentGlowExit" opacity="0.0" stroke="TRANSPARENT" strokeType="INSIDE" width="1017.0">
+      <Rectangle fx:id="enemyAttackGlow" arcHeight="5.0" arcWidth="5.0" height="75.0" layoutX="-33.0" layoutY="-21.0" onMouseClicked="#opponentClicked" onMouseEntered="#opponentGlowEnter" onMouseExited="#opponentGlowExit" opacity="0.0" stroke="TRANSPARENT" strokeType="INSIDE" width="1017.0">
          <fill>
             <LinearGradient endX="0.5285714285714286" endY="1.0" startX="0.5285714285714286">
                <stops>
@@ -226,5 +221,10 @@
             </LinearGradient>
          </fill>
       </Rectangle>
+      <ImageView fitHeight="32.0" fitWidth="51.0" layoutX="898.0" layoutY="14.0" onMouseClicked="#toggleMenu" onMouseEntered="#menuIconHoverEnter" onMouseExited="#menuIconHoverExit" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../media/Hamburger_Menu_Icon.png" />
+         </image>
+      </ImageView>
    </children>
 </AnchorPane>
