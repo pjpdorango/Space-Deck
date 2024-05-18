@@ -10,6 +10,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.media.MediaView?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
@@ -212,5 +215,16 @@
             <Text fill="WHITE" onMouseClicked="#restartGame" onMouseEntered="#onMouseHoverEnter" onMouseExited="#onMouseHoverExit" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="pauseOption" text="Restart" />
          </children>
 		</VBox>
+      <Rectangle fx:id="enemyAttackGlow" arcHeight="5.0" arcWidth="5.0" height="75.0" layoutX="-33.0" layoutY="-21.0" onMouseEntered="#opponentGlowEnter" onMouseExited="#opponentGlowExit" opacity="0.0" stroke="TRANSPARENT" strokeType="INSIDE" width="1017.0">
+         <fill>
+            <LinearGradient endX="0.5285714285714286" endY="1.0" startX="0.5285714285714286">
+               <stops>
+                  <Stop color="RED" />
+                  <Stop color="#ff000000" offset="0.9965635738831614" />
+                  <Stop color="#ff1a0000" offset="1.0" />
+               </stops>
+            </LinearGradient>
+         </fill>
+      </Rectangle>
    </children>
 </AnchorPane>

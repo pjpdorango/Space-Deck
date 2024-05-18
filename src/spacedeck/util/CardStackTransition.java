@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package spacedeck.battlescreen;
+package spacedeck.util;
 
 import spacedeck.model.Deckable;
 import javafx.animation.Transition;
@@ -10,6 +10,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.scene.Node;
+import spacedeck.battlescreen.BattleScreenController;
 
 /**
  *

@@ -4,6 +4,10 @@
  */
 package spacedeck.battlescreen;
 
+import spacedeck.util.FlashingTransition;
+import spacedeck.util.GradientTransition;
+import spacedeck.util.OpponentDrawTransition;
+import spacedeck.util.CardStackTransition;
 import spacedeck.model.Card;
 import spacedeck.model.Opponent;
 import spacedeck.model.Player;
@@ -52,6 +56,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import spacedeck.SpaceDeck;
@@ -103,6 +108,8 @@ public class BattleScreenController implements Initializable {
     private final double ROTATION_PER_CARD = -10;
 	private LinearGradient INITIAL_TURN_BUTTON_GRADIENT;
 	private LinearGradient UPDATED_TURN_BUTTON_GRADIENT;    
+	private LinearGradient INITIAL_GLOW_GRADIENT;
+	private LinearGradient UPDATED_GLOW_GRADIENT;    
     private Player player;
     private Opponent opponent;
 	private Character turn;
@@ -120,6 +127,8 @@ public class BattleScreenController implements Initializable {
     private TranslateTransition slotInvalid;
     private FlashingTransition borderRedFlashing;
     private MediaPlayer songPlayer;
+	@FXML
+	private Rectangle enemyAttackGlow;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -188,6 +197,15 @@ public class BattleScreenController implements Initializable {
 		this.UPDATED_TURN_BUTTON_GRADIENT = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, 
 			new Stop(0, new Color(0, 232d/255, 255d/255, 1)),
 			new Stop(1, new Color(52d/255, 41d/255, 102d/255, 1))
+		);
+
+		this.INITIAL_GLOW_GRADIENT = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, 
+				new Stop(0, new Color(1, 0.1, 0, 1)),
+				new Stop(1, new Color(1, 1, 1, 0))
+		);
+		this.UPDATED_GLOW_GRADIENT = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, 
+				new Stop(0, new Color(1, 204d/255, 0, 1)),
+				new Stop(1, new Color(1, 1, 1, 0))
 		);
 
 		this.PLAYER_DECK_POSITION = new BoundingBox(424, 400, 0, 0);
@@ -570,6 +588,7 @@ public class BattleScreenController implements Initializable {
 
 					targetSlot.getChildren().clear();
 					targetSlot.getStyleClass().remove("invalidSlot");
+					clearHighlights();
 				});
 			}
 		});
@@ -603,16 +622,22 @@ public class BattleScreenController implements Initializable {
 			newSlot.getStyleClass().add("currentSlot");
 
 			// Light up all available enemy slots
-			highlightEnemyCells();
+			highlightEnemyCells(index);
 		}
 	}
 
-	private void highlightEnemyCells() {
+	private void highlightEnemyCells(int slotIndex) {
 		for (Node slot : opponentPlayingField.getChildren()) {
 			AnchorPane opponentSlot	= (AnchorPane) slot;
 			if (!opponentSlot.getChildren().isEmpty()) {
 				opponentSlot.getStyleClass().add("targetSlot");
 			}
+		}
+
+		if (opponent.getPlayingField()[slotIndex] == null) {
+			enemyAttackGlow.setOpacity(0.5);
+		} else {
+			enemyAttackGlow.setOpacity(0);
 		}
 	}
 
@@ -625,6 +650,33 @@ public class BattleScreenController implements Initializable {
 
 		AnchorPane selectedSlot = (AnchorPane) playerPlayingField.getChildren().get(selectedPlayerSlot);
 		selectedSlot.getStyleClass().remove("currentSlot");
+
+		enemyAttackGlow.setOpacity(0);
+	}
+
+	@FXML
+	private void opponentGlowEnter(MouseEvent event) {
+		GradientTransition gradTrans = new GradientTransition();
+
+		System.out.println("ha");
+		
+		gradTrans.setOriginalGradient(INITIAL_GLOW_GRADIENT);
+		gradTrans.setUpdatedGradient(UPDATED_GLOW_GRADIENT);
+		gradTrans.setDuration(Duration.millis(50));
+		gradTrans.setNode(enemyAttackGlow);
+		gradTrans.play();
+	}
+
+	@FXML
+	private void opponentGlowExit(MouseEvent event) {
+		GradientTransition gradTrans = new GradientTransition();
+		
+		System.out.println("ah");
+		gradTrans.setOriginalGradient(UPDATED_GLOW_GRADIENT);
+		gradTrans.setUpdatedGradient(INITIAL_GLOW_GRADIENT);
+		gradTrans.setDuration(Duration.millis(50));
+		gradTrans.setNode(enemyAttackGlow);
+		gradTrans.play();
 	}
 	
 	/**
@@ -896,9 +948,6 @@ public class BattleScreenController implements Initializable {
 		}
 	}
 
-	/*
-
-	*/
 	private Queue<List<Object>> opponentDrawCard(OpponentMove move) {
 		Queue<List<Object>> t = getCardFromStack(null, opponent);
 		opponent.getDeck().add(Card.getRandomCard());
@@ -1004,7 +1053,8 @@ public class BattleScreenController implements Initializable {
 	}
 
 	private void executeMoves(ArrayList<OpponentMove> moves) {
-		/* 	A queue of every transition. Each "level" in the queue is a list of
+		/* 	
+			A queue of every transition. Each "level" in the queue is a list of
 		   	"events" to be played simultaneously.
 		   	These events can be either a MediaPlayer (SFX), a Transition (movement),
 			or an Animation (misc. movement).
