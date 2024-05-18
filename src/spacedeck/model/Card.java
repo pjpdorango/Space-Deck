@@ -87,7 +87,7 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
         }
         
         if (!g.getAvailability()) {
-            throw new GearAlreadyUsedException("Gear \"" + g.getName() + "\" is already in use.");                
+            throw new GearAlreadyUsedException("Gear \"" + g.getName() + "\" is already in use.");
         }
         
         // If the gear can be added, 
@@ -123,17 +123,28 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
         health -= dmg;
         
         if (health <= 0) {
-            die();
+			health = 0;
         }
-    }
-    
-    private void die() {
-        isActive = false;
     }
     
     public abstract void specialAttack();
     
     // GETTERS & SETTERS
+	public static Card getRandomCard() {
+		Random rand = new Random();
+
+		return Card.cloneCard(allCards.get(rand.nextInt(allCards.size())));
+	}
+
+	public static Card searchCard(String name) {
+		for (Card card : allCards) {
+			if (card.getName().equals(name)) {
+				return card;
+			}
+		}
+
+		return null;
+	}
 
     @Override
     public String getName() {
@@ -177,22 +188,6 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
     
     public boolean getActivity() {
         return isActive;
-	}
-
-	public static Card getRandomCard() {
-		Random rand = new Random();
-
-		return Card.cloneCard(allCards.get(rand.nextInt(allCards.size())));
-	}
-
-	public static Card searchCard(String name) {
-		for (Card card : allCards) {
-			if (card.getName().equals(name)) {
-				return card;
-			}
-		}
-
-		return null;
 	}
     
     public void setActivity(boolean newActivity) {

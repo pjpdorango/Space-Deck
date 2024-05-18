@@ -54,15 +54,14 @@ public abstract class Character implements Attackable {
         c.setActivity(true);
     }
     
-    public void undrawCard(Card c, int slot) throws CardNotInDeckException {
+    public void undrawCard(int slot) throws CardNotInDeckException {
         // If the slot specified is empty, throw a CardNotInDeckException
         if (playingCards[slot] == null) {
-            throw new CardNotInDeckException(c.getName() + " is not in the current deck.");
+            throw new CardNotInDeckException("The card is not in the current deck.");
         }
         
         // Otherwise,
         playingCards[slot] = null;
-        c.setActivity(false);
     }
     
     // COMMENTED OUT: drawCard() has the same functionality. I think. Yeah no it does
