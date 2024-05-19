@@ -29,6 +29,7 @@ import javafx.util.Duration;
  */
 public class FlashingTransition extends Transition {
     private Node node;
+	private TransitionPlayer transitionPlayer;
     String classToApply;
     
 	/**
@@ -48,21 +49,36 @@ public class FlashingTransition extends Transition {
         this.classToApply = c;
 		this.setCycleDuration(Duration.millis(200));
     }
+
+	public FlashingTransition(TransitionPlayer p) {
+		transitionPlayer = p;
+	}
     
     public void setDuration(Duration value) {
         this.setCycleDuration(value.multiply(2));
     }
     
     @Override
-    protected void interpolate(double fraction) {
-        if (fraction <= 0.5) {
+    protected void interpolate(double frac) {
+		if (transitionPlayer == null) applyCSS(frac);
+		else {
+			if (frac <= 0.5) {
+				transitionPlayer.activate(node);
+			} else {
+				transitionPlayer.deactivate(node);
+			}
+		}
+    }
+
+	private void applyCSS(double frac) {
+        if (frac <= 0.5) {
             if (!node.getStyleClass().contains(classToApply)) {
                 node.getStyleClass().add(classToApply);
             }
         } else {
             node.getStyleClass().remove(classToApply);
         }
-    }
+	}
     
     public void setNode(Node n) {
         this.node = n;

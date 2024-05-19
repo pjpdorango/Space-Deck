@@ -41,6 +41,7 @@ import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -66,6 +67,7 @@ import spacedeck.exceptions.FullDeckException;
 import spacedeck.exceptions.InsufficientFuelException;
 import spacedeck.model.OpponentMove;
 import spacedeck.util.Playable;
+import spacedeck.util.TransitionPlayer;
 
 /**
  *
@@ -99,6 +101,15 @@ public class BattleScreenController implements Initializable {
 	private VBox menu;
 	@FXML
 	private AnchorPane turnButton;
+	@FXML
+	private ImageView backgroundImage;
+	@FXML
+	private Rectangle enemyAttackGlow;
+
+	private enum GameState {
+		GAME, PAUSED, LOST, WON
+	}
+	private GameState state;
 
 	// The default position of the destination for when the stack card is drawn.
 	private Bounds PLAYER_DECK_POSITION = null;
@@ -116,7 +127,6 @@ public class BattleScreenController implements Initializable {
 	private int selectedPlayerSlot;
 	private boolean playerDrawnCard;
     private boolean isDraggingCard;
-	private boolean isPaused;
 	private double musicVolume = 0.3;
 	private double sfxVolume = 0.3;
 	private double scale;
@@ -127,17 +137,18 @@ public class BattleScreenController implements Initializable {
     private TranslateTransition slotInvalid;
     private FlashingTransition borderRedFlashing;
     private MediaPlayer songPlayer;
-	@FXML
-	private Rectangle enemyAttackGlow;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-		isPaused = false;
+		state = GameState.GAME;
 		selectedPlayerSlot = -1;
 
 		// Video Setting
         Media backgroundVideo = new Media(getClass().getResource("/spacedeck/media/[TEMP] video bg.mp4").toExternalForm());
         MediaPlayer backgroundPlayer = new MediaPlayer(backgroundVideo);
+		backgroundPlayer.setOnError(() -> {
+			backgroundImage.setOpacity(1);
+		});
         backgroundPlayer.setAutoPlay(true);
         backgroundPlayer.setCycleCount(Integer.MAX_VALUE);
         backgroundPlayer.play();
@@ -264,6 +275,8 @@ public class BattleScreenController implements Initializable {
 		} catch (IOException e) {
             System.out.println("[ERROR] Error loading player deck");
         }
+
+		System.out.println(state);
     }
     
     public void createOpponentDeck() {
@@ -300,7 +313,7 @@ public class BattleScreenController implements Initializable {
 	@FXML
 	private void menuIconHoverEnter(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (isPaused) return;
+		if (state != GameState.GAME) return;
 
 		Node menuButton = (Node) event.getSource();
 
@@ -317,7 +330,7 @@ public class BattleScreenController implements Initializable {
 	@FXML
 	private void menuIconHoverExit(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (isPaused) return;
+		if (state != GameState.GAME) return;
 
 		Node menuButton = (Node) event.getSource();
 
@@ -334,7 +347,7 @@ public class BattleScreenController implements Initializable {
     @FXML
     private void slotHoverExit(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (isPaused) return;
+		if (state != GameState.GAME) return;
 		if (turn != player) return;
 
         if (borderRedFlashing.getStatus() == Status.STOPPED) {
@@ -345,14 +358,15 @@ public class BattleScreenController implements Initializable {
 	@FXML
 	public void toggleMenu(MouseEvent event) {
 		// If the menuButton was not open 
-		if (menu.disableProperty().get()) {
-			isPaused = true;	
+		if (state != GameState.PAUSED) {
+			state = GameState.PAUSED;
 
 			menu.setDisable(false);
 			menu.setOpacity(1);
 
 			for (Node child : root.getChildren()) {
-				if (child != menu) {
+				if (child != menu 
+						&& child != enemyAttackGlow) {
 					child.setOpacity(0.5);
 				}
 			}
@@ -360,13 +374,14 @@ public class BattleScreenController implements Initializable {
 			songPlayer.setVolume(musicVolume / 2);
 		// If the menuButton was open
 		} else {
-			isPaused = false;
+			state = GameState.GAME;
 
 			menu.setDisable(true);
 			menu.setOpacity(0);
 
 			for (Node child : root.getChildren()) {
-				if (child != menu) {
+				if (child != menu 
+						&& child != enemyAttackGlow) {
 					child.setOpacity(1);
 				}
 			}
@@ -378,7 +393,7 @@ public class BattleScreenController implements Initializable {
 	@FXML
 	private void onMouseHoverExit(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (isPaused) return;
+		if (state != GameState.GAME) return;
 		if (turn != player) return;
 
 		Node button = (Node) event.getSource();
@@ -396,7 +411,7 @@ public class BattleScreenController implements Initializable {
 	@FXML
 	private void onMouseHoverEnter(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (isPaused) return;
+		if (state != GameState.GAME) return;
 		if (turn != player) return;
 
 		Node button = (Node) event.getSource();
@@ -413,9 +428,9 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void backToMenu(MouseEvent event) {
-		if (!isPaused) return;
+		if (state != GameState.PAUSED) return;
 
-		isPaused = false;
+		state = GameState.PAUSED;
 
 		songPlayer.setVolume(0);
 		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.MapScreen);
@@ -423,9 +438,9 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void restartGame(MouseEvent event) {
-		if (!isPaused) return;
+		if (state != GameState.PAUSED) return;
 
-		isPaused = false;
+		state = GameState.PAUSED;
 
 		songPlayer.setVolume(0);
 		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.BattleScreen);
@@ -434,7 +449,7 @@ public class BattleScreenController implements Initializable {
     @FXML
     private void slotHoverEnter(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (isPaused) return;
+		if (state != GameState.GAME) return;
 		if (turn != player) return;
 
         if (borderRedFlashing.getStatus() == Status.STOPPED) {
@@ -444,7 +459,7 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void onTurnButtonMouseExit(MouseEvent event) {
-		if (isPaused) return;
+		if (state != GameState.GAME) return;
 		if (turn != player) return;
 
 		ScaleTransition buttonScale = new ScaleTransition();
@@ -466,7 +481,7 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void onTurnButtonMouseEnter(MouseEvent event) {
-		if (isPaused) return;
+		if (state != GameState.GAME) return;
 		if (turn != player) return;
 
 		ScaleTransition buttonScale = new ScaleTransition();
@@ -488,14 +503,14 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void onTurnButtonMouseClicked(MouseEvent event) {
-		if (isPaused) return;
+		if (state != GameState.GAME) return;
 		if (turn != player) return;
 		endTurn();
 	}
 
 	@FXML
 	private void enemySlotClicked(MouseEvent event) {
-		if (isPaused) return;
+		if (state != GameState.GAME) return;
 		if (turn != player) return;
 		if (selectedPlayerSlot == -1) return;
 		AnchorPane selectedSlot = (AnchorPane) event.getSource();
@@ -506,14 +521,14 @@ public class BattleScreenController implements Initializable {
 
 		alreadyAttacked.add(playerSlot);
 
-		playEvents(attackSlot(playerSlot, selectedSlot));
+		playEvents(attack(playerSlot, selectedSlot));
 
 		selectedPlayerSlot = -1;
 	}
 
 	@FXML
 	private void opponentClicked(MouseEvent event) {
-		if (isPaused) return;
+		if (state != GameState.GAME) return;
 		if (selectedPlayerSlot == -1) return;
 		if (turn != player) return;
 		// If the selected slot 
@@ -522,12 +537,12 @@ public class BattleScreenController implements Initializable {
 		AnchorPane playerSlot = (AnchorPane) playerPlayingField.getChildren().get(selectedPlayerSlot);
 
 		clearHighlights();
-		playEvents(attackCharacter(playerSlot, opponent));
+		playEvents(attack(playerSlot, opponent));
 		alreadyAttacked.add(playerSlot);
 		selectedPlayerSlot = -1;
 	}
 
-	private List<Object> attackCharacter(AnchorPane selectedSlot, Character target) {
+	private List<Object> attack(AnchorPane selectedSlot, Character target) {
 		ArrayList<Object> tier = new ArrayList<>();
 
 		// Somehow, and idk if this would ever happen, but if the character
@@ -556,7 +571,20 @@ public class BattleScreenController implements Initializable {
 
 		Card selectedCard = turn.getPlayingField()[selectedCardIndex];
 		
-		FlashingTransition transition = new FlashingTransition("invincibilityFrame");	
+		FlashingTransition transition = new FlashingTransition(new TransitionPlayer() {
+			@Override
+			public void activate(Node n) {
+				n.setOpacity(0.7);
+			}
+
+			@Override
+			public void deactivate(Node n) {
+				n.setOpacity(1);
+			}
+
+			@Override
+			public void interpolate(Node n) { }
+		});	
 		transition.setDuration(Duration.millis(100));
 		transition.setCycleCount(3);
 		transition.setNode(root);
@@ -568,7 +596,19 @@ public class BattleScreenController implements Initializable {
 			updateFuel();
 		});
 
-		Media attackSfx = new Media(getClass().getResource("/spacedeck/audio/attack.mp3").toExternalForm());
+		tier.add((Playable) () -> {
+			int fuel = target.getFuel();
+			if (fuel <= 0) {
+				// makes fuel 0
+				target.addFuel(-fuel);
+				updateFuel();
+
+				// DIE
+				win();
+			}
+		});
+
+		Media attackSfx = new Media(getClass().getResource("/spacedeck/audio/normalAttack.wav").toExternalForm());
 		MediaPlayer sfxPlayer = new MediaPlayer(attackSfx);
 		sfxPlayer.setVolume(sfxVolume);
 		tier.add(sfxPlayer);
@@ -576,7 +616,7 @@ public class BattleScreenController implements Initializable {
 		return tier;
 	}
 
-	private List<Object> attackSlot(AnchorPane selectedSlot, AnchorPane targetSlot) {
+	private List<Object> attack(AnchorPane selectedSlot, AnchorPane targetSlot) {
 		ArrayList<Object> tier = new ArrayList<>();
 
 		TranslateTransition move = new TranslateTransition();
@@ -669,6 +709,8 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	private void playerSlotClicked(MouseEvent event) {
+		if (state != GameState.GAME) return;
+
 		AnchorPane newSlot = (AnchorPane) event.getSource();
 		int index = playerPlayingField.getChildren().indexOf(newSlot);
 
@@ -724,12 +766,10 @@ public class BattleScreenController implements Initializable {
 	@FXML
 	private void opponentGlowEnter(MouseEvent event) {
 		if (turn != player) return;
-		if (isPaused) return;
+		if (state != GameState.GAME) return;
 
 		GradientTransition gradTrans = new GradientTransition();
 
-		System.out.println("ha");
-		
 		gradTrans.setOriginalGradient(INITIAL_GLOW_GRADIENT);
 		gradTrans.setUpdatedGradient(UPDATED_GLOW_GRADIENT);
 		gradTrans.setDuration(Duration.millis(50));
@@ -740,11 +780,10 @@ public class BattleScreenController implements Initializable {
 	@FXML
 	private void opponentGlowExit(MouseEvent event) {
 		if (turn != player) return;
-		if (isPaused) return;
+		if (state != GameState.GAME) return;
 
 		GradientTransition gradTrans = new GradientTransition();
 		
-		System.out.println("ah");
 		gradTrans.setOriginalGradient(UPDATED_GLOW_GRADIENT);
 		gradTrans.setUpdatedGradient(INITIAL_GLOW_GRADIENT);
 		gradTrans.setDuration(Duration.millis(50));
@@ -841,8 +880,8 @@ public class BattleScreenController implements Initializable {
 				
 				// Move rotate all other cards to the right
 				updateCardOrientation(player);
-
 				playEvents(popNodeToSlot(playerSlot, c.getSceneCard(), (Card) card));
+				alreadyAttacked.add(playerSlot);
 			}
         }
         
@@ -1149,7 +1188,7 @@ public class BattleScreenController implements Initializable {
 				case ATTACK:
 					AnchorPane opponentSlot = (AnchorPane) opponentPlayingField.getChildren().get(move.getAttacker());
 					AnchorPane playerSlot = (AnchorPane) playerPlayingField.getChildren().get(move.getAttackTarget());
-					executionQueue.add(attackSlot(opponentSlot, playerSlot));
+					executionQueue.add(attack(opponentSlot, playerSlot));
 					break;
 			}
 		});
@@ -1159,16 +1198,16 @@ public class BattleScreenController implements Initializable {
 			DEBUG PURPOSES ONLY
 			-------------------
 		*/
-		System.out.println("TRANSITIONS LIST: ");
-		for (List<Object> list : executionQueue) {
-			System.out.print("[TIER] ");
-
-			for (Object event : list) {
-				System.out.print(event.getClass().toString() + " ");
-			}
-
-			System.out.println("");
-		}
+//		System.out.println("TRANSITIONS LIST: ");
+//		for (List<Object> list : executionQueue) {
+//			System.out.print("[TIER] ");
+//
+//			for (Object event : list) {
+//				System.out.print(event.getClass().toString() + " ");
+//			}
+//
+//			System.out.println("");
+//		}
 
 		// Plays all of the transitions in the queue
 		// Every transition in each "tier" or level in the queue is played simultaneously
@@ -1185,7 +1224,6 @@ public class BattleScreenController implements Initializable {
 				EventHandler<ActionEvent> oldOnFinished = lastLeadingTransition.getOnFinished();
 				lastLeadingTransition.setOnFinished((e) -> {
 					if (oldOnFinished != null) oldOnFinished.handle(e);
-					System.out.println("DONE");
 					playEvents(transitions);
 				});
 				Transition leadingTransition = getLeadingTransition(transitions);
@@ -1200,7 +1238,6 @@ public class BattleScreenController implements Initializable {
 
 		lastLeadingTransition.setOnFinished((e) -> {
 			if (oldOnFinished != null) oldOnFinished.handle(e);
-			System.out.println("Bruh");
 			endTurn();
 		});
 	}
@@ -1238,6 +1275,11 @@ public class BattleScreenController implements Initializable {
 		}
 	}
 
+	private void win() {
+		state = GameState.WON;
+		videoBackground.getMediaPlayer().pause();
+	}
+
 	// ATTRIBUTE SETTERS FOR OTHER FUNCTIONS
 	public void setPlayer(Player p) {
 		this.player = p;
@@ -1256,15 +1298,11 @@ public class BattleScreenController implements Initializable {
     }
 
 	public boolean getIsScreenActive() {
-		return !isPaused;
+		return state != GameState.PAUSED; 
 	}
 
 	public double getScreenScale() {
 		return scale;
-	}
-
-	public void setIsScreenActive(boolean isPaused) {
-		this.isPaused = !isPaused;
 	}
 
 	public boolean isPlayerTurn() {
