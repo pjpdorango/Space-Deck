@@ -10,12 +10,13 @@ package spacedeck.model;
  */
 public class OpponentMove {
 	public static enum MoveType {
-		SKIP, DRAW, ATTACK, EQUIP_GEAR, DEPLOY_CARD, REMOVE_CARD
+		SKIP, DRAW, ATTACK, ATTACK_CHARACTER, EQUIP_GEAR, DEPLOY_CARD, REMOVE_CARD
 	}
 
 	private MoveType type;
 	private Card deployCard;
 	private int attacker, attackTarget;
+	private Character characterAttacker, characterTarget;
 	private int deployTarget, removeTarget;
 	private Gear gear;
 	private Card equipGearTarget;
@@ -112,5 +113,21 @@ public class OpponentMove {
 
 	public void setAttackTarget(int attackTarget) {
 		this.attackTarget = attackTarget;
+	}
+
+	public Character getCharacterAttacker() {
+		return characterAttacker;
+	}
+
+	public void setCharacterAttacker(Character characterAttacker) {
+		this.characterAttacker = characterAttacker;
+	}
+
+	public Character getCharacterTarget() {
+		return characterTarget;
+	}
+
+	public void setCharacterTarget(Character characterTarget) {
+		this.characterTarget = characterTarget;
 	}
 }

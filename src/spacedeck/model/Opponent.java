@@ -87,7 +87,14 @@ public class Opponent extends Character {
 
 			// If the field is empty, definitely place a card in the field
 			for (int i = 0; i < playingCards.length; i++) {
-				if (playingCards[i] != null) {
+				if (playingCards[i] == null) continue;
+
+				if (player.getPlayingField()[i] == null) {
+					OpponentMove move = new OpponentMove(OpponentMove.MoveType.ATTACK_CHARACTER);
+					move.setCharacterAttacker(this);
+					move.setCharacterTarget(player);
+					moveset.add(move);
+				} else {
 					OpponentMove move = new OpponentMove(OpponentMove.MoveType.ATTACK);
 					move.setAttacker(i);
 

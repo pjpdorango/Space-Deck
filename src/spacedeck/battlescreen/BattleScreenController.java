@@ -106,7 +106,7 @@ public class BattleScreenController implements Initializable {
 	@FXML
 	private Rectangle enemyAttackGlow;
 
-	private enum GameState {
+	public static enum GameState {
 		GAME, PAUSED, LOST, WON
 	}
 	private GameState state;
@@ -668,7 +668,7 @@ public class BattleScreenController implements Initializable {
 			updateFuel();
 		});
 
-		Media attackSfx = new Media(getClass().getResource("/spacedeck/audio/attack.mp3").toExternalForm());
+		Media attackSfx = new Media(getClass().getResource("/spacedeck/audio/normalAttack.wav").toExternalForm());
 		MediaPlayer sfxPlayer = new MediaPlayer(attackSfx);
 		sfxPlayer.setVolume(sfxVolume);
 		tier.add(sfxPlayer);
@@ -1190,6 +1190,22 @@ public class BattleScreenController implements Initializable {
 					AnchorPane playerSlot = (AnchorPane) playerPlayingField.getChildren().get(move.getAttackTarget());
 					executionQueue.add(attack(opponentSlot, playerSlot));
 					break;
+				case ATTACK_CHARACTER:
+				    List<Object> transitionList = null;
+				    if (move.getCharacterAttacker() == null) {
+					AnchorPane attacker = (AnchorPane) opponentPlayingField.getChildren().get(move.getAttacker());
+					Character target = move.getCharacterTarget();
+					transitionList = attack(attacker, target);
+				    } else if (move.getCharacterTarget() == null) {
+					// implement this
+				    } else {
+					/*
+					Character attacker = move.getCharacterAttacker();
+					Character target = move.getCharacterTarget();
+					transitionList = attack(attacker, target);
+					*/
+				    }
+				    executionQueue.add(transitionList);
 			}
 		});
 
@@ -1315,5 +1331,9 @@ public class BattleScreenController implements Initializable {
 
 	public void setPlayerDrawnCard(boolean playerDrawnCard) {
 		this.playerDrawnCard = playerDrawnCard;
+	}
+
+	public GameState getState() {
+	    return state;
 	}
 }
