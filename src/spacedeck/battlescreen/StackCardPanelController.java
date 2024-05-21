@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.input.MouseEvent;
+import spacedeck.battlescreen.BattleScreenController.GameState;
 
 /**
  * FXML Controller class
@@ -29,8 +30,8 @@ public class StackCardPanelController implements Initializable {
 	@FXML
 	private void getCardFromStack(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (!sceneController.getIsScreenActive()) return;
 		if (sceneController.hasPlayerDrawnCard()) return;
+		if (sceneController.getState() != GameState.GAME) return;
 
 		sceneController.setPlayerDrawnCard(true);
 
