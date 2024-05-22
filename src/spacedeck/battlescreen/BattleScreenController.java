@@ -18,6 +18,7 @@ import spacedeck.model.Character;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
@@ -26,6 +27,7 @@ import java.util.Queue;
 import java.util.ResourceBundle;
 import java.util.Set;
 import javafx.animation.Animation.Status;
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
@@ -34,6 +36,7 @@ import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -107,7 +110,7 @@ public class BattleScreenController implements Initializable {
 	private Rectangle enemyAttackGlow;
 
 	public static enum GameState {
-		GAME, PAUSED, LOST, WON
+		GAME, PAUSED, LOST, WON, TRANSITIONING
 	}
 	private GameState state;
 
@@ -146,9 +149,13 @@ public class BattleScreenController implements Initializable {
 		// Video Setting
         Media backgroundVideo = new Media(getClass().getResource("/spacedeck/media/[TEMP] video bg.mp4").toExternalForm());
         MediaPlayer backgroundPlayer = new MediaPlayer(backgroundVideo);
+
+		root.getChildren().remove(backgroundImage);
 		backgroundPlayer.setOnError(() -> {
-			backgroundImage.setOpacity(1);
+			root.getChildren().add(backgroundImage);
+			backgroundImage.toBack();
 		});
+
         backgroundPlayer.setAutoPlay(true);
         backgroundPlayer.setCycleCount(Integer.MAX_VALUE);
         backgroundPlayer.play();
@@ -275,8 +282,6 @@ public class BattleScreenController implements Initializable {
 		} catch (IOException e) {
             System.out.println("[ERROR] Error loading player deck");
         }
-
-		System.out.println(state);
     }
     
     public void createOpponentDeck() {
@@ -373,7 +378,7 @@ public class BattleScreenController implements Initializable {
 
 			songPlayer.setVolume(musicVolume / 2);
 		// If the menuButton was open
-		} else {
+		} else if (state == GameState.PAUSED) {
 			state = GameState.GAME;
 
 			menu.setDisable(true);
@@ -391,9 +396,9 @@ public class BattleScreenController implements Initializable {
 	}
 
 	@FXML
-	private void onMouseHoverExit(MouseEvent event) {
+	public void onMouseHoverExit(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (state != GameState.GAME) return;
+		if (!(state == GameState.GAME || state == GameState.LOST || state == GameState.WON)) return;
 		if (turn != player) return;
 
 		Node button = (Node) event.getSource();
@@ -409,9 +414,9 @@ public class BattleScreenController implements Initializable {
 	}
 
 	@FXML
-	private void onMouseHoverEnter(MouseEvent event) {
+	public void onMouseHoverEnter(MouseEvent event) {
 		// If the screen is not active, don't do anything
-		if (state != GameState.GAME) return;
+		if (!(state == GameState.GAME || state == GameState.LOST || state == GameState.WON)) return;
 		if (turn != player) return;
 
 		Node button = (Node) event.getSource();
@@ -427,20 +432,20 @@ public class BattleScreenController implements Initializable {
 	}
 
 	@FXML
-	private void backToMenu(MouseEvent event) {
-		if (state != GameState.PAUSED) return;
+	public void backToMenu(MouseEvent event) {
+		if (!(state == GameState.GAME || state == GameState.LOST || state == GameState.WON)) return;
 
-		state = GameState.PAUSED;
+		state = GameState.TRANSITIONING;
 
 		songPlayer.setVolume(0);
 		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.MapScreen);
 	}
 
 	@FXML
-	private void restartGame(MouseEvent event) {
-		if (state != GameState.PAUSED) return;
+	public void restartGame(MouseEvent event) {
+		if (!(state == GameState.GAME || state == GameState.LOST || state == GameState.WON)) return;
 
-		state = GameState.PAUSED;
+		state = GameState.TRANSITIONING;
 
 		songPlayer.setVolume(0);
 		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.BattleScreen);
@@ -542,6 +547,56 @@ public class BattleScreenController implements Initializable {
 		selectedPlayerSlot = -1;
 	}
 
+	private List<Object> attack(Character attacker, Character target) {
+		ArrayList<Object> tier = new ArrayList<>();
+
+		FlashingTransition transition = new FlashingTransition(new TransitionPlayer() {
+			@Override
+			public void activate(Node n) {
+				n.setOpacity(0.7);
+			}
+			@Override
+			public void deactivate(Node n) {
+				n.setOpacity(1);
+			}
+			@Override
+			public void interpolate(Node n) { }
+		});	
+		transition.setDuration(Duration.millis(100));
+		transition.setCycleCount(3);
+		transition.setNode(root);
+		tier.add(transition);
+
+		// Update data on slots
+		tier.add((Playable) () -> {
+			attacker.attack(target);
+			updateFuel();
+		});
+
+		tier.add((Playable) () -> {
+			int fuel = target.getFuel();
+			if (fuel <= 0) {
+				// makes fuel 0
+				target.addFuel(-fuel);
+				updateFuel();
+
+				// DIE
+				if (target == opponent) {
+					win();
+				} else {
+					lose();
+				}
+			}
+		});
+
+		Media attackSfx = new Media(getClass().getResource("/spacedeck/audio/normalAttack.wav").toExternalForm());
+		MediaPlayer sfxPlayer = new MediaPlayer(attackSfx);
+		sfxPlayer.setVolume(sfxVolume);
+		tier.add(sfxPlayer);
+
+		return tier;
+	}
+
 	private List<Object> attack(AnchorPane selectedSlot, Character target) {
 		ArrayList<Object> tier = new ArrayList<>();
 
@@ -576,12 +631,10 @@ public class BattleScreenController implements Initializable {
 			public void activate(Node n) {
 				n.setOpacity(0.7);
 			}
-
 			@Override
 			public void deactivate(Node n) {
 				n.setOpacity(1);
 			}
-
 			@Override
 			public void interpolate(Node n) { }
 		});	
@@ -604,7 +657,61 @@ public class BattleScreenController implements Initializable {
 				updateFuel();
 
 				// DIE
-				win();
+				if (turn == opponent) {
+					System.out.println("yaa");
+					lose();
+				} else {
+					win();
+				}
+			}
+		});
+
+		Media attackSfx = new Media(getClass().getResource("/spacedeck/audio/normalAttack.wav").toExternalForm());
+		MediaPlayer sfxPlayer = new MediaPlayer(attackSfx);
+		sfxPlayer.setVolume(sfxVolume);
+		tier.add(sfxPlayer);
+
+		return tier;
+	}
+
+	private List<Object> attack(Character attacker, AnchorPane targetSlot) {
+		ArrayList<Object> tier = new ArrayList<>();
+
+		int targetCardIndex;
+		if (turn == player) {
+			targetCardIndex = opponentPlayingField.getChildren().indexOf(targetSlot);
+		} else {
+			targetCardIndex = playerPlayingField.getChildren().indexOf(targetSlot);
+		}
+
+		Character targetCharacter = attacker == player ? opponent : player;
+		Card target = targetCharacter.getPlayingField()[targetCardIndex];
+
+		FlashingTransition transition = new FlashingTransition("invincibilityFrame");	
+		transition.setDuration(Duration.millis(100));
+		transition.setCycleCount(3);
+		transition.setNode(targetSlot);
+		tier.add(transition);
+
+		// Update data on slots
+		tier.add((Playable) () -> {
+			attacker.attack(target);
+			updateFuel();
+		});
+
+		tier.add((Playable) () -> {
+			int fuel = targetCharacter.getFuel();
+			if (fuel <= 0) {
+				// makes fuel 0
+				targetCharacter.addFuel(-fuel);
+				updateFuel();
+
+				// DIE
+				if (targetCharacter == opponent) {
+					win();
+				} else {
+					lose();
+				}
 			}
 		});
 
@@ -1193,19 +1300,20 @@ public class BattleScreenController implements Initializable {
 				case ATTACK_CHARACTER:
 				    List<Object> transitionList = null;
 				    if (move.getCharacterAttacker() == null) {
-					AnchorPane attacker = (AnchorPane) opponentPlayingField.getChildren().get(move.getAttacker());
-					Character target = move.getCharacterTarget();
-					transitionList = attack(attacker, target);
+						AnchorPane attacker = (AnchorPane) opponentPlayingField.getChildren().get(move.getAttacker());
+						Character target = move.getCharacterTarget();
+						transitionList = attack(attacker, target);
 				    } else if (move.getCharacterTarget() == null) {
-					// implement this
+						Character attacker = move.getCharacterAttacker();
+						AnchorPane target = (AnchorPane) playerPlayingField.getChildren().get(move.getAttackTarget());
+						transitionList = attack(attacker, target);
 				    } else {
-					/*
-					Character attacker = move.getCharacterAttacker();
-					Character target = move.getCharacterTarget();
-					transitionList = attack(attacker, target);
-					*/
+						Character attacker = move.getCharacterAttacker();
+						Character target = move.getCharacterTarget();
+						transitionList = attack(attacker, target);
 				    }
-				    executionQueue.add(transitionList);
+
+					executionQueue.add(transitionList);
 			}
 		});
 
@@ -1225,31 +1333,7 @@ public class BattleScreenController implements Initializable {
 //			System.out.println("");
 //		}
 
-		// Plays all of the transitions in the queue
-		// Every transition in each "tier" or level in the queue is played simultaneously
-		// Every tier will be played one after the other
-		// This will be done by getting the leading transition on all tiers (w/ playEvents() & getLeadingTransition())
-		// And then setting the onFinished of that to do its usual function AND play the next set of transitions
-		// 
-		Transition lastLeadingTransition = null;
-		for (List<Object> transitions : executionQueue) {
-			if (lastLeadingTransition == null) {
-				playEvents(transitions);
-				lastLeadingTransition = getLeadingTransition(transitions);
-			} else {
-				EventHandler<ActionEvent> oldOnFinished = lastLeadingTransition.getOnFinished();
-				lastLeadingTransition.setOnFinished((e) -> {
-					if (oldOnFinished != null) oldOnFinished.handle(e);
-					playEvents(transitions);
-				});
-				Transition leadingTransition = getLeadingTransition(transitions);
-
-				if (leadingTransition != null) {
-					lastLeadingTransition = leadingTransition;
-				}
-			}
-		}
-
+		Transition lastLeadingTransition = queueEvents(executionQueue, GameState.GAME);
 		EventHandler<ActionEvent> oldOnFinished = lastLeadingTransition.getOnFinished();
 
 		lastLeadingTransition.setOnFinished((e) -> {
@@ -1291,9 +1375,89 @@ public class BattleScreenController implements Initializable {
 		}
 	}
 
+	public Transition queueEvents(Queue<List<Object>> queue, GameState targetState) {
+		// Plays all of the transitions in the queue
+		// Every transition in each "tier" or level in the queue is played simultaneously
+		// Every tier will be played one after the other
+		// This will be done by getting the leading transition on all tiers (w/ playEvents() & getLeadingTransition())
+		// And then setting the onFinished of that to do its usual function AND play the next set of transitions
+		Transition lastLeadingTransition = null;
+		for (List<Object> transitions : queue) {
+			if (lastLeadingTransition == null) {
+				playEvents(transitions);
+				lastLeadingTransition = getLeadingTransition(transitions);
+			} else {
+				EventHandler<ActionEvent> oldOnFinished = lastLeadingTransition.getOnFinished();
+				lastLeadingTransition.setOnFinished((e) -> {
+					if (oldOnFinished != null) oldOnFinished.handle(e);
+					if (state != targetState) return;
+					playEvents(transitions);
+				});
+				Transition leadingTransition = getLeadingTransition(transitions);
+
+				if (leadingTransition != null) {
+					lastLeadingTransition = leadingTransition;
+				}
+			}
+		}
+
+		return lastLeadingTransition;
+	}
+
 	private void win() {
 		state = GameState.WON;
 		videoBackground.getMediaPlayer().pause();
+
+	}
+
+	private void lose() {
+		state = GameState.LOST;
+		videoBackground.getMediaPlayer().pause();
+
+		Queue<List<Object>> queue = new LinkedList<>();
+		List<Object> tier = new ArrayList<>();
+		queue.add(tier);
+
+		for (Node child : root.getChildren()) {
+			FadeTransition fade = new FadeTransition();
+			fade.setDuration(Duration.millis(2000));
+			fade.setByValue(-1);
+			fade.setNode(child);
+			tier.add(fade);
+		}
+
+		tier.add((Playable) () -> {
+			songPlayer.stop();
+		});
+
+		List<Object> tier2 = new ArrayList<>();
+
+		Media loseSFX = new Media(getClass().getResource("/spacedeck/audio/lose.mp3").toExternalForm());
+		MediaPlayer sfxPlayer = new MediaPlayer(loseSFX);
+		sfxPlayer.setVolume(sfxVolume);
+		tier2.add(sfxPlayer);
+
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/spacedeck/battlescreen/LoseScreen.fxml"));
+		VBox screen = null;
+		try {
+			screen = loader.load();
+			root.getChildren().add(screen);
+			screen.setOpacity(0);
+		} catch (IOException e) {
+			System.out.println(Arrays.toString(e.getStackTrace()));
+		}
+
+		((LoseScreenController) loader.getController()).setSceneController(this);
+
+		FadeTransition fade = new FadeTransition();
+		fade.setDuration(Duration.millis(2000));
+		fade.setFromValue(0);
+		fade.setToValue(1);
+		fade.setNode(screen);
+		tier2.add(fade);
+		queue.add(tier2);
+
+		queueEvents(queue, GameState.LOST);
 	}
 
 	// ATTRIBUTE SETTERS FOR OTHER FUNCTIONS

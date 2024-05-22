@@ -6,6 +6,7 @@ package spacedeck.battlescreen;
 
 import spacedeck.model.Card;
 import spacedeck.model.Deckable;
+import spacedeck.battlescreen.BattleScreenController.GameState;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.animation.RotateTransition;
@@ -71,6 +72,7 @@ public class CardPanelController implements Initializable {
 		// If the screen is not active, don't do anything
 		if (!sceneController.getIsScreenActive()) return;
 		if (!sceneController.isPlayerTurn()) return;
+		if (sceneController.getState() != GameState.GAME) return;
 
         // If the card is not currently being dragged
         // Here bc if it is being dragged, and the card lags behind and then catches up, the cardHoverEnterAnimation

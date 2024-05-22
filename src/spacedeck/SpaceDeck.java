@@ -4,7 +4,6 @@
  */
 package spacedeck;
 
-import java.io.FileNotFoundException;
 import spacedeck.model.WaterCard;
 import spacedeck.model.Planet;
 import spacedeck.model.EarthCard;
@@ -14,7 +13,6 @@ import spacedeck.model.AILevel;
 import spacedeck.model.FireCard;
 import spacedeck.model.AirCard;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javafx.animation.FadeTransition;
@@ -54,7 +52,7 @@ public class SpaceDeck extends Application {
 			!! IMPORTANT !!
 			---------------
 
-			The project uses a library for reading the JSON files and we arenot very sure
+			The project uses a library for reading the JSON files and we are not very sure
 			how to export the project including the library...
 
 			So for now you have to **add** the library to your classpath
@@ -66,6 +64,10 @@ public class SpaceDeck extends Application {
 			- Add JAR file
 			- Select .jar file
 			- And voila!!!! Should work now.
+
+			DEBUG:
+			- Warning: Could not find resource file "C:\Users\GRAVITON\Documents\NetBeansProjects\Space Deck\src\spacedeck\json-simple-1.1.1.jar" to copy.
+				- Solution: Right click the project, resolve project problems, then provide a path for json-simple-1.1.1.jar.
 		*/		
 
 		// FONT LOADING

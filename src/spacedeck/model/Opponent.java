@@ -58,6 +58,20 @@ public class Opponent extends Character {
 			
 			// If the field is empty, definitely place a card in the field 
 			if (hasEmptyField()) {
+				if (deck.isEmpty()) {
+					if (!hasEmptyField(player)) {
+						OpponentMove move = new OpponentMove(OpponentMove.MoveType.ATTACK_CHARACTER);
+						move.setCharacterAttacker(this);
+						move.setAttackTarget(getRandomOccupiedPlayerSlot(player));
+						moveset.add(move);
+					} else {
+						OpponentMove move = new OpponentMove(OpponentMove.MoveType.ATTACK_CHARACTER);
+						move.setCharacterAttacker(this);
+						move.setCharacterTarget(player);
+						moveset.add(move);
+					}
+				}
+
 				try {
 					OpponentMove move = deployWeightedCard();
 					move.setDeployTarget(getWeightedAvailableSlot(player));
@@ -85,13 +99,14 @@ public class Opponent extends Character {
 				}
 			}
 
-			// If the field is empty, definitely place a card in the field
+			// Go through every card in the field
+			// If the current card 
 			for (int i = 0; i < playingCards.length; i++) {
 				if (playingCards[i] == null) continue;
 
 				if (player.getPlayingField()[i] == null) {
 					OpponentMove move = new OpponentMove(OpponentMove.MoveType.ATTACK_CHARACTER);
-					move.setCharacterAttacker(this);
+					move.setAttacker(i);
 					move.setCharacterTarget(player);
 					moveset.add(move);
 				} else {
@@ -160,6 +175,7 @@ public class Opponent extends Character {
 	private int getRandomOccupiedPlayerSlot(Character player) {
 		ArrayList<Integer> possible = new ArrayList<>();
 		for (int i = 0; i < player.getPlayingField().length; i++) {
+			System.out.println(player.getPlayingField()[i]);
 			if (player.getPlayingField()[i] != null) {
 				possible.add(i);
 			}
@@ -168,6 +184,8 @@ public class Opponent extends Character {
 		if (possible.isEmpty()) {
 			return -1;
 		}
+
+		System.out.println("bruh");
 
 		Random rand = new Random();
 		return possible.get(rand.nextInt(possible.size()));
@@ -281,12 +299,19 @@ public class Opponent extends Character {
 	}
 	
 	private boolean hasEmptyField() {
-		boolean hasEmptyField = true;
 		for (Card c : playingCards) {
-			if (c != null) hasEmptyField = false;
+			if (c != null) return false;
 		}
 
-		return hasEmptyField;
+		return true;
+	}
+
+	private boolean hasEmptyField(Character ch) {
+		for (Card c : ch.getPlayingField()) {
+			if (c != null) return false;
+		}
+
+		return true;
 	}
 
 	private boolean hasFullField() {

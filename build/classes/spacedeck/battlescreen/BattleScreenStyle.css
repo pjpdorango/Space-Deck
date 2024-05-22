@@ -128,3 +128,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     -fx-border-radius: 20px;
     -fx-effect: dropshadow(gaussian, white, 2, 0.1, 1.2, 1.2);
 } 
+
+.resultTitle {
+	-fx-font-family: Squartiqa4F;
+	-fx-font-size: 35;
+}
+
+.resultOption {
+	-fx-font-family: Cristik;
+	-fx-font-size: 24;
+}
