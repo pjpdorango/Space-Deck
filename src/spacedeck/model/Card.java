@@ -139,7 +139,7 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
 	public static Card searchCard(String name) {
 		for (Card card : allCards) {
 			if (card.getName().equals(name)) {
-				return card;
+				return Card.cloneCard(card);
 			}
 		}
 

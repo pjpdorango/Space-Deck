@@ -5,9 +5,8 @@
         <group>
             <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/battlescreen/BattleScreenStyle.css</file>
             <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/model/Character.java</file>
-            <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/battlescreen/LoseScreenController.java</file>
-            <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/model/Opponent.java</file>
-            <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/battlescreen/LoseScreen.fxml</file>
+            <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/battlescreen/WinScreenController.java</file>
+            <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/model/Player.java</file>
             <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/battlescreen/BattleScreenController.java</file>
         </group>
     </open-files>

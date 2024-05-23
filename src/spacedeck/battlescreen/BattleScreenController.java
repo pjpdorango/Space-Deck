@@ -26,9 +26,11 @@ import java.util.List;
 import java.util.Queue;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import javafx.animation.Animation.Status;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
+import javafx.animation.PauseTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
@@ -44,6 +46,7 @@ import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -51,6 +54,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
@@ -68,7 +72,10 @@ import spacedeck.exceptions.CardAlreadyActiveException;
 import spacedeck.exceptions.CardNotInDeckException;
 import spacedeck.exceptions.FullDeckException;
 import spacedeck.exceptions.InsufficientFuelException;
+import spacedeck.model.Item;
+import spacedeck.model.Level;
 import spacedeck.model.OpponentMove;
+import spacedeck.util.NumberTransition;
 import spacedeck.util.Playable;
 import spacedeck.util.TransitionPlayer;
 
@@ -135,6 +142,9 @@ public class BattleScreenController implements Initializable {
 	private double scale;
 	private IdentityHashMap<AnchorPane, SlotPanelController> slotControllers = new IdentityHashMap<>(); 
 	private Set<AnchorPane> alreadyAttacked = Collections.newSetFromMap(new IdentityHashMap<>()); 
+
+	// PRIVATE LEVEL INFO
+	private Level currentLevel;
     
     // TRANSITIONS
     private TranslateTransition slotInvalid;
@@ -180,7 +190,7 @@ public class BattleScreenController implements Initializable {
             // Instantiate Player
             player = new Player("PJ", 20, 1);
             for (int i = 0; i < 1; i++) {
-				player.addCard(Card.getRandomCard());
+				player.addCard(Card.searchCard("Among Us"));
             }
             
             // Instantiate Opponent
@@ -188,6 +198,14 @@ public class BattleScreenController implements Initializable {
         } catch (FullDeckException e) {
             System.out.println("[ERROR] FullDeckException");
         }
+
+		currentLevel = new Level(opponent);
+		currentLevel.getRewards().add(new Item("Token", 
+				new Image(getClass().getResourceAsStream("/spacedeck/media/token.png")), 50));
+		currentLevel.getRewards().add(new Item("Space Deck", 
+				new Image(getClass().getResourceAsStream("/spacedeck/media/Space_Deck_Title.png")), 1));
+		currentLevel.getRewards().add(new Item("Token", 
+				new Image(getClass().getResourceAsStream("/spacedeck/media/token.png")), 50));
         
 		// Create all cardPanel decks and stacks
 		createPlayerDeck();
@@ -433,9 +451,13 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	public void backToMenu(MouseEvent event) {
-		if (!(state == GameState.GAME || state == GameState.LOST || state == GameState.WON)) return;
+		if (!(state == GameState.PAUSED || state == GameState.LOST || state == GameState.WON)) return;
 
 		state = GameState.TRANSITIONING;
+
+		((Player) player).getInventory().forEach(i -> {
+			System.out.println(i.getName() + ": " + i.getAmount());
+		});
 
 		songPlayer.setVolume(0);
 		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.MapScreen);
@@ -443,7 +465,7 @@ public class BattleScreenController implements Initializable {
 
 	@FXML
 	public void restartGame(MouseEvent event) {
-		if (!(state == GameState.GAME || state == GameState.LOST || state == GameState.WON)) return;
+		if (!(state == GameState.PAUSED || state == GameState.LOST || state == GameState.WON)) return;
 
 		state = GameState.TRANSITIONING;
 
@@ -1408,6 +1430,107 @@ public class BattleScreenController implements Initializable {
 		state = GameState.WON;
 		videoBackground.getMediaPlayer().pause();
 
+		Queue<List<Object>> queue = new LinkedList<>();
+		List<Object> tier = new ArrayList<>();
+
+		queue.add(tier);
+
+		// Creates a shake animation
+		TranslateTransition shake = new TranslateTransition();
+		shake.setCycleCount(2);
+		shake.setAutoReverse(true);
+		shake.setInterpolator(Interpolator.EASE_OUT);
+		shake.setDuration(Duration.millis(40));
+		shake.setByY(20);
+		shake.setNode(root);
+		AtomicReference<Integer> cycles = new AtomicReference<>(0);
+		shake.setOnFinished(e -> {
+			if (cycles.get() < 10) shake.play();
+			cycles.set(cycles.get() + 1);
+			shake.setByY(20 / cycles.get());
+		});
+		tier.add(shake);
+		
+		tier.add((Playable) () -> {
+			songPlayer.stop();
+		});
+
+		for (Node child : root.getChildren()) {
+			child.setOpacity(child.getOpacity() - 0.7);
+		}
+
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/spacedeck/battlescreen/WinScreen.fxml"));
+		VBox screen = null;
+		try {
+			screen = loader.load();
+			root.getChildren().add(screen);
+			screen.setOpacity(0);
+		} catch (IOException e) {
+			System.out.println(Arrays.toString(e.getStackTrace()));
+		}
+
+		List<Object> tier2 = new ArrayList<>();
+		queue.add(tier2);
+
+		WinScreenController screenController = ((WinScreenController) loader.getController());
+		screenController.setSceneController(this);
+		FadeTransition fade = new FadeTransition();
+		fade.setDuration(Duration.millis(1200));
+		fade.setFromValue(0);
+		fade.setToValue(1);
+		fade.setNode(screen);
+		tier2.add(fade);
+
+		GridPane rewardsList = screenController.getRewardsList();
+
+		int currentRowIndex = 0;
+		for (Item i : currentLevel.getRewards()) {
+			player.addToInventory(i);
+
+			ImageView image = new ImageView(i.getItemIcon());
+			Text name = new Text(i.getName());
+			name.setFill(Color.WHITE);
+			name.getStyleClass().add("option");
+			Text amount = new Text("-");
+			amount.getStyleClass().add("option");
+			amount.setFill(Color.WHITE);
+
+			image.setPreserveRatio(true);
+			image.setFitHeight(30);
+
+			Node[] nodes = {image, name, amount};
+			
+			for (Node n : nodes) {
+				List<Object> newTier = new ArrayList<>();
+				queue.add(newTier);
+				n.setOpacity(0);
+
+				FadeTransition fadeInText = new FadeTransition();
+				fadeInText.setDuration(Duration.millis(200));
+				fadeInText.setFromValue(0);
+				fadeInText.setToValue(1);
+				fadeInText.setNode(n);
+				newTier.add(fadeInText);
+			}
+
+			rewardsList.addRow(currentRowIndex, 
+					image, 
+					name, 
+					amount);
+			NumberTransition numberTransition = new NumberTransition();
+			numberTransition.setDuration(Duration.millis(600));
+			numberTransition.setStart(1);
+			numberTransition.setEnd(i.getAmount());
+			numberTransition.setNode(amount);
+			List<Object> newerTier = new ArrayList<>();
+			newerTier.add(numberTransition);
+			queue.add(newerTier);
+
+			currentRowIndex++;
+		}
+
+
+		queueEvents(queue, GameState.WON);
 	}
 
 	private void lose() {
@@ -1463,6 +1586,17 @@ public class BattleScreenController implements Initializable {
 	// ATTRIBUTE SETTERS FOR OTHER FUNCTIONS
 	public void setPlayer(Player p) {
 		this.player = p;
+		createPlayerDeck();
+	}
+
+	public void setLevel(Level l) {
+		this.currentLevel = l;
+		createOpponentDeck();
+		this.opponent = l.getOpponent();
+	}
+
+	public Level getLevel() {
+		return currentLevel;
 	}
 
 	public Player getPlayer() {

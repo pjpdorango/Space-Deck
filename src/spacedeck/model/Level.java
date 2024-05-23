@@ -4,14 +4,29 @@
  */
 package spacedeck.model;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author pj
  */
 public class Level {
-	private Opponent enemy;
+	private Opponent opponent;
+	private ArrayList<Item> rewards = new ArrayList<>();
 	
 	public Level(Opponent e) {
-		enemy = e;
+		opponent = e;
 	}	
+
+	public Opponent getOpponent() {
+		return opponent;
+	}
+
+	public void setOpponent(Opponent opponent) {
+		this.opponent = opponent;
+	}
+
+	public ArrayList<Item> getRewards() {
+		return rewards;
+	}
 }

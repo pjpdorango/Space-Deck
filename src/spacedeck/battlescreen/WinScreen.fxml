@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" spacing="40.0" stylesheets="@BattleScreenStyle.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="spacedeck.battlescreen.WinScreenController">
+   <children>
+      <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="resultTitle" text="You Win!">
+         <effect>
+            <DropShadow color="#0700ff" height="0.0" offsetX="1.0" offsetY="1.0" radius="0.0" width="0.0">
+               <input>
+                  <DropShadow color="#ff007b" height="0.0" offsetX="-1.0" offsetY="-1.0" radius="0.0" width="0.0" />
+               </input>
+            </DropShadow>
+         </effect>
+      </Text>
+      <GridPane fx:id="rewardsList" alignment="CENTER" vgap="10.0">
+        <columnConstraints>
+          <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="-Infinity" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="300.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="50.0" />
+        </columnConstraints>
+      </GridPane>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="60.0">
+         <children>
+            <Text fill="WHITE" onMouseClicked="#backToMenu" onMouseEntered="#onHoverEnter" onMouseExited="#onHoverExit" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="resultOption" text="Continue" />
+         </children>
+      </HBox>
+   </children>
+</VBox>

@@ -6,6 +6,7 @@ import spacedeck.exceptions.CardNotInDeckException;
 
 public class Player extends Character {
     private ArrayList<Card> collection = new ArrayList<>();
+	private ArrayList<Item> inventory = new ArrayList<>();
     
     public Player(String n, int f, int a) {
         super(n, f, a);
@@ -46,4 +47,19 @@ public class Player extends Character {
     public ArrayList<Card> getCollection() {
         return this.collection;
     }
+
+	public ArrayList<Item> getInventory() {
+		return inventory;
+	}
+
+	public void addToInventory(Item item) {
+		for (Item i : inventory) {
+			if (i.getName().equals(item.getName())) {
+				i.setAmount(i.getAmount() + item.getAmount());
+				return;
+			}
+		}
+
+		inventory.add(item);
+	}
 }
