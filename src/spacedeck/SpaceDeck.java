@@ -83,7 +83,7 @@ public class SpaceDeck extends Application {
 		// CARD READING
 		JSONParser parser = new JSONParser();
 
-		JSONArray array = (JSONArray) parser.parse(new FileReader("src/spacedeck/CardListJSON.json"));
+		JSONArray array = (JSONArray) parser.parse(new FileReader("src/spacedeck/CardList.json"));
 		
 		for (Object o : array) {
 			JSONObject cardProperties = (JSONObject) o;
