@@ -1,0 +1,21 @@
+{
+	"name" : "PJ",
+	"fuel" : 12,
+	"attack" : 3,
+	"collection" : [
+		"Among Us",
+		"Lobster Joe",
+		"Tiny Khez'ol"
+	],
+	"inventory" : [
+		{
+			"name" : "Token",
+			"amount" : 100,
+			"icon" : "token.png"
+		}, {
+			"name" : "Space Deck",
+			"amount" : 1000,
+			"icon" : "token.png"
+		}
+	]
+}

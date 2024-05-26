@@ -30,7 +30,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import javafx.animation.Animation.Status;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
-import javafx.animation.PauseTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
@@ -38,7 +37,6 @@ import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -186,18 +184,12 @@ public class BattleScreenController implements Initializable {
 		musicVolume *= (double) SpaceDeck.getSetting("musicVolume") / 100 * (double) SpaceDeck.getSetting("masterVolume") / 100;
 		sfxVolume *= (double) SpaceDeck.getSetting("sfxVolume") / 100 * (double) SpaceDeck.getSetting("masterVolume") / 100;
         
-        try {
-            // Instantiate Player
-            player = new Player("PJ", 20, 1);
-            for (int i = 0; i < 1; i++) {
-				player.addCard(Card.searchCard("Among Us"));
-            }
-            
-            // Instantiate Opponent
-            opponent = new Opponent("Bob Ross", 20, 3, AILevel.ADVANCED);
-        } catch (FullDeckException e) {
-            System.out.println("[ERROR] FullDeckException");
-        }
+		// Instantiate Player
+		player = SpaceDeck.getPlayer();
+		player.getDeck().add(Card.getRandomCard());
+		
+		// Instantiate Opponent
+		opponent = new Opponent("Bob Ross", 20, 3, AILevel.ADVANCED);
 
 		currentLevel = new Level(opponent);
 		currentLevel.getRewards().add(new Item("Token", 
@@ -274,6 +266,7 @@ public class BattleScreenController implements Initializable {
         ArrayList<Deckable> playerDeck = player.getDeck();
         try {
 			for (int i = 0; i < playerDeck.size(); i++) {
+				System.out.println(i);
 				Deckable currentCard = playerDeck.get(i);
 				
 				FXMLLoader cardLoader = new FXMLLoader(getClass().getResource("CardPanel.fxml"));
@@ -1500,9 +1493,9 @@ public class BattleScreenController implements Initializable {
 
 			Node[] nodes = {image, name, amount};
 			
+			List<Object> newTier = new ArrayList<>();
+			queue.add(newTier);
 			for (Node n : nodes) {
-				List<Object> newTier = new ArrayList<>();
-				queue.add(newTier);
 				n.setOpacity(0);
 
 				FadeTransition fadeInText = new FadeTransition();
@@ -1581,12 +1574,6 @@ public class BattleScreenController implements Initializable {
 		queue.add(tier2);
 
 		queueEvents(queue, GameState.LOST);
-	}
-
-	// ATTRIBUTE SETTERS FOR OTHER FUNCTIONS
-	public void setPlayer(Player p) {
-		this.player = p;
-		createPlayerDeck();
 	}
 
 	public void setLevel(Level l) {

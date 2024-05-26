@@ -21,6 +21,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -29,6 +30,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import spacedeck.model.Item;
 import spacedeck.model.Player;
 
 /**
@@ -80,63 +82,10 @@ public class SpaceDeck extends Application {
 		JSON FILE READING
 		-----------------
 		*/	
-		// CARD READING
-		JSONParser parser = new JSONParser();
+		readCards();
+		readPlanets();
+		readPlayer();
 
-		JSONArray array = (JSONArray) parser.parse(new FileReader("src/spacedeck/CardList.json"));
-		
-		for (Object o : array) {
-			JSONObject cardProperties = (JSONObject) o;
-			
-			String name = (String) cardProperties.get("name");
-			String region = (String) cardProperties.get("region");
-			String element = (String) cardProperties.get("element");
-			int cost = Long.valueOf((long) cardProperties.get("cost")).intValue();
-			int attack = Long.valueOf((long) cardProperties.get("attack")).intValue();
-			int health = Long.valueOf((long) cardProperties.get("health")).intValue();
-			String description = (String) cardProperties.get("description");
-			String icon = (String) cardProperties.get("icon");
-			
-			Card card = null;
-			
-			if (element.equals("Fire")) {
-				card = new FireCard(name, region, cost, attack, health);
-			} else if (element.equals("Water")) {
-				card = new WaterCard(name, region, cost, attack, health);
-			} else if (element.equals("Earth")) {
-				card = new EarthCard(name, region, cost, attack, health);
-			} else if (element.equals("Air")) {
-				card = new AirCard(name, region, cost, attack, health);
-			} 
-			
-			if (card != null) {
-				card.setIcon(icon);
-				card.setDescription(description);
-			}	
-		}
-
-		// PLANET READING
-		array = (JSONArray) parser.parse(new FileReader("src/spacedeck/PlanetsList.json"));
-		for (Object o : array) {
-			JSONObject planet = (JSONObject) o;
-
-			String name = (String) planet.get("name");
-			String description = (String) planet.get("description");
-			int population = Long.valueOf((long) planet.get("population")).intValue();
-			int diameter = Long.valueOf((long) planet.get("diameter")).intValue();
-			String environment = (String) planet.get("environment");
-			JSONArray champions = (JSONArray) planet.get("champions");
-
-			Planet newPlanet = new Planet(name);
-			newPlanet.setDescription(description);
-			newPlanet.setPopulation(population);
-			newPlanet.setDiameter(diameter);
-			newPlanet.setEnvironment(environment);
-			for (Object s : champions) {
-				newPlanet.getChampions().add(new Opponent((String) s, 20, 1, AILevel.ADVANCED));
-			}
-		}
-		
 		JSONObject settings = (JSONObject) fastOpenJSON("src/spacedeck/Settings.json");
 	
 		currentStage = new Stage();
@@ -239,10 +188,6 @@ public class SpaceDeck extends Application {
 		return sceneLoader;
 	}
 
-	public static Stage getStage() {
-		return currentStage;
-	}
-
 	public static void changeSetting(String setting, double value) {
 		JSONObject settings = (JSONObject) fastOpenJSON("src/spacedeck/Settings.json");
 		
@@ -297,5 +242,97 @@ public class SpaceDeck extends Application {
 		}
 
 		return null;
+	}
+
+	private static void readPlanets() throws Exception {
+		JSONParser parser = new JSONParser();
+		JSONArray array = (JSONArray) parser.parse(new FileReader("src/spacedeck/PlanetsList.json"));
+		for (Object o : array) {
+			JSONObject planet = (JSONObject) o;
+
+			String name = (String) planet.get("name");
+			String description = (String) planet.get("description");
+			int population = Long.valueOf((long) planet.get("population")).intValue();
+			int diameter = Long.valueOf((long) planet.get("diameter")).intValue();
+			String environment = (String) planet.get("environment");
+			JSONArray champions = (JSONArray) planet.get("champions");
+
+			Planet newPlanet = new Planet(name);
+			newPlanet.setDescription(description);
+			newPlanet.setPopulation(population);
+			newPlanet.setDiameter(diameter);
+			newPlanet.setEnvironment(environment);
+			for (Object s : champions) {
+				newPlanet.getChampions().add(new Opponent((String) s, 20, 1, AILevel.ADVANCED));
+			}
+		}
+	}
+
+	private static void readCards() throws Exception {
+		JSONParser parser = new JSONParser();
+
+		JSONArray array = (JSONArray) parser.parse(new FileReader("src/spacedeck/CardList.json"));
+		
+		for (Object o : array) {
+			JSONObject cardProperties = (JSONObject) o;
+			
+			String name = (String) cardProperties.get("name");
+			String region = (String) cardProperties.get("region");
+			String element = (String) cardProperties.get("element");
+			int cost = Long.valueOf((long) cardProperties.get("cost")).intValue();
+			int attack = Long.valueOf((long) cardProperties.get("attack")).intValue();
+			int health = Long.valueOf((long) cardProperties.get("health")).intValue();
+			String description = (String) cardProperties.get("description");
+			String icon = (String) cardProperties.get("icon");
+			
+			Card card = null;
+			
+			if (element.equals("Fire")) {
+				card = new FireCard(name, region, cost, attack, health);
+			} else if (element.equals("Water")) {
+				card = new WaterCard(name, region, cost, attack, health);
+			} else if (element.equals("Earth")) {
+				card = new EarthCard(name, region, cost, attack, health);
+			} else if (element.equals("Air")) {
+				card = new AirCard(name, region, cost, attack, health);
+			} 
+			
+			if (card != null) {
+				card.setIcon(icon);
+				card.setDescription(description);
+			}	
+		}
+	}
+
+	private static void readPlayer() throws Exception {
+		JSONParser parser = new JSONParser();
+
+		JSONObject player = (JSONObject) parser.parse(new FileReader("src/spacedeck/Profile.json"));
+
+		currentPlayer = new Player((String) player.get("name"), (int) (long) player.get("fuel"), (int) (long) player.get("attack"));
+		
+		JSONArray collection = (JSONArray) player.get("collection");
+		for (Object c : collection) {
+			String card = (String) c;
+			currentPlayer.addToCollection(Card.searchCard(card));
+		}
+
+		JSONArray inventory = (JSONArray) player.get("inventory");
+		for (Object i : inventory) {
+			JSONObject item = (JSONObject) i;
+
+			currentPlayer.addToInventory(new Item((String) item.get("name"),
+				new Image(SpaceDeck.class.getResource("/spacedeck/media/" + (String) item.get("icon")).toExternalForm()),
+				(int) (long) item.get("amount")
+			));
+		}
+	}
+
+	public static Stage getStage() {
+		return currentStage;
+	}
+
+	public static Player getPlayer() {
+		return currentPlayer;
 	}
 }
