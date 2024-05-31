@@ -2,6 +2,10 @@
 	"name" : "PJ",
 	"fuel" : 12,
 	"attack" : 3,
+	"completed" : {
+		"planet" : 1,
+		"level" : 1
+	},
 	"collection" : [
 		"Among Us",
 		"Lobster Joe",
