@@ -31,6 +31,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import spacedeck.model.Item;
+import spacedeck.model.Level;
 import spacedeck.model.Player;
 
 /**
@@ -97,7 +98,7 @@ public class SpaceDeck extends Application {
 			SCENE LOADING
 			-------------
 		*/
-		FXMLLoader sceneLoader = loadScene(SceneType.BattleScreen);
+		FXMLLoader sceneLoader = loadScene(SceneType.TitleScreen);
 
 		currentStage.setScene(((Parent) sceneLoader.getRoot()).getScene());
 		currentStage.setResizable(false);
@@ -201,14 +202,13 @@ public class SpaceDeck extends Application {
 
 		try {
 			writer = new PrintWriter("src/spacedeck/Settings.json");
+			writer.print(settings.toJSONString());
+			writer.flush();
+			writer.close();
 		} catch (IOException e) {
 			System.out.println("[ERROR] IOException loading Settings file.");
 			return;
 		} 
-
-		writer.print(settings.toJSONString());
-		writer.flush();
-		writer.close();
 	}
 
 	public static Object getSetting(String setting) {
@@ -220,7 +220,7 @@ public class SpaceDeck extends Application {
 	/**
 	 * Opens a JSON file, automatically managing possible errors. <br>
 	 * Dependencies: {@code org.json.simple.*} <br>
-	 * Errors are managed automatically by printing the respective error and the path of the file where the error occured.
+	 * Errors are managed automatically by printing the respective error and the path of the file where the error occurred.
 	 * @param path The path to the JSON file. In the format: <br>
 	 * <p style="color: green"> {@code "src/[root folder]/[folder]/[file].json"} </p>
 	 * @return Object that represents the root structure of the JSON file.
@@ -231,9 +231,8 @@ public class SpaceDeck extends Application {
 	 */
 	public static Object fastOpenJSON(String path) {
 		JSONParser parser = new JSONParser();
-		JSONObject object;
 		try {
-			object = (JSONObject) parser.parse(new FileReader("src/spacedeck/Settings.json"));
+			Object object = parser.parse(new FileReader(path));
 			return object;
 		} catch (IOException e) {
 			System.out.println("[ERROR] IOException loading file. " + path);
@@ -262,6 +261,50 @@ public class SpaceDeck extends Application {
 			newPlanet.setPopulation(population);
 			newPlanet.setDiameter(diameter);
 			newPlanet.setEnvironment(environment);
+
+			JSONArray levels = (JSONArray) planet.get("levels");
+
+			if (levels == null) return;
+
+			for (Object l : levels) {
+				JSONObject levelInfo = (JSONObject) l;
+
+				JSONObject opponentInfo = (JSONObject) levelInfo.get("opponent");
+				String opponentName = (String) opponentInfo.get("name");
+				int fuel = (int) (long) opponentInfo.get("fuel");
+				int attack = (int) (long) opponentInfo.get("attack");
+				String aiInfo = (String) opponentInfo.get("ai");
+				AILevel ai = null;
+
+				switch (aiInfo) {
+					case "easy":
+						ai = AILevel.EASY;
+						break;
+					case "medium":
+						ai = AILevel.MEDIUM;
+						break;
+					case "advanced":
+						ai = AILevel.ADVANCED;
+						break;
+					case "random":
+						ai = AILevel.RANDOM;
+						break;
+					default:
+						break;
+				}
+
+				Opponent opponent = new Opponent(opponentName, fuel, attack, ai);
+
+				JSONArray deck = (JSONArray) opponentInfo.get("deck");
+				for (Object c : deck) {
+					Card card = Card.searchCard((String) c);
+					if (card == null) continue;
+					opponent.addCard(card);
+				}
+
+				Level level = new Level(opponent);
+				newPlanet.addLevel(level);
+			}
 			for (Object s : champions) {
 				newPlanet.getChampions().add(new Opponent((String) s, 20, 1, AILevel.ADVANCED));
 			}

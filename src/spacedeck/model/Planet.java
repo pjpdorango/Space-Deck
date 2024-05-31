@@ -54,6 +54,11 @@ public class Planet {
 		return this.levels;
 	}
 
+	public void addLevel(Level l) {
+		levels.add(l);
+		l.setPlanet(this);
+	}
+
 	public static ArrayList<Planet> getPlanets() {
 		return planets;
 	}

@@ -12,6 +12,7 @@ import java.util.ArrayList;
  */
 public class Level {
 	private Opponent opponent;
+	private Planet planet;
 	private ArrayList<Item> rewards = new ArrayList<>();
 	
 	public Level(Opponent e) {
@@ -28,5 +29,13 @@ public class Level {
 
 	public ArrayList<Item> getRewards() {
 		return rewards;
+	}
+
+	public void setPlanet(Planet p) {
+		planet = p;
+	}
+
+	public Planet getPlanet() {
+		return this.planet;
 	}
 }

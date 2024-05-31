@@ -7,6 +7,28 @@
 		"environment" : "Harsh Snowy Tundra",
 		"champions" : [
 			"Mizuki", "secret", "shhh", "cant tell u"
+		],
+		"levels" : [
+			{
+				"opponent" : {
+					"name" : "Chisaki",
+					"fuel" : 50,
+					"attack" : 4,
+					"deck" : [
+						"Among Us",
+						"Among Us",
+						"Tiny Khez'ol"
+					],
+					"ai" : "advanced"
+				},
+				"rewards" : [
+					{
+						"name" : "Token",
+						"amount" : 100,
+						"icon" : "token.png"
+					}
+				]
+			}
 		]
 	},{
 		"name" : "Lunaris IX",

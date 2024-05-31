@@ -16,6 +16,7 @@ import spacedeck.model.Deckable;
 import spacedeck.model.AILevel;
 import spacedeck.model.Character;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,6 +66,8 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import spacedeck.SpaceDeck;
 import spacedeck.exceptions.CardAlreadyActiveException;
 import spacedeck.exceptions.CardNotInDeckException;
@@ -73,6 +76,7 @@ import spacedeck.exceptions.InsufficientFuelException;
 import spacedeck.model.Item;
 import spacedeck.model.Level;
 import spacedeck.model.OpponentMove;
+import spacedeck.model.Planet;
 import spacedeck.util.NumberTransition;
 import spacedeck.util.Playable;
 import spacedeck.util.TransitionPlayer;
@@ -143,6 +147,7 @@ public class BattleScreenController implements Initializable {
 
 	// PRIVATE LEVEL INFO
 	private Level currentLevel;
+	private Planet currentPlanet;
     
     // TRANSITIONS
     private TranslateTransition slotInvalid;
@@ -186,10 +191,13 @@ public class BattleScreenController implements Initializable {
         
 		// Instantiate Player
 		player = SpaceDeck.getPlayer();
-		player.getDeck().add(Card.getRandomCard());
+		player.reset();
+		player.getDeck().add(Card.searchCard("Among Us"));
+		player.getDeck().add(Card.searchCard("Among Us"));
+		player.getDeck().add(Card.searchCard("Among Us"));
 		
 		// Instantiate Opponent
-		opponent = new Opponent("Bob Ross", 20, 3, AILevel.ADVANCED);
+		opponent = new Opponent("TEST", 20, 3, AILevel.ADVANCED);
 
 		currentLevel = new Level(opponent);
 		currentLevel.getRewards().add(new Item("Token", 
@@ -1522,8 +1530,38 @@ public class BattleScreenController implements Initializable {
 			currentRowIndex++;
 		}
 
-
 		queueEvents(queue, GameState.WON);
+
+		updatePlayerData();
+	}
+	
+	private void updatePlayerData() {
+		int actualPlanet = Planet.getPlanets().indexOf(currentPlanet) + 1;
+		List<Level> levels = currentPlanet.getLevels();
+		int actualLevel = levels.indexOf(currentLevel);
+		JSONObject playerData = (JSONObject) SpaceDeck.fastOpenJSON("src/spacedeck/Profile.json");
+		JSONObject completed = (JSONObject) playerData.get("completed");
+		int planet = (int) (long) completed.get("planet");
+		int level = (int) (long) completed.get("level");
+
+		System.out.println("planet (" + planet + ") != actualPlanet (" + actualPlanet + ");");
+		System.out.println("actualLevel (" + actualLevel + ") != level (" + level + ");");
+		if (planet != actualPlanet || actualLevel != level) return;
+		
+		level++;
+		if (level + 1 >= currentPlanet.getLevels().size()) {
+			planet++;
+			level = 0;
+		}
+
+		completed.put("planet", planet);
+		completed.put("level", level);
+		
+		try (PrintWriter writer = new PrintWriter("src/spacedeck/Profile.json")) {
+			playerData.writeJSONString(writer);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void lose() {
@@ -1578,8 +1616,9 @@ public class BattleScreenController implements Initializable {
 
 	public void setLevel(Level l) {
 		this.currentLevel = l;
-		createOpponentDeck();
+		this.currentPlanet = l.getPlanet();
 		this.opponent = l.getOpponent();
+		createOpponentDeck();
 	}
 
 	public Level getLevel() {

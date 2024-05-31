@@ -32,7 +32,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.json.simple.JSONObject;
 import spacedeck.SpaceDeck;
+import spacedeck.battlescreen.BattleScreenController;
+import spacedeck.model.Level;
 
 /**
  * FXML Controller class
@@ -43,8 +46,6 @@ public class LevelSelectionScreenController implements Initializable {
 
 	@FXML
 	private AnchorPane levelContainer;
-
-	private int selectedLevel;
 	@FXML
 	private ImageView battleIcon;
 	private Image originalBattleIcon;
@@ -63,20 +64,41 @@ public class LevelSelectionScreenController implements Initializable {
 	private VBox championsList;
 	@FXML
 	private Text description;
+	@FXML
+	private ImageView level1;
+	@FXML
+	private ImageView level2;
+	@FXML
+	private ImageView level3;
+	@FXML
+	private ImageView level4;
 
 	private boolean isScreenActive;
+	private int selectedLevel;
+	private Planet planet;
+
+	private ImageView[] levels;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+		levels = new ImageView[] { level1, level2, level3, level4 };
+		
 		isScreenActive = true;
 		selectedLevel = -1;
 		originalBattleIcon = battleIcon.getImage();
 		greyScaleBattleIcon = makeGreyScale(battleIcon);
 		disableBattle();
     }    
+
+	private void lockLevel(ImageView level) {
+		level.setImage(makeGreyScale(level));
+		level.setOnMouseEntered(null);
+		level.setOnMouseExited(null);
+		level.setOnMouseClicked(null);
+	}
 
 	@FXML
 	private void buttonHoverEnter(MouseEvent event) {
@@ -164,7 +186,12 @@ public class LevelSelectionScreenController implements Initializable {
 
 		isScreenActive = false;
 
-		SpaceDeck.transitionToScene(((Node) ev.getSource()).getScene(), SpaceDeck.SceneType.BattleScreen);
+		FXMLLoader loader = SpaceDeck.transitionToScene(((Node) ev.getSource()).getScene(), SpaceDeck.SceneType.BattleScreen);
+		System.out.println("Size: " + planet.getLevels().size() + ", selectedLevel: " + selectedLevel);
+		if (selectedLevel < planet.getLevels().size()) {
+			Level level = planet.getLevels().get(selectedLevel);
+			((BattleScreenController) loader.getController()).setLevel(level);
+		}
 	}
 
 	private Image makeGreyScale(ImageView img) {
@@ -189,6 +216,7 @@ public class LevelSelectionScreenController implements Initializable {
 	}
 
 	public void setPlanet(Planet p) {
+		planet = p;
 		planetImage.setImage(new Image(SpaceDeck.class.getResourceAsStream("/spacedeck/media/" + p.getName() + ".png")));
 		planetName.setText(p.getName());
 		description.setText(p.getDescription());
@@ -204,6 +232,23 @@ public class LevelSelectionScreenController implements Initializable {
 			champ.setFill(Color.WHITE);
 			championsList.getChildren().add(champ);
 		}		
+
+		JSONObject profile = (JSONObject) SpaceDeck.fastOpenJSON("src/spacedeck/Profile.json");
+
+		JSONObject completed = (JSONObject) profile.get("completed");
+		int unlocked = (int) (long) completed.get("level");
+		int unlockedPlanet = (int) (long) completed.get("planet");
+		int currentPlanetIndex = Planet.getPlanets().indexOf(planet);
+
+		for (int i = 1; i <= levels.length; i++) {
+			if (currentPlanetIndex + 1 == unlockedPlanet) {
+				if (i > unlocked + 1) {
+					lockLevel(levels[i - 1]);
+				}
+			} else if (currentPlanetIndex + 1 > unlockedPlanet) {
+				lockLevel(levels[i - 1]);
+			}
+		}
 	}
 
 	@FXML

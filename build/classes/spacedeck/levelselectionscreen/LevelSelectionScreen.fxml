@@ -35,7 +35,7 @@
                   </ImageView>
                   <AnchorPane fx:id="levelContainer" layoutX="192.0" layoutY="123.0">
                      <children>
-                        <ImageView fitHeight="51.0" fitWidth="58.0" layoutY="98.0" onMouseClicked="#selectLevel" onMouseEntered="#buttonHoverEnter" onMouseExited="#buttonHoverExit" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="level1" fitHeight="51.0" fitWidth="58.0" layoutY="98.0" onMouseClicked="#selectLevel" onMouseEntered="#buttonHoverEnter" onMouseExited="#buttonHoverExit" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../media/Level_Icon.png" />
                            </image>
@@ -45,7 +45,7 @@
                               <Font size="15.0" />
                            </font>
                         </Text>
-                        <ImageView fitHeight="51.0" fitWidth="58.0" layoutX="114.0" onMouseClicked="#selectLevel" onMouseEntered="#buttonHoverEnter" onMouseExited="#buttonHoverExit" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="level2" fitHeight="51.0" fitWidth="58.0" layoutX="114.0" onMouseClicked="#selectLevel" onMouseEntered="#buttonHoverEnter" onMouseExited="#buttonHoverExit" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../media/Level_Icon.png" />
                            </image>
@@ -55,7 +55,7 @@
                               <Font size="15.0" />
                            </font>
                         </Text>
-                        <ImageView fitHeight="51.0" fitWidth="58.0" layoutX="114.0" layoutY="194.0" onMouseClicked="#selectLevel" onMouseEntered="#buttonHoverEnter" onMouseExited="#buttonHoverExit" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="level3" fitHeight="51.0" fitWidth="58.0" layoutX="114.0" layoutY="194.0" onMouseClicked="#selectLevel" onMouseEntered="#buttonHoverEnter" onMouseExited="#buttonHoverExit" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../media/Level_Icon.png" />
                            </image>
@@ -65,7 +65,7 @@
                               <Font size="15.0" />
                            </font>
                         </Text>
-                        <ImageView fitHeight="62.0" fitWidth="70.0" layoutX="228.0" layoutY="93.0" onMouseClicked="#selectLevel" onMouseEntered="#buttonHoverEnter" onMouseExited="#buttonHoverExit" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="level4" fitHeight="62.0" fitWidth="70.0" layoutX="228.0" layoutY="93.0" onMouseClicked="#selectLevel" onMouseEntered="#buttonHoverEnter" onMouseExited="#buttonHoverExit" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../media/Level_Icon_Apex.png" />
                            </image>
