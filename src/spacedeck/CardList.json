@@ -18,7 +18,7 @@
         "attack": 4,
         "health": 16,
         "description": "Dull claws, but hard shell. Wait, how did he get out of his tank...?",
-        "icon": "TEMP_alien_monster.png",
+        "icon": "Lobster Joe.png",
 		"legendary" : false
     },
 	{
@@ -28,7 +28,7 @@
         "cost": 5,
         "attack": 5,
         "health": 18,
-        "description": "Soft and cuddly; an unknown creature from an unknown land. What is its origin?",
+        "description": "Soft and cuddly; an unknown creature from an unknown land. Where could it be from?",
         "icon": "TEMP_card_character.png",
 		"legendary" : false
 	},

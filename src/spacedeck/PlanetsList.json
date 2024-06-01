@@ -21,9 +21,6 @@
 				},
 				"rewards" : [
 					{
-						"name" : "Token",
-						"amount" : 100,
-						"icon" : "token.png"
 					}
 				]
 			},
@@ -35,13 +32,10 @@
 					"deck" : [
 						"Tiny Khez'ol"
 					],
-					"ai" : "random"
+					"ai" : "advanced"
 				},
 				"rewards" : [
 					{
-						"name" : "Token",
-						"amount" : 300,
-						"icon" : "token.png"
 					}
 				]
 			}

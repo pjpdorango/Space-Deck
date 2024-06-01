@@ -138,7 +138,7 @@ public class LevelSelectionScreenController implements Initializable {
 		// levelNumber is which level is being contained
 		// Level 1 will have the levelNumber = 0, etc.
 		Node level = (Node) event.getSource();	
-		int levelNumber = levelContainer.getChildren().indexOf(level);
+		int levelNumber = levelContainer.getChildren().indexOf(level) / 2;
 		
 		// Set the effect on the level icon
 		DropShadow selectedLevelEffect = new DropShadow();
@@ -188,7 +188,7 @@ public class LevelSelectionScreenController implements Initializable {
 
 		FXMLLoader loader = SpaceDeck.transitionToScene(((Node) ev.getSource()).getScene(), SpaceDeck.SceneType.BattleScreen);
 		if (selectedLevel <= planet.getLevels().size()) {
-			Level level = planet.getLevels().get(selectedLevel - 1);
+			Level level = planet.getLevels().get(selectedLevel);
 			((BattleScreenController) loader.getController()).setLevel(level);
 			((BattleScreenController) loader.getController()).setPlanet(planet);
 		}

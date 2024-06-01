@@ -52,7 +52,17 @@ public class CardDisplayPanelController implements Initializable {
     public void setCard(Card c) {
         thisCard = c;
 		cardCost.setText(Integer.toString(c.getCost()));
-		cardIcon.setImage(new Image(getClass().getResourceAsStream("/spacedeck/media/" + c.getIcon())));
+		Image icon = new Image(getClass().getResourceAsStream("/spacedeck/media/" + thisCard.getIcon()));
+		try {
+			if (thisCard instanceof Card && ((Card) thisCard).getIsLegendary()) {
+				((VBox) cardIcon.getParent()).setStyle("-fx-background-image: url(/spacedeck/media/" + thisCard.getIcon() + "); -fx-background-size: 100% 100%");
+				cardIcon.setImage(null);
+			} else {
+				cardIcon.setImage(icon);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		cardName.setText(c.getName());
 		cardDescription.setText(c.getDescription());
     }

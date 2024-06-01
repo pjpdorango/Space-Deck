@@ -50,16 +50,7 @@ public class CollectionScreenController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        currentPlayer = new Player("Awesome", 20, 3);
-        currentPlayer.addToCollection(Card.getRandomCard());
-        currentPlayer.addToCollection(Card.getRandomCard());
-        currentPlayer.addToCollection(Card.getRandomCard());
-        currentPlayer.addToCollection(Card.getRandomCard());
-        currentPlayer.addToCollection(Card.getRandomCard());
-        currentPlayer.addToCollection(Card.getRandomCard());
-        currentPlayer.addToCollection(Card.getRandomCard());
-        currentPlayer.addToCollection(Card.getRandomCard());
-        currentPlayer.addToCollection(Card.getRandomCard());
+		currentPlayer = SpaceDeck.getPlayer();
         
         addCardsToGrid();
         setSelectedCard(currentPlayer.getCollection().get(0));

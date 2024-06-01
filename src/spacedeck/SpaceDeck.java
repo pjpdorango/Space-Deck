@@ -299,11 +299,9 @@ public class SpaceDeck extends Application {
 
 				Opponent opponent = new Opponent(opponentName, fuel, attack, ai);
 
-				System.out.println("Added Level " + i + " to Planet " + newPlanet.getName());
 				JSONArray deck = (JSONArray) opponentInfo.get("deck");
 				for (Object c : deck) {
 					Card card = Card.searchCard((String) c);
-					System.out.println("Added Card " + card.getName() + " to Opponent " + i);
 					opponent.addCard(card);
 				}
 

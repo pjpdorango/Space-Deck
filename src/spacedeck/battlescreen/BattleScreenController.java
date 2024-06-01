@@ -1542,9 +1542,6 @@ public class BattleScreenController implements Initializable {
 	
 	private void updatePlayerData() {
 		int actualPlanet = Planet.getPlanets().indexOf(currentPlanet) + 1;
-		System.out.println("actualPlanet: " + actualPlanet);
-		System.out.println("currentPlanet: " + currentPlanet);
-		System.out.println("currentLevel: " + currentLevel);
 		List<Level> levels = currentPlanet.getLevels();
 		int actualLevel = levels.indexOf(currentLevel);
 		JSONObject playerData = (JSONObject) SpaceDeck.fastOpenJSON("src/spacedeck/Profile.json");
@@ -1552,6 +1549,8 @@ public class BattleScreenController implements Initializable {
 		int planet = (int) (long) completed.get("planet");
 		int level = (int) (long) completed.get("level");
 
+		System.out.println("planet (" + planet + ") != actualPlanet (" + actualPlanet + ")");
+		System.out.println("actualPlanet (" + actualPlanet + ") != level (" + level + ")");
 		if (planet != actualPlanet || actualLevel != level) return;
 		
 		level++;
