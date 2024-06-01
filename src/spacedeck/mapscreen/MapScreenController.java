@@ -158,7 +158,6 @@ public class MapScreenController implements Initializable {
 		WritableImage newImage = new WritableImage((int) image.getWidth(), (int) image.getHeight());
 		PixelWriter pwNewImage = newImage.getPixelWriter();
 
-		System.out.println("GREYING START!");
 		for (int i = 0; i < (int) image.getWidth(); i++) {
 			for (int j = 0; j < (int) image.getHeight(); j++) {
 				Color color = px.getColor(i, j);
@@ -169,7 +168,6 @@ public class MapScreenController implements Initializable {
 				pwNewImage.setColor(i, j, new Color(greyColor, greyColor, greyColor, color.getOpacity()));
 			}
 		}
-		System.out.println("GREYING SUCCESS!");
 		
 		img.setImage(newImage);
 	}

@@ -133,7 +133,7 @@ public class BattleScreenController implements Initializable {
 	private LinearGradient UPDATED_TURN_BUTTON_GRADIENT;    
 	private LinearGradient INITIAL_GLOW_GRADIENT;
 	private LinearGradient UPDATED_GLOW_GRADIENT;    
-	private int FUEL_INCREMENT = 2;
+	private final int FUEL_INCREMENT = 2;
 	private int fuelAcceleration;
     private Player player;
     private Opponent opponent;
@@ -195,6 +195,7 @@ public class BattleScreenController implements Initializable {
 		// Instantiate Player
 		player = SpaceDeck.getPlayer();
 		player.reset();
+		player.getDeck().clear();
 		try {
 			player.addCard(Card.searchCard("Among Us"));
 			player.addCard(Card.searchCard("Tiny Khez'ol"));
@@ -283,7 +284,6 @@ public class BattleScreenController implements Initializable {
         ArrayList<Deckable> playerDeck = player.getDeck();
         try {
 			for (int i = 0; i < playerDeck.size(); i++) {
-				System.out.println(i);
 				Deckable currentCard = playerDeck.get(i);
 				
 				FXMLLoader cardLoader = new FXMLLoader(getClass().getResource("CardPanel.fxml"));
@@ -480,7 +480,7 @@ public class BattleScreenController implements Initializable {
 		state = GameState.TRANSITIONING;
 
 		songPlayer.setVolume(0);
-		SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.BattleScreen);
+		((BattleScreenController) SpaceDeck.transitionToScene(((Node) event.getSource()).getScene(), SpaceDeck.SceneType.BattleScreen).getController()).setLevel(currentLevel);
 	}
 
     @FXML
@@ -729,22 +729,6 @@ public class BattleScreenController implements Initializable {
 		tier.add((Playable) () -> {
 			attacker.attack(target);
 			updateFuel();
-		});
-
-		tier.add((Playable) () -> {
-			int fuel = targetCharacter.getFuel();
-			if (fuel <= 0) {
-				// makes fuel 0
-				targetCharacter.addFuel(-fuel);
-				updateFuel();
-
-				// DIE
-				if (targetCharacter == opponent) {
-					win();
-				} else {
-					lose();
-				}
-			}
 		});
 
 		Media attackSfx = new Media(getClass().getResource("/spacedeck/audio/normalAttack.wav").toExternalForm());
@@ -1083,6 +1067,7 @@ public class BattleScreenController implements Initializable {
 			slideToDeck.setNewNode(newCard);
 			slideToDeck.setScale(scale);
 			slideToDeck.setDeckable(newCardController.getCard());
+			fuelAcceleration++;
 			slideToDeck.setByX((cardStackDestination.getMinX() - origin.getMinX()) / scale);
 			slideToDeck.setByY((cardStackDestination.getMinY() - origin.getMinY()) / scale);
 			slideToDeck.setDuration(Duration.millis(300));
@@ -1183,7 +1168,8 @@ public class BattleScreenController implements Initializable {
 		clearHighlights();
 
 		if (turn == player) {
-			turn.addFuel(fuelAcceleration);
+			player.addFuel(fuelAcceleration);
+			fuelAcceleration++;
 			updateFuel();
 
 			turn = opponent;
@@ -1193,8 +1179,7 @@ public class BattleScreenController implements Initializable {
 			ArrayList<OpponentMove> moveList = opponent.decideMoves(player);
 			executeMoves(moveList);
 		} else {
-			turn.addFuel(fuelAcceleration);
-			fuelAcceleration++;
+			opponent.addFuel(fuelAcceleration);
 			updateFuel();
 
 			if (fuelAcceleration > 5) fuelAcceleration = 5;
@@ -1373,6 +1358,10 @@ public class BattleScreenController implements Initializable {
 //		}
 
 		Transition lastLeadingTransition = queueEvents(executionQueue, GameState.GAME);
+		if (lastLeadingTransition == null) {
+			endTurn();
+			return;
+		}
 		EventHandler<ActionEvent> oldOnFinished = lastLeadingTransition.getOnFinished();
 
 		lastLeadingTransition.setOnFinished((e) -> {
@@ -1553,6 +1542,9 @@ public class BattleScreenController implements Initializable {
 	
 	private void updatePlayerData() {
 		int actualPlanet = Planet.getPlanets().indexOf(currentPlanet) + 1;
+		System.out.println("actualPlanet: " + actualPlanet);
+		System.out.println("currentPlanet: " + currentPlanet);
+		System.out.println("currentLevel: " + currentLevel);
 		List<Level> levels = currentPlanet.getLevels();
 		int actualLevel = levels.indexOf(currentLevel);
 		JSONObject playerData = (JSONObject) SpaceDeck.fastOpenJSON("src/spacedeck/Profile.json");
@@ -1560,12 +1552,10 @@ public class BattleScreenController implements Initializable {
 		int planet = (int) (long) completed.get("planet");
 		int level = (int) (long) completed.get("level");
 
-		System.out.println("planet (" + planet + ") != actualPlanet (" + actualPlanet + ");");
-		System.out.println("actualLevel (" + actualLevel + ") != level (" + level + ");");
 		if (planet != actualPlanet || actualLevel != level) return;
 		
 		level++;
-		if (level + 1 >= currentPlanet.getLevels().size()) {
+		if (level >= currentPlanet.getLevels().size()) {
 			planet++;
 			level = 0;
 		}
@@ -1633,8 +1623,13 @@ public class BattleScreenController implements Initializable {
 	public void setLevel(Level l) {
 		this.currentLevel = l;
 		this.currentPlanet = l.getPlanet();
-		this.opponent = l.getOpponent();
+		this.opponent = Opponent.clone(l.getOpponent());
+		opponent.reset();
 		createOpponentDeck();
+	}
+
+	public void setPlanet(Planet p) {
+		this.currentPlanet = p;
 	}
 
 	public Level getLevel() {

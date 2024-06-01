@@ -185,14 +185,6 @@ public class CardPanelController implements Initializable {
 		Image icon = new Image(getClass().getResourceAsStream("/spacedeck/media/" + thisCard.getIcon()));
 		try {
 			if (thisCard instanceof Card && ((Card) thisCard).getIsLegendary()) {
-//				((VBox) iconElement.getParent()).setBackground(new Background(
-//						new BackgroundImage(icon, 
-//								BackgroundRepeat.NO_REPEAT, 
-//								BackgroundRepeat.NO_REPEAT, 
-//								BackgroundPosition.DEFAULT, 
-//								new BackgroundSize(100, 100, true, true, false, false))
-//					)
-//				);
 				((VBox) iconElement.getParent()).setStyle("-fx-background-image: url(/spacedeck/media/" + thisCard.getIcon() + "); -fx-background-size: 100% 100%");
 			} else {
 				iconElement.setImage(icon);

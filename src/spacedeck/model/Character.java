@@ -28,9 +28,7 @@ public abstract class Character implements Attackable {
     }
     
     public void addCard(Deckable c) throws FullDeckException {
-		if (c == null) {
-			return;
-		}
+		if (c == null) { return; }
         if (deck.size() >= MAXCARDS) {
             throw new FullDeckException("Your deck cannot have more than " + MAXCARDS + " cards.");
         }
@@ -143,7 +141,6 @@ public abstract class Character implements Attackable {
 		for (int i = 0; i < playingCards.length; i++) {
 			playingCards[i] = null;
 		}
-		deck.clear();
     }
     
     public ArrayList<Deckable> getDeck() {
@@ -152,5 +149,9 @@ public abstract class Character implements Attackable {
 
 	public Card[] getPlayingField() {
 		return playingCards;
+	}
+
+	public int getMaxFuel() {
+		return maxFuel;
 	}
 }

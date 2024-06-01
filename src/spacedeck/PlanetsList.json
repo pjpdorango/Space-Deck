@@ -12,11 +12,9 @@
 			{
 				"opponent" : {
 					"name" : "Chisaki",
-					"fuel" : 50,
-					"attack" : 4,
+					"fuel" : 20,
+					"attack" : 2,
 					"deck" : [
-						"Among Us",
-						"Among Us",
 						"Tiny Khez'ol"
 					],
 					"ai" : "advanced"
@@ -25,6 +23,24 @@
 					{
 						"name" : "Token",
 						"amount" : 100,
+						"icon" : "token.png"
+					}
+				]
+			},
+			{
+				"opponent" : {
+					"name" : "Just a Guy",
+					"fuel" : 10,
+					"attack" : 5,
+					"deck" : [
+						"Tiny Khez'ol"
+					],
+					"ai" : "random"
+				},
+				"rewards" : [
+					{
+						"name" : "Token",
+						"amount" : 300,
 						"icon" : "token.png"
 					}
 				]

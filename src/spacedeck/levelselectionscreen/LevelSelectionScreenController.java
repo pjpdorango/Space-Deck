@@ -187,10 +187,10 @@ public class LevelSelectionScreenController implements Initializable {
 		isScreenActive = false;
 
 		FXMLLoader loader = SpaceDeck.transitionToScene(((Node) ev.getSource()).getScene(), SpaceDeck.SceneType.BattleScreen);
-		System.out.println("Size: " + planet.getLevels().size() + ", selectedLevel: " + selectedLevel);
-		if (selectedLevel < planet.getLevels().size()) {
-			Level level = planet.getLevels().get(selectedLevel);
+		if (selectedLevel <= planet.getLevels().size()) {
+			Level level = planet.getLevels().get(selectedLevel - 1);
 			((BattleScreenController) loader.getController()).setLevel(level);
+			((BattleScreenController) loader.getController()).setPlanet(planet);
 		}
 	}
 

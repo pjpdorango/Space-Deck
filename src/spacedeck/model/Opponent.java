@@ -7,6 +7,7 @@ package spacedeck.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import spacedeck.exceptions.FullDeckException;
 import spacedeck.exceptions.FullFieldException;
 import spacedeck.exceptions.InsufficientFuelException;
 
@@ -128,23 +129,24 @@ public class Opponent extends Character {
 			}
 			
 			// 1/2 chance to deploy a card
-			if (rand.nextInt(2) == 0 && !hasFullField()) {
+			if (rand.nextInt(2) == 0 && !hasFullField() && !deck.isEmpty()) {
 				OpponentMove move = new OpponentMove(OpponentMove.MoveType.DEPLOY_CARD);
 				try {
 					move.setDeployCard((Card) deck.get(rand.nextInt(deck.size())));
 					move.setDeployTarget(getRandomAvailableSlot());
+					if (move.getDeployCard().getCost() < getFuel()) moveset.add(move);
 				} catch (FullFieldException e) {
 					System.out.println(e.getMessage());
 				}
-				moveset.add(move);
 			}
 
 			// 1/2 chance to attack with any of avialable playing cards
 			for (int i = 0; i < playingCards.length; i++) {
 				Card c = playingCards[i];
-				if (rand.nextInt(2) == 0 && c != null) {
+				if (rand.nextInt(2) == 0 && c != null && !hasEmptyField(player)) {
 					OpponentMove move = new OpponentMove(OpponentMove.MoveType.ATTACK);
 					move.setAttacker(i);
+					move.setAttackTarget(getRandomOccupiedPlayerSlot(player));
 					moveset.add(move);
 				}
 			}
@@ -344,6 +346,21 @@ public class Opponent extends Character {
 		}
 
 		return hasCards;
+	}
+
+	public AILevel getAI() {
+		return difficulty;
+	}
+
+	public static Opponent clone(Opponent o) {
+		Opponent newOpp = new Opponent(o.getName(), o.getMaxFuel(), o.getAttack(), o.getAI());
+		for (Deckable c : o.getDeck()) {
+			try {
+				newOpp.addCard(Card.cloneCard((Card) c));
+			} catch (FullDeckException e) { }
+		}
+
+		return newOpp;
 	}
     
 }

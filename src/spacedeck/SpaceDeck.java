@@ -257,6 +257,7 @@ public class SpaceDeck extends Application {
 			JSONArray champions = (JSONArray) planet.get("champions");
 
 			Planet newPlanet = new Planet(name);
+			System.out.println("Added Planet " + newPlanet.getName());
 			newPlanet.setDescription(description);
 			newPlanet.setPopulation(population);
 			newPlanet.setDiameter(diameter);
@@ -264,9 +265,11 @@ public class SpaceDeck extends Application {
 
 			JSONArray levels = (JSONArray) planet.get("levels");
 
-			if (levels == null) return;
+			if (levels == null) continue;
 
+			int i = 0;
 			for (Object l : levels) {
+				i++;
 				JSONObject levelInfo = (JSONObject) l;
 
 				JSONObject opponentInfo = (JSONObject) levelInfo.get("opponent");
@@ -296,10 +299,11 @@ public class SpaceDeck extends Application {
 
 				Opponent opponent = new Opponent(opponentName, fuel, attack, ai);
 
+				System.out.println("Added Level " + i + " to Planet " + newPlanet.getName());
 				JSONArray deck = (JSONArray) opponentInfo.get("deck");
 				for (Object c : deck) {
 					Card card = Card.searchCard((String) c);
-					if (card == null) continue;
+					System.out.println("Added Card " + card.getName() + " to Opponent " + i);
 					opponent.addCard(card);
 				}
 
