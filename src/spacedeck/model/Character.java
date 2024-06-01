@@ -115,10 +115,6 @@ public abstract class Character implements Attackable {
     @Override
     public void takeDamage(int dmg) {
         fuel -= dmg;
-        
-        if (fuel <= 0) {
-            // TODO die
-        }
     }
     // GETTERS & SETTERS
 
@@ -144,6 +140,10 @@ public abstract class Character implements Attackable {
     
     public void reset() {
         fuel = INITIALFUEL;
+		for (int i = 0; i < playingCards.length; i++) {
+			playingCards[i] = null;
+		}
+		deck.clear();
     }
     
     public ArrayList<Deckable> getDeck() {

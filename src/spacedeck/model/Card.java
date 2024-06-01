@@ -13,6 +13,7 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
     private String strongAgainst, weakAgainst;
     private ArrayList<Gear> currentGears = new ArrayList<>();
 	private static ArrayList<Card> allCards = new ArrayList<>();
+	private static ArrayList<Card> stackPool = new ArrayList<>();
     private int cost, attack, health, maxHealth;
     private int level = 0, xp = 0;
     private boolean isActive = false;
@@ -166,6 +167,12 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
 		return Card.cloneCard(allCards.get(rand.nextInt(allCards.size())));
 	}
 
+	public static Card getRandomStackCard() {
+		Random rand = new Random();
+
+		return Card.cloneCard(stackPool.get(rand.nextInt(stackPool.size())));
+	}
+
 	public static Card searchCard(String name) {
 		for (Card card : allCards) {
 			if (card.getName().equals(name)) {
@@ -239,5 +246,9 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
 
 	public boolean getIsLegendary() {
 		return isLegendary;
+	}
+
+	public static ArrayList<Card> getStackPool() {
+		return stackPool;
 	}
 }

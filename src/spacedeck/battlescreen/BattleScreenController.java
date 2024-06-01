@@ -133,6 +133,8 @@ public class BattleScreenController implements Initializable {
 	private LinearGradient UPDATED_TURN_BUTTON_GRADIENT;    
 	private LinearGradient INITIAL_GLOW_GRADIENT;
 	private LinearGradient UPDATED_GLOW_GRADIENT;    
+	private int FUEL_INCREMENT = 2;
+	private int fuelAcceleration;
     private Player player;
     private Opponent opponent;
 	private Character turn;
@@ -156,6 +158,7 @@ public class BattleScreenController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+		fuelAcceleration = FUEL_INCREMENT;
 		state = GameState.GAME;
 		selectedPlayerSlot = -1;
 
@@ -194,9 +197,11 @@ public class BattleScreenController implements Initializable {
 		player.reset();
 		try {
 			player.addCard(Card.searchCard("Among Us"));
-			player.addCard(Card.searchCard("Among Us"));
+			player.addCard(Card.searchCard("Tiny Khez'ol"));
 			player.addCard(Card.searchCard("Kira"));
-		} catch (Exception e) {
+			player.addCard(Card.searchCard("Mizuki"));
+			player.addCard(Card.searchCard("Onyx"));
+		} catch (FullDeckException e) {
 			e.printStackTrace();
 		}
 		
@@ -1060,7 +1065,7 @@ public class BattleScreenController implements Initializable {
 
 			CardPanelController newCardController = newCardLoader.getController();
 			
-			newCardController.setCard(Card.getRandomCard());
+			newCardController.setCard(Card.getRandomStackCard());
 
 			try {
 				player.addCard(newCardController.getCard());
@@ -1178,14 +1183,21 @@ public class BattleScreenController implements Initializable {
 		clearHighlights();
 
 		if (turn == player) {
-			turn = opponent;
+			turn.addFuel(fuelAcceleration);
+			updateFuel();
 
+			turn = opponent;
 			turnButton.setBackground(Background.EMPTY);
 			turnIndicator.setOpacity(1);
 
 			ArrayList<OpponentMove> moveList = opponent.decideMoves(player);
 			executeMoves(moveList);
 		} else {
+			turn.addFuel(fuelAcceleration);
+			fuelAcceleration++;
+			updateFuel();
+
+			if (fuelAcceleration > 5) fuelAcceleration = 5;
 			turn = player;
 			turnButton.setBackground(new Background(new BackgroundFill(this.INITIAL_TURN_BUTTON_GRADIENT, new CornerRadii(20), Insets.EMPTY)));
 			turnButton.setOpacity(1);

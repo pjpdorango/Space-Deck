@@ -345,6 +345,9 @@ public class SpaceDeck extends Application {
 			if (card != null) {
 				card.setIcon(icon);
 				card.setDescription(description);
+				if (!card.getIsLegendary()) {
+					Card.getStackPool().add(card);
+				}
 			}	
 		}
 	}
