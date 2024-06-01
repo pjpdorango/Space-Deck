@@ -16,6 +16,7 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
     private int cost, attack, health, maxHealth;
     private int level = 0, xp = 0;
     private boolean isActive = false;
+	private boolean isLegendary;
     
     /**
      * @param n Name of the card.
@@ -39,6 +40,35 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
         this.maxHealth = h;
         this.health = h;
         this.icon = "";
+		this.isLegendary = false;
+		
+		allCards.add(this);
+    }
+
+    /**
+     * @param n Name of the card.
+     * @param r Region of the card.
+     * @param e Element of the card.
+     * @param s Element the card is strong against.
+     * @param w Element the card is weak against.
+     * @param c Fuel cost it takes to deploy the card.
+     * @param a Attack of the card.
+     * @param h Health of the card.
+	 * @param l Whether or not the card is legendary (icon will be full screen)
+     */
+    public Card(String n, String r, String e, String s, String w, int c, int a, int h, boolean l) {
+        this.name = n;
+        this.region = r;
+        this.element = e;
+        this.strongAgainst = s;
+        this.weakAgainst = w;
+        this.description = "???";
+        this.cost = c;
+        this.attack = a;
+        this.maxHealth = h;
+        this.health = h;
+        this.icon = "";
+		this.isLegendary = l;
 		
 		allCards.add(this);
     }
@@ -56,13 +86,13 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
 		Card newCard = null;
 		
 		if (card.getElement().equals("Water")) {
-			newCard = new WaterCard(card.name, card.region, card.cost, card.attack, card.health);
+			newCard = new WaterCard(card.name, card.region, card.cost, card.attack, card.health, card.isLegendary);
 		} else if (card.getElement().equals("Fire")) {
-			newCard = new FireCard(card.name, card.region, card.cost, card.attack, card.health);
+			newCard = new FireCard(card.name, card.region, card.cost, card.attack, card.health, card.isLegendary);
 		} else if (card.getElement().equals("Earth")) {
-			newCard = new EarthCard(card.name, card.region, card.cost, card.attack, card.health);
+			newCard = new EarthCard(card.name, card.region, card.cost, card.attack, card.health, card.isLegendary);
 		} else if (card.getElement().equals("Air")) {
-			newCard = new AirCard(card.name, card.region, card.cost, card.attack, card.health);
+			newCard = new AirCard(card.name, card.region, card.cost, card.attack, card.health, card.isLegendary);
 		}
 
 		newCard.currentGears.addAll(card.currentGears);
@@ -205,5 +235,9 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
 
 	public ArrayList<Gear> getGears() {
 		return currentGears;
+	}
+
+	public boolean getIsLegendary() {
+		return isLegendary;
 	}
 }

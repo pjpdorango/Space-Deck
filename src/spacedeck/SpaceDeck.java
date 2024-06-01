@@ -274,6 +274,7 @@ public class SpaceDeck extends Application {
 				int fuel = (int) (long) opponentInfo.get("fuel");
 				int attack = (int) (long) opponentInfo.get("attack");
 				String aiInfo = (String) opponentInfo.get("ai");
+
 				AILevel ai = null;
 
 				switch (aiInfo) {
@@ -326,18 +327,19 @@ public class SpaceDeck extends Application {
 			int attack = Long.valueOf((long) cardProperties.get("attack")).intValue();
 			int health = Long.valueOf((long) cardProperties.get("health")).intValue();
 			String description = (String) cardProperties.get("description");
-			String icon = (String) cardProperties.get("icon");
-			
+			String icon = "cards/" + (String) cardProperties.get("icon");
+			boolean legendary = (boolean) cardProperties.get("legendary");
+
 			Card card = null;
 			
 			if (element.equals("Fire")) {
-				card = new FireCard(name, region, cost, attack, health);
+				card = new FireCard(name, region, cost, attack, health, legendary);
 			} else if (element.equals("Water")) {
-				card = new WaterCard(name, region, cost, attack, health);
+				card = new WaterCard(name, region, cost, attack, health, legendary);
 			} else if (element.equals("Earth")) {
-				card = new EarthCard(name, region, cost, attack, health);
+				card = new EarthCard(name, region, cost, attack, health, legendary);
 			} else if (element.equals("Air")) {
-				card = new AirCard(name, region, cost, attack, health);
+				card = new AirCard(name, region, cost, attack, health, legendary);
 			} 
 			
 			if (card != null) {

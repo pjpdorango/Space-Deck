@@ -80,13 +80,13 @@ public class MapScreenController implements Initializable {
 		Planet destination;
 		
 		ImageView planet = (ImageView) event.getSource();
-		if (planet == cryoterra && unlocked <= 1) {
+		if (planet == cryoterra) {
 			destination = Planet.searchPlanet("Cryoterra");
-		} else if (planet == lunarisIX && unlocked <= 2) {
+		} else if (planet == lunarisIX) {
 			destination = Planet.searchPlanet("Lunaris IX");
-		} else if (planet == aurosMinoris && unlocked <= 3) {
+		} else if (planet == aurosMinoris) {
 			destination = Planet.searchPlanet("Auros Minoris");
-		} else if (planet == astraforge && unlocked <= 4) {
+		} else if (planet == astraforge) {
 			destination = Planet.searchPlanet("Astraforge");
 		} else return;
 

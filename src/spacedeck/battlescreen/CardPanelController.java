@@ -19,6 +19,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -173,11 +178,30 @@ public class CardPanelController implements Initializable {
 
 	public void updateAttributes(){
 		costElement.setText(Integer.toString(thisCard.getCost()));
-		Image icon = new Image(getClass().getResourceAsStream("/spacedeck/media/" + thisCard.getIcon()));
-		iconElement.setImage(icon);
 		nameElement.setText(thisCard.getName());
 		descriptionElement.setText(thisCard.getDescription());
 		String elementName = ((Card)thisCard).getElement();
+
+		Image icon = new Image(getClass().getResourceAsStream("/spacedeck/media/" + thisCard.getIcon()));
+		try {
+			if (thisCard instanceof Card && ((Card) thisCard).getIsLegendary()) {
+//				((VBox) iconElement.getParent()).setBackground(new Background(
+//						new BackgroundImage(icon, 
+//								BackgroundRepeat.NO_REPEAT, 
+//								BackgroundRepeat.NO_REPEAT, 
+//								BackgroundPosition.DEFAULT, 
+//								new BackgroundSize(100, 100, true, true, false, false))
+//					)
+//				);
+				((VBox) iconElement.getParent()).setStyle("-fx-background-image: url(/spacedeck/media/" + thisCard.getIcon() + "); -fx-background-size: 100% 100%");
+			} else {
+				iconElement.setImage(icon);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	
+
 		Image elementIcon = null;
 		if ("Fire".equals(elementName)) {
 			elementIcon = new Image(getClass().getResourceAsStream("/spacedeck/media/Fire Icon.png"));

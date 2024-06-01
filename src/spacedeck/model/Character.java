@@ -28,6 +28,9 @@ public abstract class Character implements Attackable {
     }
     
     public void addCard(Deckable c) throws FullDeckException {
+		if (c == null) {
+			return;
+		}
         if (deck.size() >= MAXCARDS) {
             throw new FullDeckException("Your deck cannot have more than " + MAXCARDS + " cards.");
         }

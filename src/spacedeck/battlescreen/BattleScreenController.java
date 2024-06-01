@@ -192,9 +192,13 @@ public class BattleScreenController implements Initializable {
 		// Instantiate Player
 		player = SpaceDeck.getPlayer();
 		player.reset();
-		player.getDeck().add(Card.searchCard("Among Us"));
-		player.getDeck().add(Card.searchCard("Among Us"));
-		player.getDeck().add(Card.searchCard("Among Us"));
+		try {
+			player.addCard(Card.searchCard("Among Us"));
+			player.addCard(Card.searchCard("Among Us"));
+			player.addCard(Card.searchCard("Kira"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		// Instantiate Opponent
 		opponent = new Opponent("TEST", 20, 3, AILevel.ADVANCED);
@@ -269,8 +273,8 @@ public class BattleScreenController implements Initializable {
 }
     
     public void createPlayerDeck() {
+		playerDeckElement.getChildren().clear();
         // Clear the player deck
-        playerDeckElement.getChildren().clear();
         ArrayList<Deckable> playerDeck = player.getDeck();
         try {
 			for (int i = 0; i < playerDeck.size(); i++) {

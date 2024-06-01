@@ -61,12 +61,10 @@
                               <String fx:value="deckCardCost" />
                               <String fx:value="title" />
                            </styleClass>
+                           <VBox.margin>
+                              <Insets bottom="40.0" />
+                           </VBox.margin>
                         </Text>
-                        <ImageView fitHeight="54.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true" styleClass="deckCardImage">
-                           <image>
-                              <Image url="@../media/TEMP_card_character.png" />
-                           </image>
-                        </ImageView>
                         <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Name">
                            <font>
                               <Font name="System Bold" size="17.0" />

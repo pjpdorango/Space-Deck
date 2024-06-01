@@ -33,7 +33,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
 .deckGear {
     -fx-border-radius: 5px;
     -fx-background-radius: 5px;
-    -fx-background-color: -fx-gear-bg-color;
     -fx-border-color: -fx-gear-border-color;
 }
 

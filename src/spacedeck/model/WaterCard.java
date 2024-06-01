@@ -8,6 +8,10 @@ public class WaterCard extends Card {
     public WaterCard(String n, int c, int a, int h) {
         super(n, "???", "Water", "Fire", "Air", c, a, h);
     }
+
+    public WaterCard(String n, String r, int c, int a, int h, boolean l) {
+        super(n, r, "Fire", "Earth", "Water", c, a, h, l);
+    }
     
     @Override
     public void specialAttack() {
