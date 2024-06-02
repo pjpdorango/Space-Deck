@@ -16,6 +16,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -184,13 +185,29 @@ public class LevelSelectionScreenController implements Initializable {
 		// Only do if screen is active
 		if (!isScreenActive) return;
 
-		isScreenActive = false;
-
-		FXMLLoader loader = SpaceDeck.transitionToScene(((Node) ev.getSource()).getScene(), SpaceDeck.SceneType.BattleScreen);
 		if (selectedLevel <= planet.getLevels().size()) {
 			Level level = planet.getLevels().get(selectedLevel);
-			((BattleScreenController) loader.getController()).setLevel(level);
-			((BattleScreenController) loader.getController()).setPlanet(planet);
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("DeckSelectionScreen.fxml"));
+			AnchorPane pane;
+			try {
+				pane = (AnchorPane) loader.load();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return;
+			}
+
+			DeckSelectionScreenController controller = (DeckSelectionScreenController) loader.getController();
+			controller.setLevel(level);
+			controller.setPlanet(planet);
+
+			AnchorPane root = ((AnchorPane) ((Node) ev.getSource()).getScene().getRoot());
+			root.getChildren().add(pane);
+			for (Node child : root.getChildren()) {
+				if (child != pane) {
+					child.setOpacity(0.3);
+				}
+			}
+			isScreenActive = false;
 		}
 	}
 

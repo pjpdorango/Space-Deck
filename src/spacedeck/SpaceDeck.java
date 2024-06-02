@@ -257,7 +257,6 @@ public class SpaceDeck extends Application {
 			JSONArray champions = (JSONArray) planet.get("champions");
 
 			Planet newPlanet = new Planet(name);
-			System.out.println("Added Planet " + newPlanet.getName());
 			newPlanet.setDescription(description);
 			newPlanet.setPopulation(population);
 			newPlanet.setDiameter(diameter);
@@ -333,6 +332,8 @@ public class SpaceDeck extends Application {
 			boolean legendary = (boolean) cardProperties.get("legendary");
 
 			Card card = null;
+
+			System.out.println("Made " + element + " card: " + name + ".");
 			
 			if (element.equals("Fire")) {
 				card = new FireCard(name, region, cost, attack, health, legendary);

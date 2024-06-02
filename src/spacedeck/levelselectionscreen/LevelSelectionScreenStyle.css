@@ -7,6 +7,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     Author     : pj
 */
 
+* {
+	-fx-menu-bg-color: #035C64;
+	-fx-menu-border-color: #00E8FF;
+}
+
 .title {
 	-fx-font-family: Cristik;
 	-fx-font-size: 45px;
@@ -26,4 +31,42 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
 	-fx-font-family: Cristik;
 	-fx-font-size: 15px;
 	-fx-font-weight: bold;
+}
+
+.deckSelectionPanel {
+    -fx-border-radius: 5px;
+    -fx-background-radius: 8px;
+    -fx-background-color: -fx-menu-bg-color;
+	-fx-border-width: 3px;
+    -fx-border-color: -fx-menu-border-color;
+}
+
+.emptyCard {
+	-fx-background-color: black;
+	-fx-opacity: 0.1;
+}
+
+.deckCard {
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-background-color: -fx-menu-bg-color;
+    -fx-border-color: -fx-menu-border-color;
+}
+
+.deckCardName {
+	-fx-font-family: Cristik;
+	-fx-font-size: 8;
+}
+
+.deckCardCost {
+	-fx-font-family: Cristik;
+    -fx-translate-x: -35;
+	-fx-font-size: 15;
+    -fx-font-weight: bold;
+}
+
+.deckCardDesc {
+    -fx-font-family: TTSupermolotNeue-Regular;
+    -fx-font-size: 6;
+    -fx-text-alignment: center;
 }

@@ -9,11 +9,13 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import spacedeck.SpaceDeck;
 
 /**
  * FXML Controller class
@@ -34,6 +36,7 @@ public class CardDisplayPanelController implements Initializable {
     
     private Card thisCard;
     private CollectionScreenController sceneController;
+	
     /**
      * Initializes the controller class.
      */
@@ -48,7 +51,7 @@ public class CardDisplayPanelController implements Initializable {
     private void selectCard(MouseEvent event) {
         sceneController.setSelectedCard(thisCard);
     }
-    
+
     public void setCard(Card c) {
         thisCard = c;
 		cardCost.setText(Integer.toString(c.getCost()));

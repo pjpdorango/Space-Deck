@@ -194,6 +194,7 @@ public class CardPanelController implements Initializable {
 		}
 	
 
+		System.out.println(elementName);
 		Image elementIcon = null;
 		if ("Fire".equals(elementName)) {
 			elementIcon = new Image(getClass().getResourceAsStream("/spacedeck/media/Fire Icon.png"));

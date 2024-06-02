@@ -195,16 +195,6 @@ public class BattleScreenController implements Initializable {
 		// Instantiate Player
 		player = SpaceDeck.getPlayer();
 		player.reset();
-		player.getDeck().clear();
-		try {
-			player.addCard(Card.searchCard("Among Us"));
-			player.addCard(Card.searchCard("Tiny Khez'ol"));
-			player.addCard(Card.searchCard("Kira"));
-			player.addCard(Card.searchCard("Mizuki"));
-			player.addCard(Card.searchCard("Onyx"));
-		} catch (FullDeckException e) {
-			e.printStackTrace();
-		}
 		
 		// Instantiate Opponent
 		opponent = new Opponent("TEST", 20, 3, AILevel.ADVANCED);
