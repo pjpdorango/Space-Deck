@@ -1,22 +1,108 @@
 package spacedeck.model;
 import java.util.ArrayList;
 import java.util.Random;
+import javafx.scene.input.KeyCode;
 import spacedeck.exceptions.GearAlreadyUsedException;
 import spacedeck.exceptions.GearLimitExceededException;
 
+/**
+ * Class represents a Card; a unit that can be placed onto slots, attack directly, and attack themselves.
+ * @author pj
+ */
 public abstract class Card implements Attackable, Deckable, Cloneable {
     // Constants
+	/**
+	 * Maximum number of gears a card can have. <br> <br>
+	 * {@code DEFAULT} = 1
+	 */
     private static final int MAXGEARS = 1;
     
     // Card Properties
-    private String name, region, element, description, icon;
-    private String strongAgainst, weakAgainst;
+	/**
+	 * The card's name. 
+	 */
+    private String name;
+	/**
+	 * The card's region of origin. 
+	 */
+	private String region;
+	/**
+	 * The card's element. The type circle in the game is as follows: <br>
+	 * <h2>The Type Circle</h2>
+	 * 
+	 * <b>Earth</b> is <span style="color: red;">strong against</span> <b>Air</b>.<br>
+	 * <b>Air</b> is <span style="color: red;">strong against</span> <b>Water</b>.<br>
+	 * <b>Water</b> is <span style="color: red;">strong against</span> <b>Fire</b>.<br>
+	 * <b>Fire</b> is <span style="color: red;">strong against</span> <b>Earth</b>.<br><br>
+	 * 
+	 * Conversely, the inverse match-ups will be weak against each other.<br><br>
+	 * 
+	 * <b>Air</b> is <span style="color: blue;">weak against</span> <b>Earth</b>.<br>
+	 * <b>Earth</b> is <span style="color: blue;">weak against</span> <b>Fire</b>.<br>
+	 * <b>Fire</b> is <span style="color: blue;">weak against</span> <b>Water</b>.<br>
+	 * <b>Water</b> is <span style="color: blue;">weak against</span> <b>Air</b>.<br>
+	 */
+	private String element;
+	/**
+	 * The element the card is strong against. 
+	 * If a card of this element is attacked by this card, the attack will do {@code 2x} the amount of normal damage.
+	 * Conversely, if a card of this element attacks this card, the attack will do {@code 1/2x} the amount of normal damage. <br>
+	 * For the full type circle, see {@link element}
+	 */
+    private String strongAgainst;
+	/**
+	 * The element the card is weak against. 
+	 * If a card of this element is attacked by this card, the attack will do {@code 1/2x} the amount of normal damage.
+	 * Conversely, if a card of this element attacks this card, the attack will do {@code 2x} the amount of normal damage.
+	 * For the full type circle, see {@link element}
+	 */
+	private String weakAgainst;
+	/**
+	 * The filename of the card's icon.
+	 * The specified file name under this String will automatically be prefixed with this path:
+	 * <div style="color: green; padding-left: 10px"> "spacedeck/media/cards/" </div>
+	 * 
+	 * <br>
+	 * <b><i> For example, </b></i> with an {@code icon} = <span style="color: red">"special/Miku.PNG"</span>, the String will refer to the path:
+	 * <div style="color: green; padding-left: 10px"> "spacedeck/media/cards/special/Miku.PNG" </div>
+	 */
+	private String icon;
+	/**
+	 * The card's description.
+	 */
+	private String description;
+	/**
+	 * The gears currently and actively attached to the card. <br>
+	 * It should always be the case that {@code currentGears.size() <= MAXGEARS}.
+	 */
     private ArrayList<Gear> currentGears = new ArrayList<>();
+	/**
+	 * A list that compiles every card to have ever been constructed. Contains no duplicates, or cards with the same name.
+	 */
 	private static ArrayList<Card> allCards = new ArrayList<>();
+	/**
+	 * A list that contains every card that can be drawn from the stack of cards. Contains no duplicates, or cards with the same name.
+	 */
 	private static ArrayList<Card> stackPool = new ArrayList<>();
-    private int cost, attack, health, maxHealth;
-    private int level = 0, xp = 0;
-    private boolean isActive = false;
+	/**
+	 * The fuel cost of the card.
+	 */
+    private int cost;
+	/**
+	 * The attack of the card.
+	 */
+	private int attack;
+	/**
+	 * The current health of the card. Must always be {@code <= maxHealth}
+	 */
+	private int health;
+	/**
+	 * The maximum health this card may have. 
+	 */
+	private int maxHealth;
+	/**
+	 * Boolean that describes whether a card is legendary status or not. Legendary cards have their icons cover the entire background of the card.
+	 */
 	private boolean isLegendary;
     
     /**
@@ -129,6 +215,13 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
         g.setAvailability(false);
     }
     
+	/**
+	 * Attacks a card.
+	 * If the target card is the element this card is strong against, the damage is doubled.
+	 * If the target card is the element this card is weak against, the damage is halved.
+	 * 
+	 * @param c The card to be attacked.
+	 */
     @Override
     public void attack(Card c) {
         // Just in case we need to scale down the damage
@@ -136,11 +229,18 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
         
         if (this.strongAgainst.equals(c.getElement())) {
             dmg *= 2;
-        }
+        } else if (this.weakAgainst.equals(c.getElement())) {
+			dmg /= 2;
+		}
         
         c.takeDamage(dmg);
     }
     
+	/**
+	 * Attacks a character.
+	 * 
+	 * @param ch The card to be attacked.
+	 */
     @Override
     public void attack(Character ch) {
         // Just in case we need to scale down the damage
@@ -149,6 +249,11 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
         ch.takeDamage(dmg);
     }
     
+	/**
+	 * Takes {@code dmg} amount of damage. Should only be used for an attack or as a means of modifying health.
+	 * 
+	 * @param dmg The amount of damage to be taken.
+	 */
     @Override
     public void takeDamage(int dmg) {
         health -= dmg;
@@ -158,21 +263,42 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
         }
     }
     
-    public abstract void specialAttack();
+	/**
+	 * Resets all the properties of the card which varies from battle to battle.
+	 */
+    public void reset() {
+        health = maxHealth;
+    }
     
-    // GETTERS & SETTERS
+	/**
+	 * Gets a random card from the list of all cards ever generated.
+	 * 
+	 * @return A random Card.
+	 */
 	public static Card getRandomCard() {
 		Random rand = new Random();
 
 		return Card.cloneCard(allCards.get(rand.nextInt(allCards.size())));
 	}
 
+	/**
+	 * Gets a random card from the list of cards that can be taken from the stack. Should only be used for when a character takes a stack from the card.
+	 * 
+	 * @return A random Card from the card stack pool.
+	 */
 	public static Card getRandomStackCard() {
 		Random rand = new Random();
 
 		return Card.cloneCard(stackPool.get(rand.nextInt(stackPool.size())));
 	}
 
+	/**
+	 * Searches for a card from the list of all cards ever generated with the given name and returns a <b>copy</b> of the card.
+	 * If the target Card is not found, returns {@code null}.
+	 * 
+	 * @param name The name of the card to be searched.
+	 * @return The target Card, or {@code null} if the target is not found.
+	 */
 	public static Card searchCard(String name) {
 		for (Card card : allCards) {
 			if (card.getName().equals(name)) {
@@ -183,6 +309,7 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
 		return null;
 	}
 
+    // GETTERS & SETTERS
     @Override
     public String getName() {
         return name;
@@ -214,21 +341,8 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
         return health;
     }
     
-    public void reset() {
-        health = maxHealth;
-        isActive = false;
-    }
-    
     public int getAttack() {
         return attack;
-    }
-    
-    public boolean getActivity() {
-        return isActive;
-	}
-    
-    public void setActivity(boolean newActivity) {
-        isActive = newActivity;
     }
     
     @Override
@@ -244,11 +358,11 @@ public abstract class Card implements Attackable, Deckable, Cloneable {
 		return currentGears;
 	}
 
-	public boolean getIsLegendary() {
-		return isLegendary;
-	}
-
 	public static ArrayList<Card> getStackPool() {
 		return stackPool;
+	}
+
+	public boolean getIsLegendary() {
+		return isLegendary;
 	}
 }

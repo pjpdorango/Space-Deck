@@ -7,6 +7,8 @@ public class Gear implements Deckable {
     private boolean isAvailable = true;
     
     /**
+	 * Constructor for the Gear class.
+	 * 
      * @param n Name of the gear.
      * @param c Fuel cost it takes to deploy the gear.
      * @param a attackFx, or the amount of attack the gear adds to the card.

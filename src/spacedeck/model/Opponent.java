@@ -12,22 +12,35 @@ import spacedeck.exceptions.FullFieldException;
 import spacedeck.exceptions.InsufficientFuelException;
 
 /**
- *
+ * Subclass of the Character class. Opponent controlled by AI.
  * @author pj
  */
 public class Opponent extends Character {
+	/**
+	 * Opponent's difficulty, or AI level. On default, {@link AILevel.EASY}.
+	 */
     AILevel difficulty = AILevel.EASY;
     
+	/**
+	 * Constructor for the opponent class.
+	 * @param n
+	 * @param f
+	 * @param a
+	 * @param diff 
+	 */
     public Opponent(String n, int f, int a, AILevel diff) {
         super(n, f, a);
         difficulty = diff;
     }
     
+	/**
+	 * Method that takes in the current state of the game and evaluates moves to do. The output depends on the AILevel.
+	 * 
+	 * @param player The player of the current game, in order to access their deck or playing field.
+	 * @return List of OpponentMoves to execute, containing a complete list of information.
+	 */
     public ArrayList<OpponentMove> decideMoves(Character player) {
 		ArrayList<OpponentMove> moveset = new ArrayList<>();
-        // TODO Opponent AI
-        // isn't actually just an attack method, but a "move" method
-		
 		if (difficulty == AILevel.ADVANCED) {
 			// ADVANCED
 			// if the opponent has no more cards in playing field left: guarantee deploy a card [DONE]
@@ -150,22 +163,6 @@ public class Opponent extends Character {
 					moveset.add(move);
 				}
 			}
-		} else if (difficulty == AILevel.EASY) {
-			if (!deckHasCards()) {
-				OpponentMove move = new OpponentMove(OpponentMove.MoveType.DRAW);
-				moveset.add(move);
-			} else {
-				try {
-					moveset.add(deployWeightedCard());
-				} catch (FullFieldException e) {
-					System.out.println("[ERROR] " + e.getMessage());
-					OpponentMove move = new OpponentMove(OpponentMove.MoveType.DRAW);
-					moveset.add(move);
-				} catch (InsufficientFuelException e) {
-					System.out.println("[ERROR] " + e.getMessage());
-					moveset.add(new OpponentMove(OpponentMove.MoveType.SKIP));
-				}
-			}
 		}
 
 		if (moveset.isEmpty()) {
@@ -174,6 +171,12 @@ public class Opponent extends Character {
 		return moveset;
     }
 
+	/**
+	 * Gets a random player slot that has a card.
+	 * 
+	 * @param player The player of the game.
+	 * @return An occupied player slot number.
+	 */
 	private int getRandomOccupiedPlayerSlot(Character player) {
 		ArrayList<Integer> possible = new ArrayList<>();
 		for (int i = 0; i < player.getPlayingField().length; i++) {
@@ -196,6 +199,8 @@ public class Opponent extends Character {
 	/**
 	 * Deploys a card depending on the weight (attack, health, cost)
 	 * @return Corresponding move of deploying a card depending on the weight (Card has been chosen, slot has been randomized)
+	 * @throws FullFieldException
+	 * @throws InsufficientFuelException
 	 */
 	private OpponentMove deployWeightedCard() throws FullFieldException, InsufficientFuelException {
 		Random rand = new Random();
@@ -243,6 +248,11 @@ public class Opponent extends Character {
 		return move;
 	}
 
+	/**
+	 * Gets a random available opponent slot. To be used to find a spot where a card can be deployed.
+	 * @return The available opponent slot.
+	 * @throws FullFieldException 
+	 */
 	private int getRandomAvailableSlot() throws FullFieldException { 
 		int[] availableSlots = new int[playingCards.length];
 		int nextSlot = 0;
@@ -260,6 +270,15 @@ public class Opponent extends Character {
 		return availableSlots[rand.nextInt(nextSlot)];
 	}
 
+	/**
+	 * Gets an available opponent slot depending on what cards are on the field right now. 
+	 * The returned slot will be more likely to be in front of a high-HP, high attack card.
+	 * This is to prevent the enemy from attacking fuel.
+	 * 
+	 * @param player Current game's player.
+	 * @return The available opponent slot.
+	 * @throws FullFieldException 
+	 */
 	private int getWeightedAvailableSlot(Character player) throws FullFieldException {
 		HashMap<Integer, Integer> weights = new HashMap<>();
 		int maxWeight = 0;
@@ -299,7 +318,11 @@ public class Opponent extends Character {
 
 		return -1;
 	}
-	
+
+	/**
+	 * Function that checks if the Opponent has an empty field.
+	 * @return Empty field boolean.
+	 */	
 	private boolean hasEmptyField() {
 		for (Card c : playingCards) {
 			if (c != null) return false;
@@ -308,6 +331,11 @@ public class Opponent extends Character {
 		return true;
 	}
 
+	/**
+	 * Function that checks whether the specified Character has an empty field.
+	 * @param ch Character to check.
+	 * @return Empty field boolean.
+	 */
 	private boolean hasEmptyField(Character ch) {
 		for (Card c : ch.getPlayingField()) {
 			if (c != null) return false;
@@ -316,6 +344,10 @@ public class Opponent extends Character {
 		return true;
 	}
 
+	/**
+	 * Function that checks if the Opponent has a full field.
+	 * @return Full field boolean.
+	 */
 	private boolean hasFullField() {
 		boolean hasFullField = true;
 		for (Card c : playingCards) {
@@ -330,7 +362,7 @@ public class Opponent extends Character {
 	 * Gears do not count towards Cards. This is used for when the AI needs to
 	 * deploy a card but must first see if any are available.
 	 * 
-	 * @return Whether or not the current opponent deck has any Cards
+	 * @return Whether or not the current opponent deck has any Cards.
 	 */
 	private boolean deckHasCards() {
 		// Base case
@@ -348,10 +380,11 @@ public class Opponent extends Character {
 		return hasCards;
 	}
 
-	public AILevel getAI() {
-		return difficulty;
-	}
-
+	/**
+	 * Function that <b>deep clones</b> an opponent and all its properties.
+	 * @param o Opponent to be cloned.
+	 * @return Cloned opponent.
+	 */
 	public static Opponent clone(Opponent o) {
 		Opponent newOpp = new Opponent(o.getName(), o.getMaxFuel(), o.getAttack(), o.getAI());
 		for (Deckable c : o.getDeck()) {
@@ -363,4 +396,7 @@ public class Opponent extends Character {
 		return newOpp;
 	}
     
+	public AILevel getAI() {
+		return difficulty;
+	}
 }

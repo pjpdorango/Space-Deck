@@ -3,11 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/levelselectionscreen/CollectionCardDisplayPanelController.java</file>
-            <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/levelselectionscreen/LevelSelectionScreenStyle.css</file>
-            <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/levelselectionscreen/DeckSelectionScreenController.java</file>
-            <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/levelselectionscreen/LevelSelectionScreenController.java</file>
+            <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/model/Card.java</file>
+            <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/model/Opponent.java</file>
             <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/battlescreen/BattleScreenController.java</file>
+            <file>file:/D:/PooJay/Documents/NetBeansProjects/Space%20Deck/src/spacedeck/model/Gear.java</file>
         </group>
     </open-files>
 </project-private>

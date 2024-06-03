@@ -6,7 +6,7 @@ package spacedeck.model;
 
 /**
  * Interface that refers to any item that can be placed inside a deck. Requires
- * a name, description, icon, and cost. Includes cards and gears
+ * a {@code name}, {@code description}, {@code icon}, and {@code cost}. Includes Cards and Gears.
  * @author pj
  */
 public interface Deckable {
